@@ -13,12 +13,12 @@ npm i yarn -g
 yarn i
 
 # 启动项目
-npm run serve
+yarn serve
 ```
 
 ## build
 
 ```bash
 ##  线上打包
-npm run build
+yarn build
 ```
