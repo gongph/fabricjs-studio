@@ -1,0 +1,18 @@
+$orange: orange;
+$inputBg: #8a8a8a;
+
+.mu-appbar {
+  height: 48px;
+}
+.mu-tab {
+  min-width: 0px;
+}
+.mu-option.is-selected .mu-item {
+  color: orange;
+}
+.mu-select-icon {
+  fill: $inputBg;
+}
+.mu-input-line {
+  background-color: $inputBg;
+}

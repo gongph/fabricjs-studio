@@ -1,0 +1,76 @@
+@import 'overwrite.scss';
+
+p, h1, h2, h3 {
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background-color: #fff;
+}
+
+// Home page style
+.home-page {
+  .mu-site-search {
+    color: #fff;
+    width: 350px;
+    height: 64px;
+    transition: width .3s cubic-bezier(.23,1,.32,1);
+    .mu-text-field-input {
+      color: #fff;
+      font-weight: 300;
+      padding-left: 15px;
+      font-size: 20px;
+    }
+    .mu-input-content {
+      background: hsla(0,0%,100%,.25);
+      border-radius: 25px;
+    }
+    &.mu-input__focus {
+      width: 400px;
+    }
+    .material-icons {
+      cursor: pointer;
+      margin-right: 10px;
+    }
+  }
+  .mu-search-pagination {
+    margin-top: 15px;
+  }
+  .mu-marked-table {
+    overflow-x: auto;
+    .mu-table-header-wrapper {
+      overflow: unset;
+    }
+  }
+}
+
+.home-page,
+.studio-page {
+  .mu-appbar-title {
+    .logo-cn {
+      font-size: 18px;
+      padding-left: 10px;
+      color: #ddd;
+    }
+  }
+}
+
+// Studio page style
+.studio-page {
+  .canvas-container {
+    margin: 10px auto;
+  }
+}
+
+// 弹框样式
+.mu-alert-dialog {
+  .mu-dialog {
+    border-radius: 9px;
+  }
+}
