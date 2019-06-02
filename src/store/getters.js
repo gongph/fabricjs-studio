@@ -16,9 +16,11 @@ const getters = {
   bookingTotal: state => state.home.bookingTotal,
   bookedList: state => state.home.bookedList,
   bookedTotal: state => state.home.bookedTotal,
-  diePatternId: state => state.home.diePattern.id,
   // 磨具
-  diePatternPath: state => state.home.diePattern.path
+  diePatternPath: state => state.home.diePattern.path,
+  diePatternId: state => state.home.diePattern.id,
+  taobaoId: state => state.home.customeTemplate.taobaoNickname,
+  recipientName: state => state.home.customeTemplate.theRecipientName
 }
 
 export default getters

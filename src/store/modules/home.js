@@ -47,7 +47,7 @@ const home = {
       } },
     customeTemplate: {
       // 定制编号
-      customNumber: gererateUUID(),
+      customNumber: '',
       // 定制数量
       customQuantity: 0,
       // 淘宝ID
@@ -77,9 +77,11 @@ const home = {
         id: -1
       }
     },
-    // 磨具数据。用于页面跳转数据
+    // 缓存磨具数据
     diePattern: {
+      // 编号
       id: -1,
+      // 磨具图路径
       path: '',
       type: 1
     }
@@ -105,6 +107,7 @@ const home = {
     },
     INIT_TEMPLATE_DATA: (state, data) => {
       // 初始化计算机模板数据
+      state.customeTemplate.customNumber = gererateUUID()
       state.customeTemplate.customQuantity = data.customQuantity
       state.customeTemplate.taobaoNickname = data.taobaoNickname
       state.customeTemplate.theRecipientName = data.theRecipientName
