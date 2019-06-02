@@ -19,8 +19,8 @@ const getters = {
   // 磨具
   diePatternPath: state => state.home.diePattern.path,
   diePatternId: state => state.home.diePattern.id,
-  taobaoId: state => state.home.diePattern.taobaoId,
-  recipientName: state => state.home.diePattern.recipientName
+  taobaoId: state => state.home.customeTemplate.taobaoNickname,
+  recipientName: state => state.home.customeTemplate.theRecipientName
 }
 
 export default getters

@@ -43,6 +43,9 @@ const user = {
     signOut ({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
+        commit('SET_USER', '')
+        commit('SET_NAME', '')
+        commit('SET_ROLES', '')
         removeToken()
         resolve()
       })
