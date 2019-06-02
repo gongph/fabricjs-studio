@@ -232,7 +232,8 @@ export default {
       // 图层激活Id，用于设置样式
       layerActiveId: '',
       // 本地上传的图片base64
-      localUploadUrl: ''
+      localUploadUrl: '',
+      scrollTop: 100
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -253,6 +254,15 @@ export default {
         console.error(err)
       })
     }
+    // 初始化滚动事件
+    fromEvent(
+      document.querySelector('.canvas-layout'),
+      'scroll'
+    ).pipe(
+      debounceTime(250)
+    ).subscribe(evt => {
+      this.scrollTop = evt.target.scrollTop
+    })
   },
   computed: {
     ...mapGetters([
@@ -326,7 +336,7 @@ export default {
             // 初始化事件
             self.initEvents()
           }, {
-            crossOrigin: 'anonymous'
+            crossOrigin: 'Anonymous'
           }
         )
         setTimeout(() => {
@@ -398,7 +408,7 @@ export default {
             name: 'itext',
             fontSize: 20,
             left: 100,
-            top: 100
+            top: this.scrollTop + 100
           })
           this.canvas.add(itext)
           this.pushLayer({
@@ -454,7 +464,7 @@ export default {
           _uuid: gererateUUID(),
           name: 'image',
           left: 100,
-          top: 100
+          top: this.scrollTop + 100
         })
         this.canvas.add(oImg)
         this.canvas.setActiveObject(oImg)
@@ -517,7 +527,7 @@ export default {
           _uuid: gererateUUID(),
           name: 'image',
           left: 100,
-          top: 100
+          top: this.scrollTop + 100
         })
         this.canvas.add(oImg)
         this.canvas.setActiveObject(oImg)
