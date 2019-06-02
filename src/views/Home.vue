@@ -300,9 +300,7 @@ export default {
   created () {
     this.$store.commit('EXIT_EDITOR')
     // 第一件事情初始化鼠标垫，鼠标垫从刀模图中获取一个
-    this.getSbdInfo({ query: '鼠标垫' }).then(response => {
-      console.log('success')
-    })
+    this.getSbdInfo({ query: '鼠标垫' })
     this.$nextTick(() => {
       document.querySelector('.carousel-wrapper').onclick = (evt) => {
         if (evt.target.tagName === 'IMG') {

@@ -234,6 +234,7 @@ export default {
       layerActiveId: '',
       // 本地上传的图片base64
       localUploadUrl: '',
+      scrollTop: 100,
       desgin: {}
     }
   },
@@ -270,6 +271,15 @@ export default {
           console.error(err)
         })
     }
+    // 初始化滚动事件
+    fromEvent(
+      document.querySelector('.canvas-layout'),
+      'scroll'
+    ).pipe(
+      debounceTime(250)
+    ).subscribe(evt => {
+      this.scrollTop = evt.target.scrollTop
+    })
   },
   computed: {
     ...mapGetters([
@@ -423,7 +433,7 @@ export default {
             name: 'itext',
             fontSize: 20,
             left: 100,
-            top: 100
+            top: this.scrollTop + 100
           })
           this.canvas.add(itext)
           this.pushLayer({
@@ -479,7 +489,7 @@ export default {
           _uuid: gererateUUID(),
           name: 'image',
           left: 100,
-          top: 100
+          top: this.scrollTop + 100
         })
         this.canvas.add(oImg)
         this.canvas.setActiveObject(oImg)
@@ -542,7 +552,7 @@ export default {
           _uuid: gererateUUID(),
           name: 'image',
           left: 100,
-          top: 100
+          top: this.scrollTop + 100
         })
         this.canvas.add(oImg)
         this.canvas.setActiveObject(oImg)
@@ -595,8 +605,6 @@ export default {
       }).then(({ result }) => {
         if (result) {
           let data = JSON.stringify(this.canvas.toJSON())
-          debugger
-          console.log(data)
           this.updateCustomTemplates(data).then(() => {
             this.$toast.success({
               message: '提交成功',

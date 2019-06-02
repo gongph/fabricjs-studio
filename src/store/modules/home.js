@@ -422,7 +422,6 @@ const home = {
         }
         Promise.all([saveCustomTemplates(state.customeTemplate), saveCustomTemplates(state.sbd)]).then(response => {
           if (response[0].status !== 201) reject(new Error('saveCustomTemplates: error'))
-          console.log(response)
           // 通过当前状态区分现在操作的是鼠标垫还是笔记本
           if (state.currentType === 1) {
             commit('SET_TEMPLATE_ID', response[0].data)
