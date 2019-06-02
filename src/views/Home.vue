@@ -62,7 +62,7 @@
           </div>
         </div>
       </div>
-      <mu-container>
+      <mu-container fluid>
         <mu-tabs
           :value.sync="tabActive"
           @change="handleTabChange"
@@ -139,31 +139,41 @@
         </div>
         <!-- 我的定制 -->
         <div class="marked-wrapping" v-if="tabActive === 1">
-          <mu-data-table class="mu-marked-table" height="300" :columns="columns2" :data="bookedList" :loading="markedTableLoading">
-            <!-- <template slot-scope="scope">
-              <td class="is-center">1</td>
-              <td class="is-center">1</td>
-              <td class="is-center">1</td>
-              <td class="is-center">2</td>
-              <td class="is-center">3</td>
-              <td class="is-center">1</td>
-              <td class="is-center">2</td>
-              <td class="is-center">3</td>
-              <td class="is-center">1</td>
-              <td class="is-center">2</td>
+          <mu-data-table stripe class="mu-marked-table" height="300" :columns="columns2" :data="bookedList" :loading="markedTableLoading">
+              <template slot-scope="scope">
+              <td class="is-center">{{ scope.row.customNumber }}</td>
               <td class="is-center">
-                <mu-tooltip placement="top" content="定制贴膜">
+                <span v-if="scope.row.diePattern && scope.row.diePattern.computerType && scope.row.diePattern.computerType.value">{{ scope.row.diePattern.computerType.value }}</span>
+                <span v-else> 这个是错误数据啊，联系管理员删除该数据 </span>
+              <td class="is-center">
+                <span v-if="scope.row.diePattern && scope.row.diePattern.diePatternType">{{ scope.row.diePattern.diePatternType }}</span>
+                <span v-else> 这个是错误数据啊，联系管理员删除该数据 </span>
+              </td>
+              <td class="is-center">{{ scope.row.customQuantity }}</td>
+              <td class="is-center">{{ scope.row.taobaoNickname }}</td>
+              <td class="is-center">{{ scope.row.theRecipientName }}</td>
+              <td class="is-center">{{ scope.row.modelType.value }}</td>
+              <td class="is-center">
+                <span v-if="scope.row.finishedCondition.id === 1" style="color: red">{{ scope.row.finishedCondition.value }}</span>
+                <span v-else>{{ scope.row.finishedCondition.value }}</span>
+              </td>
+              <td class="is-center">{{ scope.row.customState.value }}</td>
+              <td class="is-center"><span>{{ scope.row.createdDate | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span></td>
+              <td class="is-center">
+                <mu-tooltip placement="top" v-if="scope.row.finishedCondition.id === 1" content="继续定制">
                   <mu-button icon color="error">
                     <mu-icon value="computer"></mu-icon>
                   </mu-button>
                 </mu-tooltip>
               </td>
-            </template> -->
+            </template>
           </mu-data-table>
           <!-- 分页 -->
           <template v-if="bookedList.length > 0">
             <mu-flex justify-content="center" class="mu-search-pagination">
-              <mu-pagination raised circle :total="bookedTotal" :current.sync="listQuery.page"></mu-pagination>
+              <mu-pagination raised circle :total="bookedTotal" :current.sync="listQuery.page + 1"
+                             :page-size="listQuery.size"
+                             @change="handlePagingChange"></mu-pagination>
             </mu-flex>
           </template>
         </div>
@@ -214,6 +224,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { parseTime } from '@/utils'
 import { throttle } from 'lodash'
 export default {
   name: 'HomePage',
@@ -239,7 +250,7 @@ export default {
         { title: '功能', name: 'actions', align: 'center', width: 270 }
       ],
       columns2: [
-        { title: '定制编号', name: 'customNumber', sortable: true },
+        { title: '定制编号', name: 'customNumber', sortable: true, width: 220 },
         { title: '品牌', name: 'computerType', align: 'center', sortable: true },
         { title: '型号', name: 'computerMode', align: 'center', sortable: true },
         { title: '数量', name: 'customQuantity', align: 'center', sortable: true },
@@ -281,12 +292,20 @@ export default {
       }
     })
   },
+  filters: {
+    parseTime: function (value) {
+      if (!value) return ''
+      value = value.toString()
+      return parseTime(value)
+    }
+  },
   methods: {
     ...mapActions([
       'signOut',
       'changePassword',
       'getBookingList',
       'getBookedList',
+      'getMyAllBookedList',
       'initTemplateData'
     ]),
     /**
@@ -308,6 +327,10 @@ export default {
      * 查询
      */
     search () {
+      if (this.fieldKey === 'marked' && !this.listQuery.queryParams) {
+        this.getMyBookedListWithoutSearch()
+        return
+      }
       if (!this.listQuery.queryParams) {
         this.$toast.info({
           message: '搜索内容不能为空',
@@ -325,16 +348,34 @@ export default {
             this.markingTableLoading = false
           })
         } else if (this.fieldKey === 'marked') {
-          this.markedTableLoading = true
-          this.getBookedList({
-            page: this.listQuery.page,
-            size: this.listQuery.size,
-            query: this.listQuery.queryParams
-          }).then(() => {
-            this.markedTableLoading = false
-          })
+          this.getMyBookedList()
         }
       }
+    },
+    /**
+     * 获取没有搜索关键字的列表
+     */
+    getMyBookedListWithoutSearch () {
+      this.markedTableLoading = true
+      this.getMyAllBookedList({
+        page: this.listQuery.page,
+        size: this.listQuery.size
+      }).then(() => {
+        this.markedTableLoading = false
+      })
+    },
+    /**
+     * 获取有搜索关键字的列表
+     */
+    getMyBookedList () {
+      this.markedTableLoading = true
+      this.getBookedList({
+        page: this.listQuery.page,
+        size: this.listQuery.size,
+        query: this.listQuery.queryParams
+      }).then(() => {
+        this.markedTableLoading = false
+      })
     },
     /**
      * 提交`我要定制`表单
@@ -442,6 +483,7 @@ export default {
         this.fieldKey = 'marked'
         this.placeholder = '定制编号、淘宝ID、收件人姓名'
         this.tips = '输入要查询的淘宝ID或收件人姓名，并点击"搜索"图标'
+        this.getMyBookedListWithoutSearch()
       }
     },
     /**

@@ -2,7 +2,7 @@
  * 首页
  */
 
-import { queryDiePatterns, queryCustomTemplates, saveCustomTemplates } from '@/api/home'
+import { queryDiePatterns, queryCustomTemplates, saveCustomTemplates, queryAllCustomTemplates } from '@/api/home'
 import { updateCustomTemplates } from '@/api/studio'
 import { gererateUUID } from '@/utils'
 
@@ -72,6 +72,8 @@ const home = {
       state.customeTemplate.taobaoNickname = data.taobaoNickname
       state.customeTemplate.theRecipientName = data.theRecipientName
       state.customeTemplate.user.id = data.userId
+      // 关联上刀模图数据
+      state.customeTemplate.diePattern = data
 
       state.diePattern.path = data.diePatternimagePath
     },
@@ -111,7 +113,24 @@ const home = {
     getBookedList ({ commit, getters }, query) {
       return new Promise((resolve, reject) => {
         queryCustomTemplates(Object.assign(
-          { login: getters.userId },
+          { login: getters.user.login },
+          query
+        )).then(response => {
+          if (response.status !== 200) reject(new Error('error'))
+          commit('SET_BOOKED_LIST', response.data ? response.data : [])
+          commit('SET_BOOKED_TOTAL', Number(response?.headers['x-total-count']) || 0)
+          resolve()
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+    /**
+     * 获取`我的定制`列表
+     */
+    getMyAllBookedList ({ commit, getters }, query) {
+      return new Promise((resolve, reject) => {
+        queryAllCustomTemplates(getters.user.login, Object.assign(
           query
         )).then(response => {
           if (response.status !== 200) reject(new Error('error'))

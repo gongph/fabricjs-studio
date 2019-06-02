@@ -18,6 +18,7 @@ const getters = {
   bookedTotal: state => state.home.bookedTotal,
   templateId: state => {
     setTimeout(() => {
+      // eslint-disable-next-line no-unused-expressions
       state.home.customeTemplate?.id
     }, 0)
   },

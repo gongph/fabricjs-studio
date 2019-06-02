@@ -29,6 +29,17 @@ export function queryCustomTemplates (query) {
 }
 
 /**
+ * 获取我的定制列表
+ */
+export function queryAllCustomTemplates (userid, query) {
+  return request({
+    url: `/api/custom-templates/user/${userid}`,
+    method: 'get',
+    params: query
+  })
+}
+
+/**
  * 保存自定义磨具信息
  */
 
