@@ -239,7 +239,7 @@ export default {
     next(vm => {
       // 检查浏览器中是否有 id。没有说明是非法URL跳转到首页
       if (!getUrlParam('id')) {
-        this.$router.push({ path: '/' })
+        vm.$router.push({ path: '/' })
       }
     })
   },
