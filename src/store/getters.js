@@ -16,12 +16,7 @@ const getters = {
   bookingTotal: state => state.home.bookingTotal,
   bookedList: state => state.home.bookedList,
   bookedTotal: state => state.home.bookedTotal,
-  templateId: state => {
-    setTimeout(() => {
-      // eslint-disable-next-line no-unused-expressions
-      state.home.customeTemplate?.id
-    }, 0)
-  },
+  templateId: state => state.home.customeTemplate.id,
   // 磨具
   diePatternPath: state => state.home.diePattern.path
 }

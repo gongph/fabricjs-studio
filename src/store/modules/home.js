@@ -5,6 +5,7 @@
 import { queryDiePatterns, queryCustomTemplates, saveCustomTemplates, queryAllCustomTemplates } from '@/api/home'
 import { updateCustomTemplates } from '@/api/studio'
 import { gererateUUID } from '@/utils'
+import { cloneDeep } from 'lodash'
 
 const home = {
   state: {
@@ -15,6 +16,7 @@ const home = {
     bookedList: [],
     bookedTotal: 0,
     customeTemplate: {
+      id: -1,
       // 定制编号
       customNumber: gererateUUID(),
       // 定制数量
@@ -27,6 +29,8 @@ const home = {
       recommendedStatus: {
         id: 1
       },
+      // 刀模具
+      diePattern: null,
       // 磨具类型： id: 1 贴膜 id: 2 鼠标垫
       modelType: {
         id: 1
@@ -48,10 +52,6 @@ const home = {
     diePattern: {
       id: -1,
       path: ''
-    },
-    // fabric's json data
-    FabricDesignMaterial: {
-      originJson: ''
     }
   },
   mutations: {
@@ -74,13 +74,10 @@ const home = {
       state.customeTemplate.user.id = data.userId
       // 关联上刀模图数据
       state.customeTemplate.diePattern = data
-
       state.diePattern.path = data.diePatternimagePath
     },
     SET_TEMPLATE_ID: (state, id) => {
-      if (!state.customeTemplate.id) {
-        state.customeTemplate.id = id
-      }
+      state.customeTemplate.id = id
     },
     SET_JSON_OF_TEMPLATE: (state, jsonStr) => {
       if (!state.customeTemplate.fabricDesignMaterials) {
@@ -157,9 +154,10 @@ const home = {
      */
     saveCustomTemplates ({ commit, state }) {
       return new Promise((resolve, reject) => {
-        saveCustomTemplates(state.customeTemplate).then(response => {
+        const saveData = cloneDeep(state.customeTemplate)
+        delete saveData.id
+        saveCustomTemplates(saveData).then(response => {
           if (response.status !== 201) reject(new Error('saveCustomTemplates: error'))
-          console.log(response)
           commit('SET_TEMPLATE_ID', response.data.id)
           resolve()
         }).catch(err => {
