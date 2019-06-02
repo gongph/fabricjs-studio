@@ -16,7 +16,7 @@ const getters = {
   bookingTotal: state => state.home.bookingTotal,
   bookedList: state => state.home.bookedList,
   bookedTotal: state => state.home.bookedTotal,
-  templateId: state => state.home.customeTemplate.id,
+  diePatternId: state => state.home.diePattern.id,
   // 磨具
   diePatternPath: state => state.home.diePattern.path
 }

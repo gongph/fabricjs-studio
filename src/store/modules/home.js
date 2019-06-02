@@ -5,7 +5,6 @@
 import { queryDiePatterns, queryCustomTemplates, saveCustomTemplates, queryAllCustomTemplates } from '@/api/home'
 import { updateCustomTemplates } from '@/api/studio'
 import { gererateUUID } from '@/utils'
-import { cloneDeep } from 'lodash'
 
 const home = {
   state: {
@@ -16,7 +15,6 @@ const home = {
     bookedList: [],
     bookedTotal: 0,
     customeTemplate: {
-      id: -1,
       // 定制编号
       customNumber: gererateUUID(),
       // 定制数量
@@ -48,10 +46,11 @@ const home = {
         id: -1
       }
     },
-    // 磨具数据
+    // 磨具数据。用于页面跳转数据
     diePattern: {
       id: -1,
-      path: ''
+      path: '',
+      type: 1
     }
   },
   mutations: {
@@ -77,7 +76,7 @@ const home = {
       state.diePattern.path = data.diePatternimagePath
     },
     SET_TEMPLATE_ID: (state, id) => {
-      state.customeTemplate.id = id
+      state.diePattern.id = id
     },
     SET_JSON_OF_TEMPLATE: (state, jsonStr) => {
       if (!state.customeTemplate.fabricDesignMaterials) {
@@ -154,9 +153,7 @@ const home = {
      */
     saveCustomTemplates ({ commit, state }) {
       return new Promise((resolve, reject) => {
-        const saveData = cloneDeep(state.customeTemplate)
-        delete saveData.id
-        saveCustomTemplates(saveData).then(response => {
+        saveCustomTemplates(state.customeTemplate).then(response => {
           if (response.status !== 201) reject(new Error('saveCustomTemplates: error'))
           commit('SET_TEMPLATE_ID', response.data.id)
           resolve()

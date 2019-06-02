@@ -230,12 +230,15 @@ export default {
     }
   },
   mounted () {
-    if (this.templateId > 0) return
-    this.saveCustomTemplates().then(response => {
+    if (this.diePatternId > 0) {
       this.initFabric()
-    }).catch(err => {
-      console.error(err)
-    })
+    } else {
+      this.saveCustomTemplates().then(response => {
+        this.initFabric()
+      }).catch(err => {
+        console.error(err)
+      })
+    }
   },
   computed: {
     ...mapGetters([
@@ -244,7 +247,7 @@ export default {
       'diePatternPath',
       'galleryTypes',
       'gallerys',
-      'templateId'
+      'diePatternId'
     ])
   },
   methods: {
