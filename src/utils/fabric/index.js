@@ -10,6 +10,9 @@ export default {
   addItext (text, opt) {
     return new fabric.IText(text, opt)
   },
+  addText (text, opt) {
+    return new fabric.Text(text, opt)
+  },
   addRect (opt) {
     return new fabric.Rect(opt)
   },

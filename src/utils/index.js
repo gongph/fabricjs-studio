@@ -17,6 +17,35 @@ export function dataURItoBlob (dataURI) {
 }
 
 /**
+ * 下载
+ */
+export function download (url, fileName) {
+  const link = document.createElement('a')
+  link.href = window.URL.createObjectURL(dataURItoBlob(url))
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
+/**
+ * 获取 url 参数值
+ * @param  {String} name 参数名
+ * @return {String}      参数值
+ */
+export function getUrlParam (name) {
+  var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)')
+  var search = window.location.search
+  if (search) {
+    var r = decodeURIComponent(search).substring(1).match(reg)
+    if (r) {
+      return unescape(r[2])
+    }
+  }
+  return ''
+}
+
+/**
  * 格式化日期
  */
 

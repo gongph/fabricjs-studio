@@ -36,19 +36,22 @@
     <mu-appbar :z-depth="2" class="mu-appbar-header is-open is-only-title" color="primary" v-if="!loading">
       <svg-icon icon-class="logo"/>
       <span class="logo-cn">新通路贴膜定制系统</span>
-      <mu-button small flat slot="right" color="orange" @click="handleRedo">
+      <mu-button small flat slot="right" @click="handleRedo">
         <mu-icon left value="cached"></mu-icon> 重做
       </mu-button>
       <mu-button small flat slot="right" @click="previewCanvas">
         <mu-icon left value="remove_red_eye"></mu-icon> 预览
       </mu-button>
-      <mu-button small flat slot="right" @click="handleSave">
+      <mu-button small flat slot="right" @click="handleSaveToRemote">
         <mu-icon left value="cloud_upload"></mu-icon> 提交
+      </mu-button>
+      <mu-button small flat slot="right" @click="handleDownloadToLocal">
+        <mu-icon left value="vertical_align_bottom"></mu-icon> 保存到本地
       </mu-button>
       <mu-button small flat slot="right" @click="handleQuitEditor">
         <mu-icon left value="reply"></mu-icon> 退出编辑
       </mu-button>
-      <mu-button small flat slot="right">
+      <mu-button small flat slot="right" color="orange">
         欢迎您，{{ nickName }}
       </mu-button>
       <mu-menu slot="right" open-on-hover>
@@ -172,6 +175,8 @@
           slot="actions"
           flat
           color="info"
+          v-loading="sureBtnLoading"
+          data-mu-loading-size="24"
           @click="handleImgSelected"
         >
           确定
@@ -188,7 +193,7 @@
 <script>
 import { SidebarBase, SidebarAttrs, SidebarLayer } from './layout'
 import { mapGetters, mapActions } from 'vuex'
-import { baseImgUrl, gererateUUID } from '@/utils'
+import { baseImgUrl, gererateUUID, download, getUrlParam } from '@/utils'
 import { fromEvent } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 // import { uploadify } from '@/utils/file-upload.js'
@@ -216,6 +221,7 @@ export default {
       graphType: 'itext',
       disabled: true,
       globalLoading: true,
+      sureBtnLoading: false,
       imageTypeId: '',
       // 当前选择的图片对象
       selectedImg: null,
@@ -228,6 +234,14 @@ export default {
       // 本地上传的图片base64
       localUploadUrl: ''
     }
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      // 检查浏览器中是否有 id。没有说明是非法URL跳转到首页
+      if (!getUrlParam('id')) {
+        this.$router.push({ path: '/' })
+      }
+    })
   },
   mounted () {
     if (this.diePatternId > 0) {
@@ -245,9 +259,11 @@ export default {
       'nickName',
       'activeObject',
       'diePatternPath',
+      'diePatternId',
       'galleryTypes',
       'gallerys',
-      'diePatternId'
+      'taobaoId',
+      'recipientName'
     ])
   },
   methods: {
@@ -277,28 +293,42 @@ export default {
       const image = new Image()
       image.src = `${baseImgUrl}${self.diePatternPath}`
       image.onload = () => {
-        const canvas = self.canvas = fb.init(document.getElementById('canvas'), {
-          name: 'canvas',
-          backgroundColor: '#fff',
-          width: image.width / 2,
-          height: image.height / 2,
-          stopContextMenu: true,
-          backgroundVpt: false
-        })
+        // 初始化Canvas画布
+        const canvas = self.canvas = fb.init(
+          document.getElementById('canvas'),
+          {
+            name: 'canvas',
+            backgroundColor: '#fff',
+            width: image.width / 2,
+            height: image.height / 2,
+            stopContextMenu: true,
+            backgroundVpt: false
+          }
+        )
         self.setCanvas(this.canvas)
-        self.$fabric.Image.fromURL(`${baseImgUrl}${self.diePatternPath}`, (oImg) => {
-          oImg.scale(0.5)
-          oImg.set({
-            name: 'diebg',
-            selectable: false,
-            evented: false,
-            moveCursor: 'default',
-            hoverCursor: 'default'
-          })
-          canvas.add(oImg)
-        })
-        self.initCornerStyle()
-        self.initEvents()
+        // 加载背景磨具图片
+        self.$fabric.Image.fromURL(
+          `${baseImgUrl}${self.diePatternPath}`,
+          (oImg) => {
+            oImg.scale(0.5)
+            oImg.set({
+              name: 'diebg',
+              selectable: false,
+              evented: false,
+              moveCursor: 'default',
+              hoverCursor: 'default'
+            })
+            canvas.add(oImg)
+            // 初始化水印
+            self.initWatermark()
+            // 初始化选中样式
+            self.initCornerStyle()
+            // 初始化事件
+            self.initEvents()
+          }, {
+            crossOrigin: 'anonymous'
+          }
+        )
         setTimeout(() => {
           loading.close()
           self.loading = false
@@ -336,6 +366,25 @@ export default {
           self.disabled = true
         }
       })
+    },
+    /**
+     * 添加水印。淘宝ID和收件人姓名
+     */
+    initWatermark (opt = { left: 150, top: 10 }) {
+      const text = fb.addText(
+        `淘宝ID：${this.taobaoId}    收件人姓名：${this.recipientName}`,
+        {
+          name: 'text',
+          fontFamily: '微软雅黑',
+          fill: '#ccc',
+          left: opt.left,
+          top: opt.top,
+          evented: false,
+          selectable: false
+        }
+      )
+      text.scale(0.25)
+      this.canvas.add(text)
     },
     /**
      * 添加图形
@@ -461,6 +510,7 @@ export default {
      * 处理官方图库图片选择
      */
     handleImgSelected () {
+      this.sureBtnLoading = true
       this.$fabric.Image.fromURL(this.selectedImg.src, oImg => {
         oImg.scale(900 / oImg.width / 2)
         oImg.set({
@@ -468,8 +518,6 @@ export default {
           name: 'image',
           left: 100,
           top: 100
-        }, {
-          crossOrigin: 'Anonymous'
         })
         this.canvas.add(oImg)
         this.canvas.setActiveObject(oImg)
@@ -483,6 +531,9 @@ export default {
         // 新添加的靠前
         this.canvas.sendBackwards(oImg)
         this.openUploadImgDialog = false
+        this.sureBtnLoading = false
+      }, {
+        crossOrigin: 'Anonymous'
       })
     },
     /**
@@ -511,9 +562,9 @@ export default {
       this.openPreivewCanvasDialog = true
     },
     /**
-     * 保存
+     * 保存到服务器
      */
-    handleSave () {
+    handleSaveToRemote () {
       this.$confirm('确定要提交吗？', '提示', {
         type: 'info'
       }).then(({ result }) => {
@@ -529,6 +580,19 @@ export default {
               position: 'top'
             })
           })
+        }
+      })
+    },
+    /**
+     * 保存到本地
+     */
+    handleDownloadToLocal () {
+      this.$confirm('确定要保存到本地吗？', '提示', {
+        type: 'info'
+      }).then(({ result }) => {
+        if (result) {
+          const id = getUrlParam('id') || Date.now()
+          download(this.canvas.toDataURL({ format: 'jpeg' }), id)
         }
       })
     },
