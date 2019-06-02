@@ -10,7 +10,7 @@ A project width fabric.js and vue@2.0
 npm i yarn -g
 
 # 安装项目依赖
-yarn i
+yarn install
 
 # 启动项目
 yarn serve
