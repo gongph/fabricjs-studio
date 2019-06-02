@@ -144,10 +144,16 @@
               <template slot-scope="scope">
               <td class="is-center">{{ scope.row.customNumber }}</td>
               <td class="is-center">
-                <span v-if="scope.row.diePattern && scope.row.diePattern.computerType && scope.row.diePattern.computerType.value">{{ scope.row.diePattern.computerType.value }}</span>
+                <span v-if="scope.row.diePattern && scope.row.diePattern.computerType && scope.row.diePattern.computerType.value">
+                  <span v-if="scope.row.modelType.id === 1">{{ scope.row.diePattern.computerType.value }}</span>
+                  <span v-else>{{getModeType(scope.row.customNumber)}}</span>
+                </span>
                 <span v-else> 这个是错误数据啊，联系管理员删除该数据 </span>
               <td class="is-center">
-                <span v-if="scope.row.diePattern && scope.row.diePattern.diePatternType">{{ scope.row.diePattern.diePatternType }}</span>
+                <span v-if="scope.row.diePattern && scope.row.diePattern.diePatternType">
+                  <span v-if="scope.row.modelType.id === 1">{{ scope.row.diePattern.diePatternType }}</span>
+                  <span v-else>{{getModeType(scope.row.customNumber)}}</span>
+                </span>
                 <span v-else> 这个是错误数据啊，联系管理员删除该数据 </span>
               </td>
               <td class="is-center">{{ scope.row.customQuantity }}</td>
@@ -233,6 +239,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import { parseTime } from '@/utils'
 import { throttle } from 'lodash'
+import { getFabricDesignMaterialsByCustomNumber } from '@/api/studio'
 export default {
   name: 'HomePage',
   data () {
@@ -291,6 +298,7 @@ export default {
     ])
   },
   created () {
+    this.$store.commit('EXIT_EDITOR')
     // 第一件事情初始化鼠标垫，鼠标垫从刀模图中获取一个
     this.getSbdInfo({ query: '鼠标垫' }).then(response => {
       console.log('success')
@@ -320,6 +328,18 @@ export default {
       'getMyAllBookedList',
       'initTemplateData'
     ]),
+    getModeType (bh) {
+      getFabricDesignMaterialsByCustomNumber(bh).then(response => {
+        if (response.status === 200 && response.data[0]) {
+          if (response.data[0].customTemplate && response.data[0].customTemplate.modelType.id === 1) {
+            return response.data[0].customTemplate
+          } else {
+            return response.data[1].customTemplate
+          }
+        }
+        return null
+      })
+    },
     /**
      * 退出系统
      */
@@ -339,9 +359,10 @@ export default {
       this.$store.commit('SET_CURRENT_TYPE', type)
       this.$store.commit('SET_TEMPLATE_ID', row)
 
+      let id = row.id
       this.$router.push({
         name: 'studio',
-        query: row.id
+        query: { id }
       })
     },
     /**
