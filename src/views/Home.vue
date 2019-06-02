@@ -160,20 +160,30 @@
               <td class="is-center">{{ scope.row.customState.value }}</td>
               <td class="is-center"><span>{{ scope.row.createdDate | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span></td>
               <td class="is-center">
-                <mu-tooltip placement="top" v-if="scope.row.finishedCondition.id === 1" content="继续定制">
-                  <mu-button icon color="error">
-                    <mu-icon value="computer"></mu-icon>
+                <template v-if="scope.row.finishedCondition.id === 1">
+                  <mu-button
+                    href="javascript:;"
+                    small
+                    color="error"
+                    :ripple="false"
+                  >
+                    继续定制
                   </mu-button>
-                </mu-tooltip>
+                </template>
               </td>
             </template>
           </mu-data-table>
           <!-- 分页 -->
           <template v-if="bookedList.length > 0">
             <mu-flex justify-content="center" class="mu-search-pagination">
-              <mu-pagination raised circle :total="bookedTotal" :current.sync="listQuery.page + 1"
-                             :page-size="listQuery.size"
-                             @change="handlePagingChange"></mu-pagination>
+              <mu-pagination
+                raised
+                circle
+                :total="bookedTotal"
+                :current.sync="listQuery.page + 1"
+                :page-size="listQuery.size"
+                @change="handlePagingChange"
+              />
             </mu-flex>
           </template>
         </div>
