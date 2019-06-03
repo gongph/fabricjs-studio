@@ -3,7 +3,7 @@
  */
 
 import { queryDiePatterns, queryCustomTemplates, saveCustomTemplates, queryAllCustomTemplates } from '@/api/home'
-import { updateCustomTemplates } from '@/api/studio'
+import { updateCustomTemplates, saveFabricDesignMaterials, updateFabricDesignMaterials } from '@/api/studio'
 import { gererateUUID } from '@/utils'
 
 const home = {
@@ -17,6 +17,7 @@ const home = {
     // 鼠标垫模具
     sbdDiePattern: {},
     currentType: {},
+    currentCustomeTemplate: {},
     // 鼠标垫
     sbd: {
       // 定制数量
@@ -130,14 +131,26 @@ const home = {
         state.diePattern.path = state.sbdDiePattern.diePatternimagePath
       }
     },
+    EXIT_EDITOR: (state, data) => {
+      state.diePattern.id = null
+      state.diePattern.path = null
+      state.currentType = null
+      state.currentCustomeTemplate = null
+      state.sbd.id = null
+      state.customeTemplate.id = null
+    },
     SET_TEMPLATE_ID: (state, data) => {
+      debugger
       state.diePattern.id = data.diePattern.id
-      // 根据按的类型来处里不同的模板
-      // if (state.currentType === 1) {
       state.diePattern.path = data.diePattern.diePatternimagePath
-      // } else {
-      //  state.diePattern.path = state.sbdDiePattern.diePatternimagePath
-      // }
+      // 根据按的类型来处里不同的模板
+      if (state.currentType === 1) {
+        state.customeTemplate = data
+        state.currentCustomeTemplate = data
+      } else {
+        state.sbd = data
+        state.currentCustomeTemplate = data
+      }
     },
     SET_JSON_OF_TEMPLATE: (state, jsonStr) => {
       if (!state.customeTemplate.fabricDesignMaterials) {
@@ -228,6 +241,185 @@ const home = {
      */
     saveCustomTemplates ({ commit, state }) {
       return new Promise((resolve, reject) => {
+        // {"version":"3.0.0","objects":[{"type":"image","version":"3.0.0","originX":"left","originY":"top","left":0,"top":0,"width":2000,"height":4158,"fill":"rgb(0,0,0)","stroke":null,"strokeWidth":0,"strokeDashArray":null,"strokeLineCap":"butt","strokeDashOffset":0,"strokeLineJoin":"miter","strokeMiterLimit":4,"scaleX":0.5,"scaleY":0.5,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","paintFirst":"fill","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"crossOrigin":"*","cropX":0,"cropY":0,"src":"http://th.minio.boyuanziben.cn/die-pattern/3f8b95cc-1da2-4993-97ea-b4b5e45c96b3.png","filters":[]},{"type":"text","version":"3.0.0","originX":"left","originY":"top","left":150,"top":10,"width":499,"height":45.2,"fill":"#ccc","stroke":null,"strokeWidth":1,"strokeDashArray":null,"strokeLineCap":"butt","strokeDashOffset":0,"strokeLineJoin":"miter","strokeMiterLimit":4,"scaleX":0.25,"scaleY":0.25,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","paintFirst":"fill","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"text":"淘宝ID：1    收件人姓名：2","fontSize":40,"fontWeight":"normal","fontFamily":"微软雅黑","fontStyle":"normal","lineHeight":1.16,"underline":false,"overline":false,"linethrough":false,"textAlign":"left","textBackgroundColor":"","charSpacing":0,"styles":{}}],"background":"#fff"}
+        let bjbOrigin = {
+          'version': '3.0.0',
+          'objects': [{
+            'type': 'image',
+            'version': '3.0.0',
+            'originX': 'left',
+            'originY': 'top',
+            'left': 0,
+            'top': 0,
+            'width': 2000,
+            'height': 4158,
+            'fill': 'rgb(0,0,0)',
+            'stroke': null,
+            'strokeWidth': 0,
+            'strokeDashArray': null,
+            'strokeLineCap': 'butt',
+            'strokeDashOffset': 0,
+            'strokeLineJoin': 'miter',
+            'strokeMiterLimit': 4,
+            'scaleX': 0.5,
+            'scaleY': 0.5,
+            'angle': 0,
+            'flipX': false,
+            'flipY': false,
+            'opacity': 1,
+            'shadow': null,
+            'visible': true,
+            'clipTo': null,
+            'backgroundColor': '',
+            'fillRule': 'nonzero',
+            'paintFirst': 'fill',
+            'globalCompositeOperation': 'source-over',
+            'transformMatrix': null,
+            'skewX': 0,
+            'skewY': 0,
+            'crossOrigin': '*',
+            'cropX': 0,
+            'cropY': 0,
+            'src': 'http://th.minio.boyuanziben.cn/' + state.customeTemplate.diePattern.diePatternimagePath,
+            'filters': []
+          }, {
+            'type': 'text',
+            'version': '3.0.0',
+            'originX': 'left',
+            'originY': 'top',
+            'left': 150,
+            'top': 10,
+            'width': 451,
+            'height': 45.2,
+            'fill': '#ccc',
+            'stroke': null,
+            'strokeWidth': 1,
+            'strokeDashArray': null,
+            'strokeLineCap': 'butt',
+            'strokeDashOffset': 0,
+            'strokeLineJoin': 'miter',
+            'strokeMiterLimit': 4,
+            'scaleX': 0.25,
+            'scaleY': 0.25,
+            'angle': 0,
+            'flipX': false,
+            'flipY': false,
+            'opacity': 1,
+            'shadow': null,
+            'visible': true,
+            'clipTo': null,
+            'backgroundColor': '',
+            'fillRule': 'nonzero',
+            'paintFirst': 'fill',
+            'globalCompositeOperation': 'source-over',
+            'transformMatrix': null,
+            'skewX': 0,
+            'skewY': 0,
+            'text': '淘宝ID：' + state.customeTemplate.taobaoNickname + '收件人姓名：' + state.customeTemplate.theRecipientName,
+            'fontSize': 40,
+            'fontWeight': 'normal',
+            'fontFamily': '微软雅黑',
+            'fontStyle': 'normal',
+            'lineHeight': 1.16,
+            'underline': false,
+            'overline': false,
+            'linethrough': false,
+            'textAlign': 'left',
+            'textBackgroundColor': '',
+            'charSpacing': 0,
+            'styles': {}
+          }],
+          'background': '#fff'
+        }
+        let sbdOrigin = {
+          'version': '3.0.0',
+          'objects': [{
+            'type': 'image',
+            'version': '3.0.0',
+            'originX': 'left',
+            'originY': 'top',
+            'left': 0,
+            'top': 0,
+            'width': 2000,
+            'height': 4158,
+            'fill': 'rgb(0,0,0)',
+            'stroke': null,
+            'strokeWidth': 0,
+            'strokeDashArray': null,
+            'strokeLineCap': 'butt',
+            'strokeDashOffset': 0,
+            'strokeLineJoin': 'miter',
+            'strokeMiterLimit': 4,
+            'scaleX': 0.5,
+            'scaleY': 0.5,
+            'angle': 0,
+            'flipX': false,
+            'flipY': false,
+            'opacity': 1,
+            'shadow': null,
+            'visible': true,
+            'clipTo': null,
+            'backgroundColor': '',
+            'fillRule': 'nonzero',
+            'paintFirst': 'fill',
+            'globalCompositeOperation': 'source-over',
+            'transformMatrix': null,
+            'skewX': 0,
+            'skewY': 0,
+            'crossOrigin': '*',
+            'cropX': 0,
+            'cropY': 0,
+            'src': 'http://th.minio.boyuanziben.cn/' + state.sbd.diePattern.diePatternimagePath,
+            'filters': []
+          }, {
+            'type': 'text',
+            'version': '3.0.0',
+            'originX': 'left',
+            'originY': 'top',
+            'left': 150,
+            'top': 10,
+            'width': 451,
+            'height': 45.2,
+            'fill': '#ccc',
+            'stroke': null,
+            'strokeWidth': 1,
+            'strokeDashArray': null,
+            'strokeLineCap': 'butt',
+            'strokeDashOffset': 0,
+            'strokeLineJoin': 'miter',
+            'strokeMiterLimit': 4,
+            'scaleX': 0.25,
+            'scaleY': 0.25,
+            'angle': 0,
+            'flipX': false,
+            'flipY': false,
+            'opacity': 1,
+            'shadow': null,
+            'visible': true,
+            'clipTo': null,
+            'backgroundColor': '',
+            'fillRule': 'nonzero',
+            'paintFirst': 'fill',
+            'globalCompositeOperation': 'source-over',
+            'transformMatrix': null,
+            'skewX': 0,
+            'skewY': 0,
+            'text': '淘宝ID：' + state.customeTemplate.taobaoNickname + '收件人姓名：' + state.customeTemplate.theRecipientName,
+            'fontSize': 40,
+            'fontWeight': 'normal',
+            'fontFamily': '微软雅黑',
+            'fontStyle': 'normal',
+            'lineHeight': 1.16,
+            'underline': false,
+            'overline': false,
+            'linethrough': false,
+            'textAlign': 'left',
+            'textBackgroundColor': '',
+            'charSpacing': 0,
+            'styles': {}
+          }],
+          'background': '#fff'
+        }
         Promise.all([saveCustomTemplates(state.customeTemplate), saveCustomTemplates(state.sbd)]).then(response => {
           if (response[0].status !== 201) reject(new Error('saveCustomTemplates: error'))
           // 通过当前状态区分现在操作的是鼠标垫还是笔记本
@@ -236,6 +428,12 @@ const home = {
           } else {
             commit('SET_TEMPLATE_ID', response[1].data)
           }
+          // 保存两个对应的素材信息，然后在设计界面直接加载该json信息即可，不论是继续设计还是新建，统一处理逻辑
+          return Promise.all([saveFabricDesignMaterials({ originJson: JSON.stringify(bjbOrigin), customTemplate: response[0].data }), saveFabricDesignMaterials({ originJson: JSON.stringify(sbdOrigin), customTemplate: response[1].data })])
+        }).then(response => {
+          if (response[0].status !== 201) reject(new Error('saveCustomTemplates: error'))
+          console.log(response)
+          // 如果执行完则直接响应成功
           resolve()
         }).catch(err => {
           reject(err)

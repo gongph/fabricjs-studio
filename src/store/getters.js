@@ -20,7 +20,9 @@ const getters = {
   diePatternPath: state => state.home.diePattern.path,
   diePatternId: state => state.home.diePattern.id,
   taobaoId: state => state.home.customeTemplate.taobaoNickname,
-  recipientName: state => state.home.customeTemplate.theRecipientName
+  recipientName: state => state.home.customeTemplate.theRecipientName,
+  // 保存当前的操作对象
+  currentCustomeTemplate: state => state.home.currentCustomeTemplate
 }
 
 export default getters

@@ -194,6 +194,7 @@
 import { SidebarBase, SidebarAttrs, SidebarLayer } from './layout'
 import { mapGetters, mapActions } from 'vuex'
 import { baseImgUrl, gererateUUID, download, getUrlParam } from '@/utils'
+import { getFabricDesignMaterialsByCustomId } from '@/api/studio'
 import { fromEvent } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 // import { uploadify } from '@/utils/file-upload.js'
@@ -233,7 +234,8 @@ export default {
       layerActiveId: '',
       // 本地上传的图片base64
       localUploadUrl: '',
-      scrollTop: 100
+      scrollTop: 100,
+      desgin: {}
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -245,14 +247,29 @@ export default {
     })
   },
   mounted () {
+    // 上来先加载配置文件
     if (this.diePatternId > 0) {
-      this.initFabric()
-    } else {
-      this.saveCustomTemplates().then(response => {
+      // 继续设计的加载信息
+      getFabricDesignMaterialsByCustomId(this.currentCustomeTemplate.id).then(response => {
+        if (response.status === 200) {
+          this.desgin = response.data[0]
+        }
         this.initFabric()
-      }).catch(err => {
-        console.error(err)
       })
+    } else {
+      // 保存数据
+      this.saveCustomTemplates().then(response => {
+        // 加载配置信息
+        return getFabricDesignMaterialsByCustomId(this.currentCustomeTemplate.id)
+      }).then(response => {
+        if (response.status === 200) {
+          this.desgin = response.data[0]
+        }
+        this.initFabric()
+      })
+        .catch(err => {
+          console.error(err)
+        })
     }
     // 初始化滚动事件
     fromEvent(
@@ -272,6 +289,7 @@ export default {
       'diePatternId',
       'galleryTypes',
       'gallerys',
+      'currentCustomeTemplate',
       'taobaoId',
       'recipientName'
     ])
@@ -301,7 +319,7 @@ export default {
         text: '正在为您准备画布，请稍等...'
       })
       const image = new Image()
-      image.src = `${baseImgUrl}${self.diePatternPath}`
+      image.src = `${self.baseImgUrl}${self.currentCustomeTemplate.diePattern.diePatternimagePath}`
       image.onload = () => {
         // 初始化Canvas画布
         const canvas = self.canvas = fb.init(
@@ -316,29 +334,36 @@ export default {
           }
         )
         self.setCanvas(this.canvas)
-        // 加载背景磨具图片
-        self.$fabric.Image.fromURL(
-          `${baseImgUrl}${self.diePatternPath}`,
-          (oImg) => {
-            oImg.scale(0.5)
-            oImg.set({
-              name: 'diebg',
-              selectable: false,
-              evented: false,
-              moveCursor: 'default',
-              hoverCursor: 'default'
-            })
-            canvas.add(oImg)
-            // 初始化水印
-            self.initWatermark()
-            // 初始化选中样式
-            self.initCornerStyle()
-            // 初始化事件
-            self.initEvents()
-          }, {
-            crossOrigin: 'Anonymous'
-          }
-        )
+        let json = self.desgin.originJson
+        // 加载Json数据
+        canvas.loadFromJSON(json, canvas.renderAll.bind(canvas), function (o, object) {
+          console.log(o)
+          console.log(object)
+          // `o` = json object
+          // `object` = fabric.Object instance
+          // ... do some stuff ...
+        })
+        // self.$fabric.Image.fromURL(`${self.baseImgUrl}${self.diePatternPath}`,
+        //   (oImg) => {
+        //     oImg.scale(0.5)
+        //     oImg.set({
+        //       name: 'diebg',
+        //       selectable: false,
+        //       evented: false,
+        //       moveCursor: 'default',
+        //       hoverCursor: 'default'
+        //     })
+        //     canvas.add(oImg)
+        //     // 初始化水印
+        //     self.initWatermark()
+        //     // 初始化选中样式
+        //     self.initCornerStyle()
+        //     // 初始化事件
+        //     self.initEvents()
+        //   }, {
+        //     crossOrigin: '*'
+        //   }
+        // )
         setTimeout(() => {
           loading.close()
           self.loading = false
@@ -543,7 +568,7 @@ export default {
         this.openUploadImgDialog = false
         this.sureBtnLoading = false
       }, {
-        crossOrigin: 'Anonymous'
+        crossOrigin: '*'
       })
     },
     /**
@@ -579,7 +604,8 @@ export default {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
-          this.updateCustomTemplates(JSON.stringify(this.canvas.toJSON())).then(() => {
+          let data = JSON.stringify(this.canvas.toJSON())
+          this.updateCustomTemplates(data).then(() => {
             this.$toast.success({
               message: '提交成功',
               position: 'top'
@@ -614,6 +640,7 @@ export default {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
+          this.$store.commit('EXIT_EDITOR')
           this.$router.push({ path: '/' })
         }
       })

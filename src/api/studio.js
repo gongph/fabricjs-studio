@@ -48,3 +48,47 @@ export function updateCustomTemplates (data) {
     data
   })
 }
+
+/**
+ * 保存设计素材
+ */
+
+export function saveFabricDesignMaterials (data) {
+  return request({
+    url: '/api/fabric-design-materials',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 更新设计素材
+ */
+
+export function updateFabricDesignMaterials (data) {
+  return request({
+    url: '/api/fabric-design-materials',
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 根据定制id获取设计素材
+ */
+export function getFabricDesignMaterialsByCustomId (id) {
+  return request({
+    url: `/api/fabric-design-materials/custom-templates/${id}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 根据定制编号获取设计素材
+ */
+export function getFabricDesignMaterialsByCustomNumber (id) {
+  return request({
+    url: `/api/fabric-design-materials/custom-templates-custom-number/${id}`,
+    method: 'get'
+  })
+}
