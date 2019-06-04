@@ -22,7 +22,7 @@ const home = {
     // 鼠标垫
     sbd: {
       // 定制数量
-      customQuantity: 0,
+      customQuantity: 1,
       // 淘宝ID
       taobaoNickname: '',
       // 收件人姓名
@@ -46,12 +46,13 @@ const home = {
       // 当前用户
       user: {
         id: -1
-      } },
+      }
+    },
     customeTemplate: {
       // 定制编号
       customNumber: '',
       // 定制数量
-      customQuantity: 0,
+      customQuantity: 1,
       // 淘宝ID
       taobaoNickname: '',
       // 收件人姓名
@@ -136,7 +137,67 @@ const home = {
       state.diePattern = {}
       state.currentType = null
       state.currentCustomeTemplate = {}
-      state.sbd = {}
+      state.customeTemplate = {
+      // 定制编号
+        customNumber: '',
+        // 定制数量
+        customQuantity: 1,
+        // 淘宝ID
+        taobaoNickname: '',
+        // 收件人姓名
+        theRecipientName: '',
+        // 推荐状态
+        recommendedStatus: {
+          id: 1
+        },
+        // 刀模具
+        diePattern: null,
+        // 磨具类型： id: 1 贴膜 id: 2 鼠标垫
+        modelType: {
+          id: 1
+        },
+        // 完成状态
+        finishedCondition: {
+          id: 1
+        },
+        // 定制状态
+        customState: {
+          id: 1
+        },
+        // 当前用户
+        user: {
+          id: -1
+        }
+      }
+      // 重置鼠标垫配置
+      state.sbd = {
+        // 定制数量
+        customQuantity: 1,
+        // 淘宝ID
+        taobaoNickname: '',
+        // 收件人姓名
+        theRecipientName: '',
+        // 推荐状态
+        recommendedStatus: {
+          id: 1
+        },
+        // 磨具类型： id: 1 贴膜 id: 2 鼠标垫
+        modelType: {
+          id: 2
+        },
+        // 完成状态
+        finishedCondition: {
+          id: 1
+        },
+        // 定制状态
+        customState: {
+          id: 1
+        },
+        // 当前用户
+        user: {
+          id: -1
+        }
+      }
     },
     // 设置设计素材
     SET_FABRIC_DESIGN: (state, data) => {
@@ -169,7 +230,12 @@ const home = {
       return new Promise((resolve, reject) => {
         queryDiePatterns(query).then(response => {
           if (response.status !== 200) reject(new Error('error'))
-          commit('SET_BOOKING_LIST', response.data ? response.data : [])
+          let data = response.data
+          data.forEach(function
+          (item, index, array) {
+            item.customQuantity = 1
+          })
+          commit('SET_BOOKING_LIST', data || [])
           commit('SET_BOOKING_TOTAL', Number(response?.headers['x-total-count']) || 0)
           resolve()
         }).catch(err => {
@@ -245,7 +311,8 @@ const home = {
         let bjbOrigin = {
           'version': '3.0.0',
           'objects': [{
-            'type': 'image',
+            'name': 'diebg',
+            'type': 'named-image',
             'version': '3.0.0',
             'originX': 'left',
             'originY': 'top',
@@ -283,7 +350,8 @@ const home = {
             'src': 'http://th.minio.boyuanziben.cn/' + state.customeTemplate.diePattern.diePatternimagePath,
             'filters': []
           }, {
-            'type': 'text',
+            'type': 'named-text',
+            'name': 'sjr',
             'version': '3.0.0',
             'originX': 'left',
             'originY': 'top',
@@ -334,7 +402,8 @@ const home = {
         let sbdOrigin = {
           'version': '3.0.0',
           'objects': [{
-            'type': 'image',
+            'name': 'diebg',
+            'type': 'named-image',
             'version': '3.0.0',
             'originX': 'left',
             'originY': 'top',
@@ -372,7 +441,8 @@ const home = {
             'src': 'http://th.minio.boyuanziben.cn/' + state.sbd.diePattern.diePatternimagePath,
             'filters': []
           }, {
-            'type': 'text',
+            'name': 'sjr',
+            'type': 'named-text',
             'version': '3.0.0',
             'originX': 'left',
             'originY': 'top',
