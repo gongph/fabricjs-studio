@@ -10,8 +10,9 @@
         full-width
       >
         <mu-tab><mu-icon value="view_quilt"></mu-icon>基础</mu-tab>
-        <mu-tab :disabled="attrTababled"><mu-icon value="storage"></mu-icon>属性</mu-tab>
+        <mu-tab :disabled="attrTababled"><mu-icon value="storage"></mu-icon>自定义</mu-tab>
         <mu-tab><mu-icon value="layers"></mu-icon>图层</mu-tab>
+        <mu-tab><mu-icon value="loyalty"></mu-icon>属性</mu-tab>
       </mu-tabs>
       <div class="sidebar-base-content" v-if="navTabActived === 0">
         <sidebar-base @click="handleMenuClick"/>
@@ -30,6 +31,9 @@
           @layer:selected="handleLayerSelected"
           @layer:removed="handleLayerRemoved"
         />
+      </div>
+      <div class="sidebar-infos-content" v-if="navTabActived === 3">
+        //
       </div>
     </mu-paper>
     <!-- 头部菜单 -->
@@ -328,6 +332,16 @@ export default {
               moveCursor: 'default',
               hoverCursor: 'default'
             })
+
+            // 拓展字段
+            oImg.toObject = (function (toObject) {
+              return function () {
+                return self.$fabric.util.object.extend(toObject.call(this), {
+                  name: this.name
+                })
+              }
+            })(oImg.toObject)
+
             canvas.add(oImg)
             // 初始化水印
             self.initWatermark()
@@ -400,6 +414,7 @@ export default {
      * 添加图形
      */
     handleMenuClick (type) {
+      const self = this
       if (!type) return
       switch (type) {
         case 'itext':
@@ -410,6 +425,17 @@ export default {
             left: 100,
             top: this.scrollTop + 100
           })
+
+          // 拓展字段
+          itext.toObject = (function (toObject) {
+            return function () {
+              return self.$fabric.util.object.extend(toObject.call(this), {
+                _uuid: this._uuid,
+                name: this.name
+              })
+            }
+          })(itext.toObject)
+
           this.canvas.add(itext)
           this.pushLayer({
             name: itext.name,
@@ -457,6 +483,7 @@ export default {
      * @return {[type]} [description]
      */
     uploadLocalImgToCanvas () {
+      const self = this
       if (!this.localUploadUrl) return
       this.$fabric.Image.fromURL(this.localUploadUrl, oImg => {
         oImg.scale(0.5)
@@ -466,6 +493,17 @@ export default {
           left: 100,
           top: this.scrollTop + 100
         })
+
+        // 拓展字段
+        self.toObject = (function (toObject) {
+          return function () {
+            return self.$fabric.util.object.extend(toObject.call(this), {
+              _uuid: this._uuid,
+              name: this.name
+            })
+          }
+        })(self.toObject)
+
         this.canvas.add(oImg)
         this.canvas.setActiveObject(oImg)
         this.setActiveObject(oImg)
@@ -529,6 +567,17 @@ export default {
           left: 100,
           top: this.scrollTop + 100
         })
+
+        // 拓展字段
+        self.toObject = (function (toObject) {
+          return function () {
+            return self.$fabric.util.object.extend(toObject.call(this), {
+              _uuid: this._uuid,
+              name: this.name
+            })
+          }
+        })(self.toObject)
+
         this.canvas.add(oImg)
         this.canvas.setActiveObject(oImg)
         this.setActiveObject(oImg)
@@ -597,12 +646,16 @@ export default {
      * 保存到本地
      */
     handleDownloadToLocal () {
+      console.log(this.canvas.toJSON())
       this.$confirm('确定要保存到本地吗？', '提示', {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
           const id = getUrlParam('id') || Date.now()
-          download(this.canvas.toDataURL({ format: 'jpeg' }), id)
+          download(this.canvas.toDataURL({
+            format: 'jpeg',
+            multiplier: 2
+          }), id)
         }
       })
     },
