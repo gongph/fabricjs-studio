@@ -35,6 +35,9 @@ const studio = {
     },
     SET_LAYERS: (state, object) => {
       state.layers.push(object)
+    },
+    SET_CLEAN_LAYERS: (state, object) => {
+      state.layers = []
     }
   },
   actions: {
