@@ -253,6 +253,7 @@ export default {
       getFabricDesignMaterialsByCustomId(this.currentCustomeTemplate.id).then(response => {
         if (response.status === 200) {
           this.desgin = response.data[0]
+          this.$store.commit('SET_FABRIC_DESIGN', this.desgin)
         }
         this.initFabric()
       })
@@ -264,6 +265,7 @@ export default {
       }).then(response => {
         if (response.status === 200) {
           this.desgin = response.data[0]
+          this.$store.commit('SET_FABRIC_DESIGN', this.desgin)
         }
         this.initFabric()
       })
@@ -337,12 +339,39 @@ export default {
         let json = self.desgin.originJson
         // 加载Json数据
         canvas.loadFromJSON(json, canvas.renderAll.bind(canvas), function (o, object) {
-          console.log(o)
-          console.log(object)
+          // 设置，初始化淘宝ID和收件人层不可编辑
+          if (o.type === 'text' && o.text.indexOf('收件人') > 0) {
+            o.evented = false
+            o.selectable = false
+            object.evented = false
+            object.selectable = false
+          } else if (o.type === 'image' && o.src.indexOf('die-pattern') > 0) {
+            object.width = image.width
+            object.height = image.height
+            object.selectable = false
+            object.evented = false
+            object.moveCursor = 'default'
+            object.hoverCursor = 'default'
+            canvas.add(object)
+          } else {
+            object.name = 'load'
+            object._uuid = gererateUUID()
+            self.pushLayer({
+              name: object.name,
+              id: object._uuid,
+              visible: true
+            })
+          }
+          // console.log(o)
+          // console.log(object)
           // `o` = json object
           // `object` = fabric.Object instance
           // ... do some stuff ...
         })
+        // 初始化选中样式
+        self.initCornerStyle()
+        // 初始化事件
+        self.initEvents()
         // self.$fabric.Image.fromURL(`${self.baseImgUrl}${self.diePatternPath}`,
         //   (oImg) => {
         //     oImg.scale(0.5)
@@ -641,6 +670,7 @@ export default {
       }).then(({ result }) => {
         if (result) {
           this.$store.commit('EXIT_EDITOR')
+          this.$store.commit('SET_CLEAN_LAYERS', [])
           this.$router.push({ path: '/' })
         }
       })

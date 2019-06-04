@@ -3,7 +3,7 @@
  */
 
 import { queryDiePatterns, queryCustomTemplates, saveCustomTemplates, queryAllCustomTemplates } from '@/api/home'
-import { updateCustomTemplates, saveFabricDesignMaterials, updateFabricDesignMaterials } from '@/api/studio'
+import { saveFabricDesignMaterials, updateFabricDesignMaterials } from '@/api/studio'
 import { gererateUUID } from '@/utils'
 
 const home = {
@@ -18,6 +18,7 @@ const home = {
     sbdDiePattern: {},
     currentType: {},
     currentCustomeTemplate: {},
+    currentFabricDesign: {},
     // 鼠标垫
     sbd: {
       // 定制数量
@@ -132,15 +133,16 @@ const home = {
       }
     },
     EXIT_EDITOR: (state, data) => {
-      state.diePattern.id = null
-      state.diePattern.path = null
+      state.diePattern = {}
       state.currentType = null
-      state.currentCustomeTemplate = null
-      state.sbd.id = null
-      state.customeTemplate.id = null
+      state.currentCustomeTemplate = {}
+      state.sbd = {}
+    },
+    // 设置设计素材
+    SET_FABRIC_DESIGN: (state, data) => {
+      state.currentFabricDesign = data
     },
     SET_TEMPLATE_ID: (state, data) => {
-      debugger
       state.diePattern.id = data.diePattern.id
       state.diePattern.path = data.diePattern.diePatternimagePath
       // 根据按的类型来处里不同的模板
@@ -152,13 +154,11 @@ const home = {
         state.currentCustomeTemplate = data
       }
     },
-    SET_JSON_OF_TEMPLATE: (state, jsonStr) => {
-      if (!state.customeTemplate.fabricDesignMaterials) {
-        state.customeTemplate.fabricDesignMaterials = []
+    SET_JSON_OF_FABRIC_DESIGN: (state, jsonStr) => {
+      if (!state.currentFabricDesign.originJson) {
+        state.currentFabricDesign.originJson = {}
       }
-      state.customeTemplate.fabricDesignMaterials.push({
-        originJson: jsonStr
-      })
+      state.currentFabricDesign.originJson = jsonStr
     }
   },
   actions: {
@@ -420,7 +420,34 @@ const home = {
           }],
           'background': '#fff'
         }
-        Promise.all([saveCustomTemplates(state.customeTemplate), saveCustomTemplates(state.sbd)]).then(response => {
+        const getBjbImg = new Promise((resolve, reject) => {
+          // 图片
+          const img = new Image()
+          const src = 'http://th.minio.boyuanziben.cn/' + state.customeTemplate.diePattern.diePatternimagePath
+          img.src = src
+          img.onload = function () {
+            resolve(img)
+          }
+        })
+        const getSbdImg = new Promise((resolve, reject) => {
+          // 图片
+          const img = new Image()
+          const src = 'http://th.minio.boyuanziben.cn/' + state.sbd.diePattern.diePatternimagePath
+          img.src = src
+          img.onload = function () {
+            resolve(img)
+          }
+        })
+        // 获取鼠标垫和笔记本的宽和高
+        getBjbImg.then(response => {
+          bjbOrigin.width = response.width
+          bjbOrigin.height = response.height
+          return getSbdImg
+        }).then(response => {
+          sbdOrigin.width = response.width
+          sbdOrigin.height = response.height
+          return Promise.all([saveCustomTemplates(state.customeTemplate), saveCustomTemplates(state.sbd)])
+        }).then(response => {
           if (response[0].status !== 201) reject(new Error('saveCustomTemplates: error'))
           // 通过当前状态区分现在操作的是鼠标垫还是笔记本
           if (state.currentType === 1) {
@@ -432,6 +459,12 @@ const home = {
           return Promise.all([saveFabricDesignMaterials({ originJson: JSON.stringify(bjbOrigin), customTemplate: response[0].data }), saveFabricDesignMaterials({ originJson: JSON.stringify(sbdOrigin), customTemplate: response[1].data })])
         }).then(response => {
           if (response[0].status !== 201) reject(new Error('saveCustomTemplates: error'))
+          // 通过当前状态区分现在操作的是鼠标垫还是笔记本
+          if (state.currentType === 1) {
+            commit('SET_FABRIC_DESIGN', response[0].data)
+          } else {
+            commit('SET_FABRIC_DESIGN', response[1].data)
+          }
           console.log(response)
           // 如果执行完则直接响应成功
           resolve()
@@ -445,8 +478,8 @@ const home = {
      */
     updateCustomTemplates ({ commit, state }, jsonStr) {
       return new Promise((resolve, reject) => {
-        commit('SET_JSON_OF_TEMPLATE', jsonStr)
-        updateCustomTemplates(state.customeTemplate).then(response => {
+        commit('SET_JSON_OF_FABRIC_DESIGN', jsonStr)
+        updateFabricDesignMaterials(state.currentFabricDesign).then(response => {
           if (response.status !== 200) reject(new Error('updateCustomTemplates: error'))
           resolve()
         }).catch(err => {
