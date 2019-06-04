@@ -454,6 +454,7 @@ export default {
      * 添加图形
      */
     handleMenuClick (type) {
+      const self = this
       if (!type) return
       switch (type) {
         case 'itext':
@@ -464,6 +465,17 @@ export default {
             left: 100,
             top: this.scrollTop + 100
           })
+
+          // 拓展 toObject 方法
+          itext.toObject = (function (toObject) {
+            return function () {
+              return self.$fabric.util.object.extend(toObject.call(this), {
+                _uuid: this._uuid,
+                name: this.name
+              })
+            }
+          })(itext.toObject)
+
           this.canvas.add(itext)
           this.pushLayer({
             name: itext.name,
@@ -511,6 +523,7 @@ export default {
      * @return {[type]} [description]
      */
     uploadLocalImgToCanvas () {
+      const self = this
       if (!this.localUploadUrl) return
       this.$fabric.Image.fromURL(this.localUploadUrl, oImg => {
         oImg.scale(0.5)
@@ -520,6 +533,17 @@ export default {
           left: 100,
           top: this.scrollTop + 100
         })
+
+        // 拓展 toObject 方法
+        oImg.toObject = (function (toObject) {
+          return function () {
+            return self.$fabric.util.object.extend(toObject.call(this), {
+              _uuid: this._uuid,
+              name: this.name
+            })
+          }
+        })(oImg.toObject)
+
         this.canvas.add(oImg)
         this.canvas.setActiveObject(oImg)
         this.setActiveObject(oImg)
@@ -574,6 +598,7 @@ export default {
      * 处理官方图库图片选择
      */
     handleImgSelected () {
+      const self = this
       this.sureBtnLoading = true
       this.$fabric.Image.fromURL(this.selectedImg.src, oImg => {
         oImg.scale(900 / oImg.width / 2)
@@ -583,6 +608,17 @@ export default {
           left: 100,
           top: this.scrollTop + 100
         })
+
+        // 拓展 toObject 方法
+        oImg.toObject = (function (toObject) {
+          return function () {
+            return self.$fabric.util.object.extend(toObject.call(this), {
+              _uuid: this._uuid,
+              name: this.name
+            })
+          }
+        })(oImg.toObject)
+
         this.canvas.add(oImg)
         this.canvas.setActiveObject(oImg)
         this.setActiveObject(oImg)
