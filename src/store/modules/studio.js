@@ -93,6 +93,27 @@ const studio = {
       })
     },
     /**
+     * 根据Id获取Fabric’s json 文件
+     * @param  {String|Number} id 定制编号或定制id
+     */
+    getFabricJsonById ({ commit }, id) {
+      return new Promise((resolve, reject) => {
+        let fetchJson = null
+        if (typeof id === 'string') {
+          fetchJson = Api.getFabricDesignMaterialsByCustomNumber(id)
+        } else {
+          fetchJson = Api.getFabricDesignMaterialsByCustomId(id)
+        }
+        fetchJson.then(response => {
+          console.log(response)
+          if (!response.status === 200) return reject(new Error('getFabricJsonById: error'))
+          resolve(response.data.length > 0 ? response.data[0].originJson : null)
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+    /**
      * 添加图层
      */
     pushLayer ({ commit }, object) {

@@ -106,6 +106,7 @@ const home = {
     },
     SET_CACHE_DATA: (state, data) => {
       state.cacheDiePattern.id = data.id
+      state.cacheDiePattern.path = data.diePattern.diePatternimagePath
       state.cacheDiePattern.modelType = data.modelType.id
     },
     SET_JSON_OF_TEMPLATE: (state, jsonStr) => {
@@ -192,6 +193,7 @@ const home = {
       }, row)
       return new Promise((resolve) => {
         commit('INIT_TEMPLATE_DATA', data)
+        commit('SET_CACHE_CUSTOMNUMBER', state.customeTemplate.customNumber)
         commit('SET_CACHE_MODE_TYPE', state.customeTemplate.modelType.id)
         resolve(state.customeTemplate.customNumber)
       })

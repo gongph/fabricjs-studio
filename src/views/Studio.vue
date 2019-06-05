@@ -291,20 +291,56 @@ export default {
       'getGalleryTypes',
       'getGalleryByTypeId',
       'pushLayer',
-      'updateCustomTemplates'
+      'updateCustomTemplates',
+      'getFabricJsonById'
     ]),
     /**
-     * 初始化Fabric
-     * @return {[type]} [description]
+     * 从 JOSN 中加载
      */
-    initFabric () {
+    loadFromJSON (canvas, json) {
+      canvas.loadFromJSON(json)
+    },
+    /**
+     * 创建Fabric
+     */
+    createFabric (canvas) {
       const self = this
-      const loading = this.$loading({
-        overlayColor: '#303030',
-        color: 'orange',
-        className: 'mu-custom-loading',
-        text: '正在为您准备画布，请稍等...'
-      })
+      self.$fabric.Image.fromURL(
+        `${baseImgUrl}${self.cacheDiePatternPath}`,
+        (oImg) => {
+          oImg.scale(0.5)
+          oImg.set({
+            name: 'diebg',
+            selectable: false,
+            evented: false,
+            moveCursor: 'default',
+            hoverCursor: 'default'
+          })
+
+          // 拓展字段
+          oImg.toObject = (function (toObject) {
+            return function () {
+              return self.$fabric.util.object.extend(toObject.call(this), {
+                name: this.name
+              })
+            }
+          })(oImg.toObject)
+
+          canvas.add(oImg)
+          // 初始化水印
+          self.initWatermark()
+          // 初始化选中样式
+          // self.initCornerStyle()
+          // 初始化事件
+          // self.initEvents()
+        }, {
+          crossOrigin: 'Anonymous'
+        }
+      )
+    },
+    // 初始化 Canvas
+    initCanvas (callback) {
+      const self = this
       const image = new Image()
       image.src = `${baseImgUrl}${self.cacheDiePatternPath}`
       image.onload = () => {
@@ -320,45 +356,48 @@ export default {
             backgroundVpt: false
           }
         )
-        self.setCanvas(this.canvas)
-        // 加载背景磨具图片
-        self.$fabric.Image.fromURL(
-          `${baseImgUrl}${self.cacheDiePatternPath}`,
-          (oImg) => {
-            oImg.scale(0.5)
-            oImg.set({
-              name: 'diebg',
-              selectable: false,
-              evented: false,
-              moveCursor: 'default',
-              hoverCursor: 'default'
-            })
-
-            // 拓展字段
-            oImg.toObject = (function (toObject) {
-              return function () {
-                return self.$fabric.util.object.extend(toObject.call(this), {
-                  name: this.name
-                })
-              }
-            })(oImg.toObject)
-
-            canvas.add(oImg)
-            // 初始化水印
-            self.initWatermark()
-            // 初始化选中样式
-            self.initCornerStyle()
-            // 初始化事件
-            self.initEvents()
-          }, {
-            crossOrigin: 'Anonymous'
-          }
-        )
-        setTimeout(() => {
-          loading.close()
-          self.loading = false
-        }, 0)
+        callback(canvas)
+        // setTimeout(() => {
+        //   loading.close()
+        //   self.loading = false
+        // }, 0)
       }
+    },
+    /**
+     * 初始化Fabric
+     * @return {[type]} [description]
+     */
+    initFabric () {
+      const self = this
+      const loading = this.$loading({
+        overlayColor: '#303030',
+        color: 'orange',
+        className: 'mu-custom-loading',
+        text: '正在为您准备画布，请稍等...'
+      })
+
+      // 获取服务器上保存的 json 文件
+      this.getFabricJsonById(this.cacheCustomNumber).then(json => {
+        this.initCanvas((canvas) => {
+          if (!json) {
+            self.createFabric(canvas)
+          } else {
+            self.loadFromJSON(canvas, json)
+          }
+          self.setCanvas(canvas)
+          // 初始化选中样式
+          self.initCornerStyle()
+          // 初始化事件
+          self.initEvents()
+          setTimeout(() => {
+            loading.close()
+            self.loading = false
+          }, 0)
+        })
+      }).catch(err => {
+        console.error(err)
+      })
+
     },
     /**
      * 初始化转角样式
