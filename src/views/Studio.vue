@@ -340,12 +340,12 @@ export default {
         // 加载Json数据
         canvas.loadFromJSON(json, canvas.renderAll.bind(canvas), function (o, object) {
           // 设置，初始化淘宝ID和收件人层不可编辑
-          if (o.type === 'text' && o.text.indexOf('收件人') > 0) {
+          if (o.name === 'sjr') {
             o.evented = false
             o.selectable = false
             object.evented = false
             object.selectable = false
-          } else if (o.type === 'image' && o.src.indexOf('die-pattern') > 0) {
+          } else if (o.name === 'diebg') {
             object.width = image.width
             object.height = image.height
             object.selectable = false
@@ -354,8 +354,8 @@ export default {
             object.hoverCursor = 'default'
             canvas.add(object)
           } else {
-            object.name = 'load'
-            object._uuid = gererateUUID()
+            // object.name = 'load'
+            // object._uuid = gererateUUID()
             self.pushLayer({
               name: object.name,
               id: object._uuid,
@@ -525,7 +525,7 @@ export default {
     uploadLocalImgToCanvas () {
       const self = this
       if (!this.localUploadUrl) return
-      this.$fabric.Image.fromURL(this.localUploadUrl, oImg => {
+      fb.addFromURL(this.localUploadUrl, oImg => {
         oImg.scale(0.5)
         oImg.set({
           _uuid: gererateUUID(),
@@ -600,7 +600,7 @@ export default {
     handleImgSelected () {
       const self = this
       this.sureBtnLoading = true
-      this.$fabric.Image.fromURL(this.selectedImg.src, oImg => {
+      fb.addFromURL(this.selectedImg.src, oImg => {
         oImg.scale(900 / oImg.width / 2)
         oImg.set({
           _uuid: gererateUUID(),
@@ -688,12 +688,13 @@ export default {
      * 保存到本地
      */
     handleDownloadToLocal () {
+      // 调整文件命名规则
+      const id = (this.currentCustomeTemplate.taobaoNickname || '') + (this.currentCustomeTemplate.theRecipientName || '') + this.currentCustomeTemplate.diePattern.computerType.value + this.currentCustomeTemplate.diePattern.diePatternType + this.currentCustomeTemplate.modelType.value + this.currentCustomeTemplate.createdDate
       this.$confirm('确定要保存到本地吗？', '提示', {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
-          const id = getUrlParam('id') || Date.now()
-          download(this.canvas.toDataURL({ format: 'jpeg' }), id)
+          download(this.canvas.toDataURL({ format: 'png' }), id + '.png')
         }
       })
     },
