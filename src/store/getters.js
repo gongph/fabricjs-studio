@@ -20,6 +20,7 @@ const getters = {
   cacheDiePatternPath: state => state.home.cacheDiePattern.path,
   cacheCustomNumber: state => state.home.cacheDiePattern.customNumber,
   cacheModelType: state => state.home.cacheDiePattern.modelType,
+  cacheSavedCustomTemplate: state => state.home.cacheDiePattern.savedCustomTemplate,
   taobaoNickname: state => state.home.customeTemplate.taobaoNickname,
   theRecipientName: state => state.home.customeTemplate.theRecipientName
 }

@@ -237,7 +237,9 @@ export default {
       layerActiveId: '',
       // 本地上传的图片base64
       localUploadUrl: '',
-      scrollTop: 100
+      scrollTop: 100,
+      // 是否创建过
+      fabricDesign: null
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -291,7 +293,7 @@ export default {
       'getGalleryTypes',
       'getGalleryByTypeId',
       'pushLayer',
-      'updateCustomTemplates',
+      'saveOrUpdateFabricDesign',
       'getFabricJsonById'
     ]),
     /**
@@ -357,15 +359,10 @@ export default {
           }
         )
         callback(canvas)
-        // setTimeout(() => {
-        //   loading.close()
-        //   self.loading = false
-        // }, 0)
       }
     },
     /**
      * 初始化Fabric
-     * @return {[type]} [description]
      */
     initFabric () {
       const self = this
@@ -377,12 +374,17 @@ export default {
       })
 
       // 获取服务器上保存的 json 文件
-      this.getFabricJsonById(this.cacheCustomNumber).then(json => {
+      this.getFabricJsonById(this.cacheCustomNumber).then(data => {
+        let originJson = null
+        if (data) {
+          this.fabricDesign = data
+          originJson = data.originJson
+        }
         this.initCanvas((canvas) => {
-          if (!json) {
+          if (!originJson) {
             self.createFabric(canvas)
           } else {
-            self.loadFromJSON(canvas, json)
+            self.loadFromJSON(canvas, originJson)
           }
           self.setCanvas(canvas)
           // 初始化选中样式
@@ -688,9 +690,9 @@ export default {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
-          this.updateCustomTemplates(JSON.stringify(this.canvas.toJSON())).then(() => {
+          this.saveOrUpdateFabricDesign(JSON.stringify(this.canvas.toJSON())).then(() => {
             this.$toast.success({
-              message: '提交成功',
+              message: '保存成功',
               position: 'top'
             })
           }).catch(err => {

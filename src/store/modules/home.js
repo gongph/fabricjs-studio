@@ -3,7 +3,7 @@
  */
 
 import { queryDiePatterns, queryCustomTemplates, saveCustomTemplates, queryAllCustomTemplates } from '@/api/home'
-import { updateCustomTemplates } from '@/api/studio'
+// import { updateCustomTemplates } from '@/api/studio'
 import { gererateUUID } from '@/utils'
 import { cloneDeep } from 'lodash'
 
@@ -60,8 +60,9 @@ const home = {
       // 模具图路径
       path: '',
       // 模具类型
-      modelType: 1
-    }
+      modelType: 1,
+      savedCustomTemplate: null
+    },
   },
   mutations: {
     SET_BOOKING_LIST: (state, data) => {
@@ -109,13 +110,8 @@ const home = {
       state.cacheDiePattern.path = data.diePattern.diePatternimagePath
       state.cacheDiePattern.modelType = data.modelType.id
     },
-    SET_JSON_OF_TEMPLATE: (state, jsonStr) => {
-      if (!state.customeTemplate.fabricDesignMaterials) {
-        state.customeTemplate.fabricDesignMaterials = []
-      }
-      state.customeTemplate.fabricDesignMaterials.push({
-        originJson: jsonStr
-      })
+    SET_CACHE_SAVED_CUSTOME_TEMPLATE: (state, data) => {
+      state.cacheDiePattern.savedCustomTemplate = data
     }
   },
   actions: {
@@ -193,7 +189,6 @@ const home = {
       }, row)
       return new Promise((resolve) => {
         commit('INIT_TEMPLATE_DATA', data)
-        commit('SET_CACHE_CUSTOMNUMBER', state.customeTemplate.customNumber)
         commit('SET_CACHE_MODE_TYPE', state.customeTemplate.modelType.id)
         resolve(state.customeTemplate.customNumber)
       })
@@ -219,25 +214,18 @@ const home = {
           if (response[0].status !== 201) reject(new Error('saveCustomTemplates: error'))
           commit('SET_CACHE_CUSTOMNUMBER', state.customeTemplate.customNumber)
           commit('SET_CACHE_MODE_TYPE', state.customeTemplate.modelType.id)
+          let data = null
+          if (state.customeTemplate.modelType.id === 1) {
+            data = response[0].data
+          } else {
+            data = response[1].data
+          }
+          commit('SET_CACHE_SAVED_CUSTOME_TEMPLATE', data)
           resolve()
         }).catch(err => {
           reject(err)
         })
 
-      })
-    },
-    /**
-     * 更新自定义磨具
-     */
-    updateCustomTemplates ({ commit, state }, jsonStr) {
-      return new Promise((resolve, reject) => {
-        commit('SET_JSON_OF_TEMPLATE', jsonStr)
-        updateCustomTemplates(state.customeTemplate).then(response => {
-          if (response.status !== 200) reject(new Error('updateCustomTemplates: error'))
-          resolve()
-        }).catch(err => {
-          reject(err)
-        })
       })
     },
     /**

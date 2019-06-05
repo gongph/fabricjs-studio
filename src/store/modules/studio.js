@@ -3,6 +3,7 @@
  */
 
 import * as Api from '@/api/studio'
+import { cloneDeep } from 'lodash'
 
 const studio = {
   state: {
@@ -105,9 +106,23 @@ const studio = {
           fetchJson = Api.getFabricDesignMaterialsByCustomId(id)
         }
         fetchJson.then(response => {
-          console.log(response)
           if (!response.status === 200) return reject(new Error('getFabricJsonById: error'))
-          resolve(response.data.length > 0 ? response.data[0].originJson : null)
+          resolve(response.data.length > 0 ? response.data[0] : null)
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+    /**
+     * 保存/更新设计素材
+     */
+    saveOrUpdateFabricDesign ({ commit, getters }, jsonStr) {
+      return new Promise((resolve, reject) => {
+        const data = cloneDeep(getters.cacheSavedCustomTemplate)
+        data.originJson = jsonStr
+        Api.updateFabricDesignMaterials(data).then(response => {
+          if (response.status !== 200) reject(new Error('saveOrUpdateFabricDesign: error'))
+          resolve(response)
         }).catch(err => {
           reject(err)
         })

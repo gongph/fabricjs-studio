@@ -68,3 +68,27 @@ export function getFabricDesignMaterialsByCustomNumber (id) {
     method: 'get'
   })
 }
+
+/**
+ * 保存设计素材
+ */
+
+export function saveFabricDesignMaterials (data) {
+  return request({
+    url: '/api/fabric-design-materials',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 更新设计素材
+ */
+
+export function updateFabricDesignMaterials (data) {
+  return request({
+    url: '/api/fabric-design-materials',
+    method: 'put',
+    data
+  })
+}
