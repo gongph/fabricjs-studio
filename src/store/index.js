@@ -22,6 +22,8 @@ export default new Vuex.Store({
       paths: [
         'user.user',
         'home.cacheDiePattern',
+        'home.customeTemplate.taobaoNickname',
+        'home.customeTemplate.theRecipientName',
         'studio.galleryTypes'
       ]
     })

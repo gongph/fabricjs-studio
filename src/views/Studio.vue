@@ -277,8 +277,8 @@ export default {
       'cacheModelType',
       'galleryTypes',
       'gallerys',
-      'taobaoId',
-      'recipientName'
+      'taobaoNickname',
+      'theRecipientName'
     ])
   },
   methods: {
@@ -396,20 +396,40 @@ export default {
      * 添加水印。淘宝ID和收件人姓名
      */
     initWatermark (opt = { left: 150, top: 10 }) {
-      const text = fb.addText(
-        `淘宝ID：${this.taobaoId}    收件人姓名：${this.recipientName}`,
-        {
-          name: 'text',
-          fontFamily: '微软雅黑',
-          fill: '#ccc',
+      const self = this
+      if (!this.cacheModelType) return
+      const waterStr = `淘宝ID：${this.taobaoNickname}    收件人姓名：${this.theRecipientName}`
+      const waterText = fb.addText(waterStr, {
+        name: 'waterText',
+        fontFamily: 'Microsoft YaHei',
+        fill: '#fff',
+        evented: false,
+        selectable: false
+      })
+      if (this.cacheModelType === 1) {
+        waterText.scale(0.25)
+        waterText.set({
           left: opt.left,
           top: opt.top,
-          evented: false,
-          selectable: false
+        })
+      } else {
+        waterText.scale(0.35)
+        waterText.set({
+          left: 20,
+          top: 10,
+          angle: 90
+        })
+      }
+      // 拓展字段
+      waterText.toObject = (function (toObject) {
+        return function () {
+          return self.$fabric.util.object.extend(toObject.call(this), {
+            name: this.name
+          })
         }
-      )
-      text.scale(0.25)
-      this.canvas.add(text)
+      })(waterText.toObject)
+
+      this.canvas.add(waterText)
     },
     /**
      * 添加图形

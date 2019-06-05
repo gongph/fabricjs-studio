@@ -51,7 +51,7 @@ const home = {
         id: -1
       }
     },
-    // 缓存磨具数据
+    // 缓存模具数据
     cacheDiePattern: {
       // 模具编号
       id: -1,
@@ -188,6 +188,7 @@ const home = {
       }, row)
       return new Promise((resolve) => {
         commit('INIT_TEMPLATE_DATA', data)
+        commit('SET_CACHE_MODE_TYPE', state.customeTemplate.modelType.id)
         resolve(state.customeTemplate.customNumber)
       })
     },
@@ -211,6 +212,7 @@ const home = {
         ]).then(response => {
           if (response[0].status !== 201) reject(new Error('saveCustomTemplates: error'))
           commit('SET_CACHE_CUSTOMNUMBER', state.customeTemplate.customNumber)
+          commit('SET_CACHE_MODE_TYPE', state.customeTemplate.modelType.id)
           resolve()
         }).catch(err => {
           reject(err)
