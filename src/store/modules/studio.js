@@ -99,13 +99,8 @@ const studio = {
      */
     getFabricJsonById ({ commit }, id) {
       return new Promise((resolve, reject) => {
-        let fetchJson = null
-        if (typeof id === 'string') {
-          fetchJson = Api.getFabricDesignMaterialsByCustomNumber(id)
-        } else {
-          fetchJson = Api.getFabricDesignMaterialsByCustomId(id)
-        }
-        fetchJson.then(response => {
+        // 1. 只能用id查询，如果用定制编号查询的话，会出现两条记录一条是笔记本，一条是贴膜的
+        Api.getFabricDesignMaterialsByCustomId(id).then(response => {
           if (!response.status === 200) return reject(new Error('getFabricJsonById: error'))
           resolve(response.data.length > 0 ? response.data[0] : null)
         }).catch(err => {
@@ -119,12 +114,30 @@ const studio = {
     saveOrUpdateFabricDesign ({ commit, getters }, jsonStr) {
       return new Promise((resolve, reject) => {
         const data = cloneDeep(getters.cacheSavedCustomTemplate)
-        data.originJson = jsonStr
-        Api.updateFabricDesignMaterials(data).then(response => {
-          if (response.status !== 200) reject(new Error('saveOrUpdateFabricDesign: error'))
-          resolve(response)
-        }).catch(err => {
-          reject(err)
+        // 定制素材数据格式
+        let design = { originJson: jsonStr, customTemplate: data }
+        // 1. 查询当前的定制模版是否已经存在定制的素材
+        // 2。 如果当前定制模版存在定制素材，则调用更新接口
+        // 3。 如果当前定制模版不存在定制素材，则调用保存接口
+        Api.getFabricDesignMaterialsByCustomId(data.id).then(response => {
+          if (response.status === 200 && response.data && response.data.length > 0) {
+            design = response.data[0]
+            // 把更改过的值设置上，其他的值从服务器上读取
+            design.originJson = jsonStr
+            Api.updateFabricDesignMaterials(design).then(response => {
+              if (response.status !== 200) reject(new Error('updateOrUpdateFabricDesign: error'))
+              resolve(response)
+            }).catch(err => {
+              reject(err)
+            })
+          } else {
+            Api.saveFabricDesignMaterials(design).then(response => {
+              if (response.status !== 201) reject(new Error('saveOrUpdateFabricDesign: error'))
+              resolve(response)
+            }).catch(err => {
+              reject(err)
+            })
+          }
         })
       })
     },

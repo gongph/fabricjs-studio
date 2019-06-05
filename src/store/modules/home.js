@@ -122,7 +122,12 @@ const home = {
       return new Promise((resolve, reject) => {
         queryDiePatterns(query).then(response => {
           if (response.status !== 200) reject(new Error('error'))
-          commit('SET_BOOKING_LIST', response.data ? response.data : [])
+          let data = response.data
+          data.forEach(function
+          (item, index, array) {
+            item.customQuantity = 1
+          })
+          commit('SET_BOOKING_LIST', data || [])
           commit('SET_BOOKING_TOTAL', Number(response?.headers['x-total-count']) || 0)
           resolve()
         }).catch(err => {
