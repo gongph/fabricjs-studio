@@ -5,6 +5,7 @@
 import { queryDiePatterns, queryCustomTemplates, saveCustomTemplates, queryAllCustomTemplates } from '@/api/home'
 import { updateCustomTemplates } from '@/api/studio'
 import { gererateUUID } from '@/utils'
+import { cloneDeep } from 'lodash'
 
 const home = {
   state: {
@@ -14,37 +15,10 @@ const home = {
     // 我的定制列表
     bookedList: [],
     bookedTotal: 0,
-    // 鼠标垫模具
-    sbdDiePattern: {},
     currentType: {},
-    // 鼠标垫
-    sbd: {
-      // 定制数量
-      customQuantity: 0,
-      // 淘宝ID
-      taobaoNickname: '',
-      // 收件人姓名
-      theRecipientName: '',
-      // 推荐状态
-      recommendedStatus: {
-        id: 1
-      },
-      // 磨具类型： id: 1 贴膜 id: 2 鼠标垫
-      modelType: {
-        id: 2
-      },
-      // 完成状态
-      finishedCondition: {
-        id: 1
-      },
-      // 定制状态
-      customState: {
-        id: 1
-      },
-      // 当前用户
-      user: {
-        id: -1
-      } },
+    // 鼠标垫贴膜模具
+    sbdDiePattern: null,
+    // 初始化自定义模板数据
     customeTemplate: {
       // 定制编号
       customNumber: '',
@@ -58,7 +32,7 @@ const home = {
       recommendedStatus: {
         id: 1
       },
-      // 刀模具
+      // 电脑贴膜模具
       diePattern: null,
       // 磨具类型： id: 1 贴膜 id: 2 鼠标垫
       modelType: {
@@ -78,12 +52,15 @@ const home = {
       }
     },
     // 缓存磨具数据
-    diePattern: {
-      // 编号
+    cacheDiePattern: {
+      // 模具编号
       id: -1,
-      // 磨具图路径
+      // 定制编号
+      customNumber: '',
+      // 模具图路径
       path: '',
-      type: 1
+      // 模具类型
+      modelType: 1
     }
   },
   mutations: {
@@ -106,38 +83,26 @@ const home = {
       state.bookedTotal = total
     },
     INIT_TEMPLATE_DATA: (state, data) => {
-      // 初始化计算机模板数据
       state.customeTemplate.customNumber = gererateUUID()
       state.customeTemplate.customQuantity = data.customQuantity
       state.customeTemplate.taobaoNickname = data.taobaoNickname
       state.customeTemplate.theRecipientName = data.theRecipientName
       state.customeTemplate.user = data.user
-      // 关联上刀模图数据
+      state.customeTemplate.modelType.id = data.modelType
       state.customeTemplate.diePattern = data
 
-      // 初始化鼠标垫模板数据
-      state.sbd.customQuantity = data.customQuantity
-      state.sbd.taobaoNickname = data.taobaoNickname
-      state.sbd.theRecipientName = data.theRecipientName
-      state.sbd.user = data.user
-      state.sbd.diePattern = state.sbdDiePattern
-      // 设置统一的编号
-      state.sbd.customNumber = state.customeTemplate.customNumber
-      // 根据按的类型来处里不同的模板
-      if (state.currentType === 1) {
-        state.diePattern.path = data.diePatternimagePath
+      // 电脑贴膜和鼠标垫的图片路径是不一样的
+      if (data.modelType === 1) {
+        state.cacheDiePattern.path = data.diePatternimagePath
       } else {
-        state.diePattern.path = state.sbdDiePattern.diePatternimagePath
+        state.cacheDiePattern.path = state.sbdDiePattern?.diePatternimagePath
       }
     },
-    SET_TEMPLATE_ID: (state, data) => {
-      state.diePattern.id = data.diePattern.id
-      // 根据按的类型来处里不同的模板
-      // if (state.currentType === 1) {
-      state.diePattern.path = data.diePattern.diePatternimagePath
-      // } else {
-      //  state.diePattern.path = state.sbdDiePattern.diePatternimagePath
-      // }
+    SET_CACHE_CUSTOMNUMBER: (state, customNumber) => {
+      state.cacheDiePattern.customNumber = customNumber
+    },
+    SET_CACHE_MODE_TYPE: (state, modelType) => {
+      state.cacheDiePattern.modelType = modelType
     },
     SET_JSON_OF_TEMPLATE: (state, jsonStr) => {
       if (!state.customeTemplate.fabricDesignMaterials) {
@@ -165,7 +130,7 @@ const home = {
       })
     },
     /**
-     * 获取`鼠标垫信息`列表
+     * 获取鼠标垫信息
      */
     getSbdInfo ({ commit }, query) {
       return new Promise((resolve, reject) => {
@@ -216,8 +181,11 @@ const home = {
     /**
      * 初始化磨具数据： 定制数量、淘宝ID、收件人姓名
      */
-    initTemplateData ({ commit, state, getters }, prod) {
-      const data = Object.assign({ user: getters.user }, prod)
+    initTemplateData ({ commit, state, getters }, { row, type }) {
+      const data = Object.assign({
+        user: getters.user,
+        modelType: type
+      }, row)
       return new Promise((resolve) => {
         commit('INIT_TEMPLATE_DATA', data)
         resolve(state.customeTemplate.customNumber)
@@ -228,18 +196,26 @@ const home = {
      */
     saveCustomTemplates ({ commit, state }) {
       return new Promise((resolve, reject) => {
-        Promise.all([saveCustomTemplates(state.customeTemplate), saveCustomTemplates(state.sbd)]).then(response => {
+        const computerTemplateData = cloneDeep(state.customeTemplate)
+        const sbdTemplateData = cloneDeep(state.customeTemplate)
+
+        // 电脑贴膜数据
+        computerTemplateData.modelType.id = 1
+        // 鼠标垫数据
+        sbdTemplateData.modelType.id = 2
+        sbdTemplateData.diePattern = state.sbdDiePattern
+
+        Promise.all([
+          saveCustomTemplates(computerTemplateData),
+          saveCustomTemplates(sbdTemplateData)
+        ]).then(response => {
           if (response[0].status !== 201) reject(new Error('saveCustomTemplates: error'))
-          // 通过当前状态区分现在操作的是鼠标垫还是笔记本
-          if (state.currentType === 1) {
-            commit('SET_TEMPLATE_ID', response[0].data)
-          } else {
-            commit('SET_TEMPLATE_ID', response[1].data)
-          }
+          commit('SET_CACHE_CUSTOMNUMBER', state.customeTemplate.customNumber)
           resolve()
         }).catch(err => {
           reject(err)
         })
+
       })
     },
     /**

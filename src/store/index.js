@@ -21,7 +21,7 @@ export default new Vuex.Store({
       // 指定哪些数据需要缓冲
       paths: [
         'user.user',
-        'home.diePattern',
+        'home.cacheDiePattern',
         'studio.galleryTypes'
       ]
     })

@@ -10,9 +10,9 @@
         full-width
       >
         <mu-tab><mu-icon value="view_quilt"></mu-icon>基础</mu-tab>
-        <mu-tab :disabled="attrTababled"><mu-icon value="storage"></mu-icon>自定义</mu-tab>
+        <mu-tab :disabled="attrTababled"><mu-icon value="storage"></mu-icon>属性</mu-tab>
         <mu-tab><mu-icon value="layers"></mu-icon>图层</mu-tab>
-        <mu-tab><mu-icon value="loyalty"></mu-icon>属性</mu-tab>
+        <mu-tab><mu-icon value="loyalty"></mu-icon>信息</mu-tab>
       </mu-tabs>
       <div class="sidebar-base-content" v-if="navTabActived === 0">
         <sidebar-base @click="handleMenuClick"/>
@@ -249,7 +249,7 @@ export default {
     })
   },
   mounted () {
-    if (this.diePatternId > 0) {
+    if (this.cacheCustomNumber) {
       this.initFabric()
     } else {
       this.saveCustomTemplates().then(response => {
@@ -272,8 +272,9 @@ export default {
     ...mapGetters([
       'nickName',
       'activeObject',
-      'diePatternPath',
-      'diePatternId',
+      'cacheDiePatternPath',
+      'cacheCustomNumber',
+      'cacheModelType',
       'galleryTypes',
       'gallerys',
       'taobaoId',
@@ -305,7 +306,7 @@ export default {
         text: '正在为您准备画布，请稍等...'
       })
       const image = new Image()
-      image.src = `${baseImgUrl}${self.diePatternPath}`
+      image.src = `${baseImgUrl}${self.cacheDiePatternPath}`
       image.onload = () => {
         // 初始化Canvas画布
         const canvas = self.canvas = fb.init(
@@ -322,7 +323,7 @@ export default {
         self.setCanvas(this.canvas)
         // 加载背景磨具图片
         self.$fabric.Image.fromURL(
-          `${baseImgUrl}${self.diePatternPath}`,
+          `${baseImgUrl}${self.cacheDiePatternPath}`,
           (oImg) => {
             oImg.scale(0.5)
             oImg.set({
@@ -646,7 +647,6 @@ export default {
      * 保存到本地
      */
     handleDownloadToLocal () {
-      console.log(this.canvas.toJSON())
       this.$confirm('确定要保存到本地吗？', '提示', {
         type: 'info'
       }).then(({ result }) => {

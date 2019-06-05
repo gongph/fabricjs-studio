@@ -17,8 +17,9 @@ const getters = {
   bookedList: state => state.home.bookedList,
   bookedTotal: state => state.home.bookedTotal,
   // 磨具
-  diePatternPath: state => state.home.diePattern.path,
-  diePatternId: state => state.home.diePattern.id,
+  cacheDiePatternPath: state => state.home.cacheDiePattern.path,
+  cacheCustomNumber: state => state.home.cacheDiePattern.customNumber,
+  cacheModelType: state => state.home.cacheDiePattern.modelType,
   taobaoId: state => state.home.customeTemplate.taobaoNickname,
   recipientName: state => state.home.customeTemplate.theRecipientName
 }

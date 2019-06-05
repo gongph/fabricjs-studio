@@ -400,9 +400,10 @@ export default {
      * 提交`我要定制`表单
      */
     submitMarkingForm (type, row) {
-      // 设置当前操作的类型，笔记本1，鼠标垫2
-      this.$store.commit('SET_CURRENT_TYPE', type)
-      this.initTemplateData(row).then((id) => {
+      this.initTemplateData({
+        row,
+        type
+      }).then(id => {
         this.$router.push({
           name: 'studio',
           query: {
