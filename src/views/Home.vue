@@ -162,7 +162,7 @@
               <td class="is-center"><span>{{ scope.row.createdDate | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span></td>
               <td class="is-center">
                 <mu-tooltip placement="top" v-if="scope.row.finishedCondition.id === 1" content="继续定制">
-                  <mu-button icon color="error" @click="goStudio(scope.row.modelType.id, scope.row)">
+                  <mu-button icon color="error" @click="goStudio(scope.row)">
                     <mu-icon value="computer" v-if="scope.row.modelType.id === 1"></mu-icon>
                     <mu-icon v-else value="mouse"></mu-icon>
                   </mu-button>
@@ -316,7 +316,8 @@ export default {
       'getBookingList',
       'getBookedList',
       'getMyAllBookedList',
-      'initTemplateData'
+      'initTemplateData',
+      'setCacheDiePattern'
     ]),
     /**
      * 退出系统
@@ -333,13 +334,12 @@ export default {
       this.openAlert = false
       this.clear()
     },
-    goStudio (type, row) {
-      this.$store.commit('SET_CURRENT_TYPE', type)
-      this.$store.commit('SET_TEMPLATE_ID', row)
-
-      this.$router.push({
-        name: 'studio',
-        query: row.id
+    goStudio (row) {
+      this.setCacheDiePattern(row).then(() => {
+        this.$router.push({
+          name: 'studio',
+          query: { id: row.id }
+        })
       })
     },
     /**

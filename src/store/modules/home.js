@@ -104,6 +104,10 @@ const home = {
     SET_CACHE_MODE_TYPE: (state, modelType) => {
       state.cacheDiePattern.modelType = modelType
     },
+    SET_CACHE_DATA: (state, data) => {
+      state.cacheDiePattern.id = data.id
+      state.cacheDiePattern.modelType = data.modelType.id
+    },
     SET_JSON_OF_TEMPLATE: (state, jsonStr) => {
       if (!state.customeTemplate.fabricDesignMaterials) {
         state.customeTemplate.fabricDesignMaterials = []
@@ -232,6 +236,16 @@ const home = {
         }).catch(err => {
           reject(err)
         })
+      })
+    },
+    /**
+     * 设置缓存中的模具类型
+     */
+    setCacheDiePattern ({ commit }, data) {
+      return new Promise(resolve => {
+        commit('SET_CACHE_DATA', data)
+        commit('SET_CACHE_CUSTOMNUMBER', data.id)
+        resolve()
       })
     }
   }
