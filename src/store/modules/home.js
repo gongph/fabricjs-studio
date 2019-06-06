@@ -2,7 +2,12 @@
  * 首页
  */
 
-import { queryDiePatterns, queryCustomTemplates, saveCustomTemplates, queryAllCustomTemplates } from '@/api/home'
+import {
+  queryDiePatterns,
+  queryCustomTemplates,
+  saveCustomTemplates,
+  queryAllCustomTemplates
+} from '@/api/home'
 // import { updateCustomTemplates } from '@/api/studio'
 import { gererateUUID } from '@/utils'
 import { cloneDeep } from 'lodash'
@@ -62,7 +67,7 @@ const home = {
       // 模具类型
       modelType: 1,
       savedCustomTemplate: null
-    },
+    }
   },
   mutations: {
     SET_BOOKING_LIST: (state, data) => {
@@ -84,17 +89,17 @@ const home = {
       state.bookedTotal = total
     },
     INIT_TEMPLATE_DATA: (state, data) => {
-      state.customeTemplate.customNumber = gererateUUID()
+      state.customeTemplate.customNumber = data.customNumber ? data.customNumber : gererateUUID()
       state.customeTemplate.customQuantity = data.customQuantity
       state.customeTemplate.taobaoNickname = data.taobaoNickname
       state.customeTemplate.theRecipientName = data.theRecipientName
       state.customeTemplate.user = data.user
-      state.customeTemplate.modelType.id = data.modelType
-      state.customeTemplate.diePattern = data
+      state.customeTemplate.modelType.id = data.modelType.id
+      state.customeTemplate.diePattern = data?.diePattern ? data.diePattern : data
 
       // 电脑贴膜和鼠标垫的图片路径是不一样的
-      if (data.modelType === 1) {
-        state.cacheDiePattern.path = data.diePatternimagePath
+      if (data.modelType.id=== 1) {
+        state.cacheDiePattern.path = data?.diePatternimagePath ? data.diePatternimagePath : data.diePattern.diePatternimagePath
       } else {
         state.cacheDiePattern.path = state.sbdDiePattern?.diePatternimagePath
       }
@@ -230,7 +235,6 @@ const home = {
         }).catch(err => {
           reject(err)
         })
-
       })
     },
     /**
@@ -238,7 +242,7 @@ const home = {
      */
     setCacheDiePattern ({ commit }, data) {
       return new Promise(resolve => {
-        commit('SET_CACHE_DATA', data)
+        commit('INIT_TEMPLATE_DATA', data)
         commit('SET_CACHE_CUSTOMNUMBER', data.id)
         resolve()
       })

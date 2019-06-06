@@ -251,7 +251,7 @@ export default {
     })
   },
   mounted () {
-    if (this.cacheCustomNumber) {
+    if (this.cacheSavedCustomTemplate?.id) {
       this.initFabric()
     } else {
       this.saveCustomTemplates().then(response => {
@@ -451,7 +451,7 @@ export default {
         waterText.scale(0.25)
         waterText.set({
           left: opt.left,
-          top: opt.top,
+          top: opt.top
         })
       } else {
         waterText.scale(0.35)

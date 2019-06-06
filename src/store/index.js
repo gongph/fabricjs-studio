@@ -24,6 +24,7 @@ export default new Vuex.Store({
         'home.cacheDiePattern',
         'home.customeTemplate.taobaoNickname',
         'home.customeTemplate.theRecipientName',
+        'home.sbdDiePattern',
         'studio.galleryTypes'
       ]
     })

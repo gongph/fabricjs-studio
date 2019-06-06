@@ -400,10 +400,7 @@ export default {
      * 提交`我要定制`表单
      */
     submitMarkingForm (type, row) {
-      this.initTemplateData({
-        row,
-        type
-      }).then(id => {
+      this.initTemplateData({ row, type }).then(id => {
         this.$router.push({
           name: 'studio',
           query: {
