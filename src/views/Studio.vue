@@ -368,29 +368,14 @@ export default {
         (oImg) => {
           oImg.scale(0.5)
           oImg.set({
-            name: 'diebg',
             selectable: false,
             evented: false,
             moveCursor: 'default',
             hoverCursor: 'default'
           })
-
-          // 拓展字段
-          oImg.toObject = (function (toObject) {
-            return function () {
-              return self.$fabric.util.object.extend(toObject.call(this), {
-                name: this.name
-              })
-            }
-          })(oImg.toObject)
-
+          oImg = self.extendObject(oImg, 'diebg', false) // 拓展字段
           canvas.add(oImg)
-          // 初始化水印
-          self.initWatermark()
-          // 初始化选中样式
-          // self.initCornerStyle()
-          // 初始化事件
-          // self.initEvents()
+          self.initWatermark() // 初始化水印
         }, {
           crossOrigin: 'Anonymous'
         }
@@ -450,7 +435,7 @@ export default {
           setTimeout(() => {
             loading.close()
             self.loading = false
-          }, 0)
+          }, 250)
         })
       }).catch(err => {
         console.error(err)
@@ -474,7 +459,11 @@ export default {
       const self = this
       const canvas = this.canvas
       fromEvent(canvas, 'mouse:down').pipe(debounceTime(100)).subscribe(opt => {
-        const target = opt.target
+        let target = opt.target
+        if (target && !target.name) {
+          const name = target.type === 'image' ? 'image' : 'itext'
+          target = self.extendObject(target, name)
+        }
         if (target) {
           self.layerActiveId = target._uuid
           self.setActiveObject(opt.target)
@@ -488,6 +477,30 @@ export default {
         }
       })
     },
+    extendObject (target, name, ispush = true) {
+      const self = this
+      target.set({
+        name,
+        _uuid: gererateUUID()
+      })
+      // 是否推送到图层
+      if (ispush) {
+        this.pushLayer({
+          name: target.name,
+          id: target._uuid,
+          visible: true
+        })
+      }
+      target.toObject = (function (toObject) {
+        return function () {
+          return self.$fabric.util.object.extend(toObject.call(this), {
+            name: this.name,
+            _uuid: this._uuid
+          })
+        }
+      })(target.toObject)
+      return target
+    },
     /**
      * 添加水印。淘宝ID和收件人姓名
      */
@@ -495,8 +508,7 @@ export default {
       const self = this
       if (!this.cacheModelType) return
       const waterStr = `淘宝ID：${this.taobaoId}    收件人姓名：${this.recevier}`
-      const waterText = self.waterText = fb.addText(waterStr, {
-        name: 'waterText',
+      let waterText = self.waterText = fb.addText(waterStr, {
         fontFamily: 'Microsoft YaHei',
         fill: '#fff',
         evented: false,
@@ -517,14 +529,7 @@ export default {
         })
       }
       // 拓展字段
-      waterText.toObject = (function (toObject) {
-        return function () {
-          return self.$fabric.util.object.extend(toObject.call(this), {
-            name: this.name
-          })
-        }
-      })(waterText.toObject)
-
+      waterText = self.extendObject(waterText, 'waterText', false)
       this.canvas.add(waterText)
     },
     handleWatermark () {
@@ -542,30 +547,14 @@ export default {
       if (!type) return
       switch (type) {
         case 'itext':
-          const itext = this.itext = fb.addItext('新文字内容', {
-            _uuid: gererateUUID(),
-            name: 'itext',
+          let itext = this.itext = fb.addItext('新文字内容', {
             fontSize: 20,
             left: 100,
             top: this.scrollTop + 100
           })
-
           // 拓展字段
-          itext.toObject = (function (toObject) {
-            return function () {
-              return self.$fabric.util.object.extend(toObject.call(this), {
-                _uuid: this._uuid,
-                name: this.name
-              })
-            }
-          })(itext.toObject)
-
+          itext = self.extendObject(itext, 'itext')
           this.canvas.add(itext)
-          this.pushLayer({
-            name: itext.name,
-            id: itext._uuid,
-            visible: true
-          })
           this.canvas.renderAll()
           break
         case 'image':
@@ -612,32 +601,18 @@ export default {
       this.$fabric.Image.fromURL(this.localUploadUrl, oImg => {
         oImg.scale(0.5)
         oImg.set({
-          _uuid: gererateUUID(),
-          name: 'image',
           left: 100,
           top: this.scrollTop + 100
         })
-
         // 拓展字段
-        self.toObject = (function (toObject) {
-          return function () {
-            return self.$fabric.util.object.extend(toObject.call(this), {
-              _uuid: this._uuid,
-              name: this.name
-            })
-          }
-        })(self.toObject)
-
+        oImg = self.extendObject(oImg, 'image')
         this.canvas.add(oImg)
+        // 设置为激活对象
         this.canvas.setActiveObject(oImg)
         this.setActiveObject(oImg)
+
         this.openUploadImgDialog = false
         this.localUploadUrl = ''
-        this.pushLayer({
-          name: oImg.name,
-          id: oImg._uuid,
-          visible: true
-        })
         // 新添加的靠前
         this.canvas.sendBackwards(oImg)
       })
@@ -686,31 +661,17 @@ export default {
       this.$fabric.Image.fromURL(this.selectedImg.src, oImg => {
         oImg.scale(900 / oImg.width / 2)
         oImg.set({
-          _uuid: gererateUUID(),
-          name: 'image',
           left: 100,
           top: this.scrollTop + 100
         })
-
         // 拓展字段
-        self.toObject = (function (toObject) {
-          return function () {
-            return self.$fabric.util.object.extend(toObject.call(this), {
-              _uuid: this._uuid,
-              name: this.name
-            })
-          }
-        })(self.toObject)
-
+        oImg = this.extendObject(oImg, 'image')
         this.canvas.add(oImg)
+        // 设置为激活对象
         this.canvas.setActiveObject(oImg)
         this.setActiveObject(oImg)
+
         this.canvas.renderAll()
-        this.pushLayer({
-          name: oImg.name,
-          id: oImg._uuid,
-          visible: true
-        })
         // 新添加的靠前
         this.canvas.sendBackwards(oImg)
         this.openUploadImgDialog = false
