@@ -43,7 +43,9 @@ theme.use('darkTheme')
 
 Vue.use(Toast)
 Vue.use(MuseUI)
-Vue.use(NProgress)
+Vue.use(NProgress, {
+  color: '#ff4081'
+})
 Vue.use(Loading)
 Vue.use(Message)
 

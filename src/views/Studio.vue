@@ -403,17 +403,24 @@ export default {
       }
     },
     /**
-     * 初始化Fabric
+     * 全局Loading
      */
-    initFabric () {
-      const self = this
-      const loading = this.$loading({
+    handleLoading (opts) {
+      var opts = opts || {
         overlayColor: '#303030',
         color: 'orange',
         className: 'mu-custom-loading',
         text: '正在为您准备画布，请稍等...'
-      })
-
+      }
+      return this.$loading(opts)
+    },
+    /**
+     * 初始化Fabric
+     */
+    initFabric () {
+      const self = this
+      this.$progress.start()
+      const loading = this.handleLoading()
       // 获取服务器上保存的 json 文件
       this.getFabricJsonById(this.$route.query.id).then(data => {
         let originJson = null
@@ -433,6 +440,7 @@ export default {
           // 初始化事件
           self.initEvents()
           setTimeout(() => {
+            self.$progress.done()
             loading.close()
             self.loading = false
           }, 250)
@@ -657,6 +665,7 @@ export default {
      * 处理官方图库图片选择
      */
     handleImgSelected () {
+      this.$progress.start()
       this.sureBtnLoading = true
       this.$fabric.Image.fromURL(this.selectedImg.src, oImg => {
         oImg.scale(900 / oImg.width / 2)
@@ -676,6 +685,7 @@ export default {
         this.canvas.sendBackwards(oImg)
         this.openUploadImgDialog = false
         this.sureBtnLoading = false
+        this.$progress.done()
       }, {
         crossOrigin: 'Anonymous'
       })
@@ -713,12 +723,15 @@ export default {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
+          this.$progress.start()
           this.saveOrUpdateFabricDesign(JSON.stringify(this.canvas.toJSON())).then(() => {
+            this.$progress.done()
             this.$toast.success({
               message: '保存成功',
               position: 'top'
             })
           }).catch(err => {
+            this.$progress.done()
             this.$toast.error({
               message: err.response?.data?.detail,
               position: 'top'
@@ -735,11 +748,13 @@ export default {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
+          this.$progress.start()
           const id = getUrlParam('id') || Date.now()
           download(this.canvas.toDataURL({
             format: 'jpeg',
             multiplier: 2
           }), id)
+          this.$progress.done()
         }
       })
     },
