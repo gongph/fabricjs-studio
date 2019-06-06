@@ -47,7 +47,16 @@
         <mu-icon left value="remove_red_eye"></mu-icon> 预览
       </mu-button>
       <mu-button small flat slot="right" @click="handleSaveToRemote">
-        <mu-icon left value="cloud_upload"></mu-icon> 提交
+        <mu-icon left value="cloud_upload"></mu-icon> 保存
+      </mu-button>
+      <mu-button small flat slot="right" @click="handleSaveToRemote">
+        <mu-icon left value="cloud_upload"></mu-icon> 提交设计
+      </mu-button>
+      <mu-button small flat slot="right" @click="handleSaveToRemote">
+        <mu-icon left value="cloud_upload"></mu-icon> 设计鼠标垫
+      </mu-button>
+      <mu-button small flat slot="right" @click="handleSaveToRemote">
+        <mu-icon left value="cloud_upload"></mu-icon> 设计贴膜
       </mu-button>
       <mu-button small flat slot="right" @click="handleDownloadToLocal">
         <mu-icon left value="vertical_align_bottom"></mu-icon> 保存到本地
@@ -204,6 +213,7 @@ import { debounceTime } from 'rxjs/operators'
 import fb from '@/utils/fabric'
 import ImageLazyload from '@/components/ImgLazyload/index.vue'
 import PreviewCanvas from './components/preview-canvas.vue'
+import { cloneDeep } from 'lodash'
 
 export default {
   name: 'Studio',
@@ -241,6 +251,8 @@ export default {
       scrollTop: 100,
       // 水印对象
       waterText: null,
+      // 保存当前页面
+      currentCustomTemplate: null,
       // 淘宝Id
       taobaoId: this.taobaoNickname,
       // 收件人姓名
@@ -278,6 +290,7 @@ export default {
       'cacheDiePatternPath',
       'cacheCustomNumber',
       'cacheSavedCustomTemplate',
+      'sbdCustomTemplate',
       'cacheModelType',
       'galleryTypes',
       'gallerys',
@@ -295,7 +308,9 @@ export default {
       'getGalleryByTypeId',
       'pushLayer',
       'clearLayers',
+      'getCustomTemplateByCustomNumber',
       'saveOrUpdateFabricDesign',
+      'updateCustomTemplates',
       'getFabricJsonById'
     ]),
     /**
@@ -423,8 +438,10 @@ export default {
       const self = this
       this.$progress.start()
       const loading = this.handleLoading()
-      // 获取服务器上保存的 json 文件
-      this.getFabricJsonById(this.$route.query.id).then(data => {
+      this.getCustomTemplateByCustomNumber(this.$route.query.bh, this.$route.query.id, this.$route.query.type).then(response => {
+        // 获取服务器上保存的 json 文件
+        return this.getFabricJsonById(this.$route.query.id)
+      }).then(data => {
         let originJson = null
         if (data) {
           originJson = data.originJson
@@ -719,44 +736,79 @@ export default {
       this.openPreivewCanvasDialog = true
     },
     /**
+     * 提取公共的保存信息
+     */
+    handleCustomTemplateAndFabricDesign () {
+      this.$progress.start()
+      // 更新定制模版信息
+      let customTemaplate = cloneDeep(this.cacheSavedCustomTemplate)
+      const sbd = cloneDeep(this.sbdCustomTemplate)
+      // 淘宝id
+      customTemaplate.taobaoNickname = this.taobaoId
+      // 收件人姓名
+      customTemaplate.theRecipientName = this.recevier
+      sbd.taobaoNickname = this.taobaoId
+      sbd.theRecipientName = this.recevier
+      Promise.all([this.updateCustomTemplates(customTemaplate), this.updateCustomTemplates(sbd)]).then(response => {
+        return this.saveOrUpdateFabricDesign(JSON.stringify(this.canvas.toJSON()))
+      }).then(() => {
+        this.$progress.done()
+        this.$toast.success({
+          message: '保存成功',
+          position: 'top'
+        })
+      }).catch(err => {
+        this.$progress.done()
+        this.$toast.error({
+          message: err.response?.data?.detail,
+          position: 'top'
+        })
+      })
+    },
+    /**
      * 保存到服务器
      */
     handleSaveToRemote () {
-      this.$confirm('确定要提交吗？', '提示', {
-        type: 'info'
-      }).then(({ result }) => {
-        if (result) {
-          this.$progress.start()
-          this.saveOrUpdateFabricDesign(JSON.stringify(this.canvas.toJSON())).then(() => {
-            this.$progress.done()
-            this.$toast.success({
-              message: '保存成功',
-              position: 'top'
-            })
-          }).catch(err => {
-            this.$progress.done()
-            this.$toast.error({
-              message: err.response?.data?.detail,
-              position: 'top'
-            })
-          })
-        }
-      })
+      // 您真的要提交设计？一旦提交成功，将不能再修改，请再次确认！！！
+      if (!this.taobaoId || !this.recevier) {
+        this.$confirm('淘宝ID、或收件人姓名尚未填写，是否确认继续保存并预览？请再次确认！！！', '提示', {
+          type: 'info'
+        }).then(({ result }) => {
+          // 如果选择是确认，直接提交信息，否则的话打开信息面板
+          if (result) {
+            this.handleCustomTemplateAndFabricDesign()
+          } else {
+            this.navTabActived = 3
+          }
+        })
+      } else {
+        this.handleCustomTemplateAndFabricDesign()
+      }
     },
     /**
      * 保存到本地
      */
     handleDownloadToLocal () {
-      this.$confirm('确定要保存到本地吗？', '提示', {
+      // 如果收件人或者淘宝id为空不允许提交
+      if (!this.taobaoId || !this.recevier) {
+        this.$toast.error({
+          message: '淘宝ID或者收件人姓名不能为空',
+          position: 'top'
+        })
+        this.navTabActived = 3
+        return
+      }
+      // 调整文件命名规则
+      const id = (this.cacheSavedCustomTemplate.taobaoNickname) + (this.cacheSavedCustomTemplate.theRecipientName) + this.cacheSavedCustomTemplate.diePattern.computerType.value + this.cacheSavedCustomTemplate.diePattern.diePatternType + this.cacheSavedCustomTemplate.modelType.value + this.cacheSavedCustomTemplate.createdDate
+      this.$confirm('您真的要将设计保存到本地？一旦点击确定，将不能再修改，请再次确认！！！', '重要提示', {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
           this.$progress.start()
-          const id = getUrlParam('id') || Date.now()
           download(this.canvas.toDataURL({
-            format: 'jpeg',
+            format: 'png',
             multiplier: 2
-          }), id)
+          }), id + '.png')
           this.$progress.done()
         }
       })
@@ -765,7 +817,7 @@ export default {
      * 退出编辑
      */
     handleQuitEditor () {
-      this.$confirm('确定要退出编辑吗？', '提示', {
+      this.$confirm('您是否已经保存设计？您真的要退出编辑？请再次确认！！！', '重要提示', {
         type: 'info'
       }).then(({ result }) => {
         if (result) {

@@ -2,12 +2,12 @@
   <div class="app-container login-page">
     <div class="bg"></div>
     <div class="login-container">
-      <div class="qrcode-wrapper">
-        <div class="qrcode">
-          <img src="/img/qrcode.png">
-          <p>— 关注xxxx公众号 —</p>
-        </div>
-      </div>
+<!--      <div class="qrcode-wrapper">-->
+<!--        <div class="qrcode">-->
+<!--          <img src="/img/qrcode.png">-->
+<!--          <p>— 关注xxxx公众号 —</p>-->
+<!--        </div>-->
+<!--      </div>-->
       <div class="login-form__wrapper">
         <div class="login-form">
           <h2>用户登录</h2>
@@ -29,13 +29,13 @@
                 :type="visibility ? 'text' : 'password'"
               />
             </mu-form-item>
-            <mu-form-item label="验证码">
-              <mu-text-field type="text" prop="password" placeholder="请输入验证码">
-                <template #append>
-                  <span style="font-style: italic;">4025</span>
-                </template>
-              </mu-text-field>
-            </mu-form-item>
+<!--            <mu-form-item label="验证码">-->
+<!--              <mu-text-field type="text" prop="password" placeholder="请输入验证码">-->
+<!--                <template #append>-->
+<!--                  <span style="font-style: italic;">4025</span>-->
+<!--                </template>-->
+<!--              </mu-text-field>-->
+<!--            </mu-form-item>-->
             <mu-form-item>
               <mu-checkbox label="记住密码" v-model="validateForm.rememberMe"></mu-checkbox>
               <a href="javascript:;" class="forget-pass" @click="showDialog">忘记密码?</a>

@@ -161,12 +161,11 @@
               <td class="is-center">{{ scope.row.customState.value }}</td>
               <td class="is-center"><span>{{ scope.row.createdDate | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span></td>
               <td class="is-center">
-                <mu-tooltip placement="top" v-if="scope.row.finishedCondition.id === 1" content="继续定制">
-                  <mu-button icon color="error" @click="goStudio(scope.row)">
-                    <mu-icon value="computer" v-if="scope.row.modelType.id === 1"></mu-icon>
-                    <mu-icon v-else value="mouse"></mu-icon>
-                  </mu-button>
-                </mu-tooltip>
+                <mu-button color="error" v-if="scope.row.finishedCondition.id === 1" @click="goStudio(scope.row)">
+                  <span>继续定制</span>
+                  <mu-icon value="computer" v-if="scope.row.modelType.id === 1"></mu-icon>
+                  <mu-icon v-else value="mouse"></mu-icon>
+                </mu-button>
               </td>
             </template>
           </mu-data-table>
@@ -339,7 +338,7 @@ export default {
       this.setCacheDiePattern(row).then(() => {
         this.$router.push({
           name: 'studio',
-          query: { id: row.id }
+          query: { id: row.id, type: row.modelType.id, bh: row.customNumber }
         })
       })
     },
@@ -379,6 +378,7 @@ export default {
       this.markedTableLoading = true
       this.getMyAllBookedList({
         page: this.listQuery.page,
+        sort: 'createdDate,desc',
         size: this.listQuery.size
       }).then(() => {
         this.markedTableLoading = false
@@ -392,6 +392,7 @@ export default {
       this.getBookedList({
         page: this.listQuery.page,
         size: this.listQuery.size,
+        sort: 'createdDate,desc',
         query: this.listQuery.queryParams
       }).then(() => {
         this.markedTableLoading = false
@@ -402,11 +403,11 @@ export default {
      */
     submitMarkingForm (type, row) {
       this.initTemplateData({ row, type }).then(() => {
-        this.saveCustomTemplates().then(({ id }) => {
+        this.saveCustomTemplates().then(response => {
           this.$router.push({
             name: 'studio',
             query: {
-              id
+              id: response.id, type: response.modelType.id, bh: response.customNumber
             }
           })
         })
