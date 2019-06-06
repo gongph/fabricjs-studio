@@ -16,7 +16,9 @@ const studio = {
     // 官方图库
     gallerys: [],
     // 图层
-    layers: []
+    layers: [],
+    // 设置素材对象
+    fabricDesign: null
   },
   mutations: {
     SET_CANVAS: (state, canvas) => {
@@ -36,6 +38,9 @@ const studio = {
     },
     SET_LAYERS: (state, object) => {
       state.layers.push(object)
+    },
+    SET_FABRIC_DESIGN: (state, data) => {
+      state.fabricDesign = data
     }
   },
   actions: {
@@ -102,7 +107,10 @@ const studio = {
         // 1. 只能用id查询，如果用定制编号查询的话，会出现两条记录一条是笔记本，一条是贴膜的
         Api.getFabricDesignMaterialsByCustomId(id).then(response => {
           if (!response.status === 200) return reject(new Error('getFabricJsonById: error'))
-          resolve(response.data.length > 0 ? response.data[0] : null)
+          const data = response.data.length > 0 ? response.data[0] : null
+          // 存起来，展示用
+          commit('SET_FABRIC_DESIGN', data)
+          resolve(data)
         }).catch(err => {
           reject(err)
         })

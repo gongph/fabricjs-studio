@@ -33,7 +33,7 @@
         />
       </div>
       <div class="sidebar-infos-content" v-if="navTabActived === 3">
-        //
+        <sidebar-infos @info:changed="handleInfoChanged"/>
       </div>
     </mu-paper>
     <!-- 头部菜单 -->
@@ -195,7 +195,7 @@
 </template>
 
 <script>
-import { SidebarBase, SidebarAttrs, SidebarLayer } from './layout'
+import { SidebarBase, SidebarAttrs, SidebarLayer, SidebarInfos } from './layout'
 import { mapGetters, mapActions } from 'vuex'
 import { baseImgUrl, gererateUUID, download, getUrlParam } from '@/utils'
 import { fromEvent } from 'rxjs'
@@ -211,6 +211,7 @@ export default {
     SidebarBase,
     SidebarAttrs,
     SidebarLayer,
+    SidebarInfos,
     ImageLazyload,
     PreviewCanvas
   },
@@ -239,7 +240,13 @@ export default {
       localUploadUrl: '',
       scrollTop: 100,
       // 是否创建过
-      fabricDesign: null
+      fabricDesign: null,
+      // 水印对象
+      waterText: null,
+      // 淘宝Id
+      taobaoId: this.taobaoNickname,
+      // 收件人姓名
+      recevier: this.theRecipientName
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -330,11 +337,14 @@ export default {
             visible: true
           })
         } else if (object.type === 'text') {
-          // 文字
+          // 水印文字
           object.set({
-            name: 'text',
-            _uuid: -1
+            name: 'waterText',
+            _uuid: -1,
+            evented: false,
+            selectable: false
           })
+          self.waterText = object
         }
 
         object.toObject = (function (toObject) {
@@ -484,8 +494,8 @@ export default {
     initWatermark (opt = { left: 150, top: 10 }) {
       const self = this
       if (!this.cacheModelType) return
-      const waterStr = `淘宝ID：${this.taobaoNickname}    收件人姓名：${this.theRecipientName}`
-      const waterText = fb.addText(waterStr, {
+      const waterStr = `淘宝ID：${this.taobaoId}    收件人姓名：${this.recevier}`
+      const waterText = self.waterText = fb.addText(waterStr, {
         name: 'waterText',
         fontFamily: 'Microsoft YaHei',
         fill: '#fff',
@@ -516,6 +526,13 @@ export default {
       })(waterText.toObject)
 
       this.canvas.add(waterText)
+    },
+    handleWatermark () {
+      if (!this.waterText) return
+      this.waterText.set({
+        text: `淘宝ID：${this.taobaoId}    收件人姓名：${this.recevier}`
+      })
+      this.canvas.renderAll()
     },
     /**
      * 添加图形
@@ -848,6 +865,14 @@ export default {
     handleLayerRemoved (id) {
       const o = this.getObjectById(id)
       if (o) this.canvas.remove(o)
+    },
+    /**
+     * 信息被修改后回调
+     */
+    handleInfoChanged (data) {
+      this.taobaoId = data.taobaoNickname
+      this.recevier = data.theRecipientName
+      this.handleWatermark()
     }
   }
 }

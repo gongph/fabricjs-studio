@@ -25,7 +25,8 @@ export default new Vuex.Store({
         'home.customeTemplate.taobaoNickname',
         'home.customeTemplate.theRecipientName',
         'home.sbdDiePattern',
-        'studio.galleryTypes'
+        'studio.galleryTypes',
+        'studio.fabricDesign'
       ]
     })
   ]
