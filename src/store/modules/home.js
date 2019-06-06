@@ -103,6 +103,7 @@ const home = {
       } else {
         state.cacheDiePattern.path = state.sbdDiePattern?.diePatternimagePath
       }
+      state.cacheDiePattern.modelType = state.customeTemplate.modelType.id
 
     },
     SET_CACHE_CUSTOMNUMBER: (state, customNumber) => {
