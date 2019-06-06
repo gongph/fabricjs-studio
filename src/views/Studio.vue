@@ -276,6 +276,7 @@ export default {
       'activeObject',
       'cacheDiePatternPath',
       'cacheCustomNumber',
+      'cacheSavedCustomTemplate',
       'cacheModelType',
       'galleryTypes',
       'gallerys',
@@ -374,7 +375,7 @@ export default {
       })
 
       // 获取服务器上保存的 json 文件
-      this.getFabricJsonById(this.cacheCustomNumber).then(data => {
+      this.getFabricJsonById(this.cacheSavedCustomTemplate.id).then(data => {
         let originJson = null
         if (data) {
           this.fabricDesign = data
@@ -399,7 +400,6 @@ export default {
       }).catch(err => {
         console.error(err)
       })
-
     },
     /**
      * 初始化转角样式
