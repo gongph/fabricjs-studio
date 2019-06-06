@@ -292,6 +292,7 @@ export default {
       'getGalleryTypes',
       'getGalleryByTypeId',
       'pushLayer',
+      'clearLayers',
       'saveOrUpdateFabricDesign',
       'getFabricJsonById'
     ]),
@@ -705,6 +706,8 @@ export default {
               c.remove(object)
             }
           })
+          // 清空图层
+          this.clearLayers()
           this.navTabActived = 0
         }
       })

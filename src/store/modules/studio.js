@@ -39,6 +39,9 @@ const studio = {
     SET_LAYERS: (state, object) => {
       state.layers.push(object)
     },
+    CLEAR_LAYERS: (state) => {
+      state.layers = []
+    },
     SET_FABRIC_DESIGN: (state, data) => {
       state.fabricDesign = data
     }
@@ -157,6 +160,12 @@ const studio = {
         commit('SET_LAYERS', object)
         resolve()
       })
+    },
+    /**
+     * 清空图层
+     */
+    clearLayers ({ commit }) {
+      commit('CLEAR_LAYERS')
     },
     /**
      * 删除图层
