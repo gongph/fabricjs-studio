@@ -257,6 +257,10 @@ export default {
       }
     })
   },
+  created () {
+    this.taobaoId = this.taobaoNickname
+    this.recevier = this.theRecipientName
+  },
   mounted () {
     this.initFabric()
     // 初始化滚动事件
