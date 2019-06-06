@@ -317,7 +317,8 @@ export default {
       'getBookedList',
       'getMyAllBookedList',
       'initTemplateData',
-      'setCacheDiePattern'
+      'setCacheDiePattern',
+      'saveCustomTemplates',
     ]),
     /**
      * 退出系统
@@ -400,12 +401,14 @@ export default {
      * 提交`我要定制`表单
      */
     submitMarkingForm (type, row) {
-      this.initTemplateData({ row, type }).then(id => {
-        this.$router.push({
-          name: 'studio',
-          query: {
-            id
-          }
+      this.initTemplateData({ row, type }).then(() => {
+        this.saveCustomTemplates().then(({ id }) => {
+          this.$router.push({
+            name: 'studio',
+            query: {
+              id
+            }
+          })
         })
       })
     },

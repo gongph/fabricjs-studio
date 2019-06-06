@@ -251,15 +251,7 @@ export default {
     })
   },
   mounted () {
-    if (this.cacheSavedCustomTemplate?.id) {
-      this.initFabric()
-    } else {
-      this.saveCustomTemplates().then(response => {
-        this.initFabric()
-      }).catch(err => {
-        console.error(err)
-      })
-    }
+    this.initFabric()
     // 初始化滚动事件
     fromEvent(
       document.querySelector('.canvas-layout'),
@@ -290,7 +282,6 @@ export default {
       'setCanvas',
       'setActiveObject',
       'delActiveObject',
-      'saveCustomTemplates',
       'getGalleryTypes',
       'getGalleryByTypeId',
       'pushLayer',
@@ -301,7 +292,61 @@ export default {
      * 从 JOSN 中加载
      */
     loadFromJSON (canvas, json) {
-      canvas.loadFromJSON(json)
+      const self = this
+      canvas.loadFromJSON(json, canvas.renderAll.bind(canvas), function (o, object) {
+        // 修复 toJSON 时 name 过滤掉的问题
+        if (object.type === 'image') {
+          if (object.name === 'diebg') {
+            // 模具背景
+            object.set({
+              _uuid: -1,
+              name: 'diebg',
+              selectable: false,
+              evented: false,
+              moveCursor: 'default',
+              hoverCursor: 'default'
+            })
+          } else if (object.name === 'image') {
+            // 图片
+            object.set({
+              name: 'image',
+              _uuid: gererateUUID()
+            })
+            self.pushLayer({
+              name: object.name,
+              id: object._uuid,
+              visible: true
+            })
+          }
+        } else if (object.type === 'i-text') {
+          // 可编辑文字
+          object.set({
+            name: 'itext',
+            _uuid: gererateUUID()
+          })
+          self.pushLayer({
+            name: object.name,
+            id: object._uuid,
+            visible: true
+          })
+        } else if (object.type === 'text') {
+          // 文字
+          object.set({
+            name: 'text',
+            _uuid: -1
+          })
+        }
+
+        object.toObject = (function (toObject) {
+          return function () {
+            return self.$fabric.util.object.extend(toObject.call(this), {
+              name: this.name,
+              _uuid: this._uuid
+            })
+          }
+        })(object.toObject)
+
+      })
     },
     /**
      * 创建Fabric
@@ -375,7 +420,7 @@ export default {
       })
 
       // 获取服务器上保存的 json 文件
-      this.getFabricJsonById(this.cacheSavedCustomTemplate.id).then(data => {
+      this.getFabricJsonById(this.$route.query.id).then(data => {
         let originJson = null
         if (data) {
           this.fabricDesign = data

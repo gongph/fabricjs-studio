@@ -94,15 +94,16 @@ const home = {
       state.customeTemplate.taobaoNickname = data.taobaoNickname
       state.customeTemplate.theRecipientName = data.theRecipientName
       state.customeTemplate.user = data.user
-      state.customeTemplate.modelType.id = data.modelType.id
+      state.customeTemplate.modelType.id = (typeof data.modelType) === 'object' ? data.modelType.id : data.modelType
       state.customeTemplate.diePattern = data?.diePattern ? data.diePattern : data
 
       // 电脑贴膜和鼠标垫的图片路径是不一样的
-      if (data.modelType.id=== 1) {
+      if (state.customeTemplate.modelType.id === 1) {
         state.cacheDiePattern.path = data?.diePatternimagePath ? data.diePatternimagePath : data.diePattern.diePatternimagePath
       } else {
         state.cacheDiePattern.path = state.sbdDiePattern?.diePatternimagePath
       }
+
     },
     SET_CACHE_CUSTOMNUMBER: (state, customNumber) => {
       state.cacheDiePattern.customNumber = customNumber
@@ -200,7 +201,7 @@ const home = {
       return new Promise((resolve) => {
         commit('INIT_TEMPLATE_DATA', data)
         commit('SET_CACHE_MODE_TYPE', state.customeTemplate.modelType.id)
-        resolve(state.customeTemplate.customNumber)
+        resolve()
       })
     },
     /**
@@ -231,7 +232,7 @@ const home = {
             data = response[1].data
           }
           commit('SET_CACHE_SAVED_CUSTOME_TEMPLATE', data)
-          resolve()
+          resolve(data)
         }).catch(err => {
           reject(err)
         })
@@ -243,7 +244,7 @@ const home = {
     setCacheDiePattern ({ commit }, data) {
       return new Promise(resolve => {
         commit('INIT_TEMPLATE_DATA', data)
-        commit('SET_CACHE_CUSTOMNUMBER', data.id)
+        commit('SET_CACHE_CUSTOMNUMBER', data?.customNumber)
         resolve()
       })
     }
