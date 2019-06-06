@@ -773,6 +773,7 @@ export default {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
+          this.clearLayers()
           this.$router.push({ path: '/' })
         }
       })
@@ -786,6 +787,7 @@ export default {
       }).then(({ result }) => {
         if (result) {
           this.signOut().then(() => {
+            this.this.clearLayers()
             this.$router.push({ path: '/login' })
           })
         }
