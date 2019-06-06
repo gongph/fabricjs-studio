@@ -93,7 +93,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'fabricDesign'
+      'cacheSavedCustomTemplate'
     ])
   },
   created () {
@@ -101,16 +101,16 @@ export default {
   },
   methods: {
     initData () {
-      const obj = this.fabricDesign
+      const obj = this.cacheSavedCustomTemplate
       if (!obj) return
-      this.form.customeNumber = obj.customTemplate.customNumber
-      this.form.computerType = obj.customTemplate.diePattern.computerType.value
-      this.form.diePatternType = obj.customTemplate.diePattern.diePatternType
-      this.form.customQuantity = obj.customTemplate.customQuantity
-      this.form.modelType = obj.customTemplate.modelType.value
+      this.form.customeNumber = obj.customNumber
+      this.form.computerType = obj.diePattern.computerType.value
+      this.form.diePatternType = obj.diePattern.diePatternType
+      this.form.customQuantity = obj.customQuantity
+      this.form.modelType = obj.modelType.value
       this.form.lastModifiedDate = parseTime(obj.lastModifiedDate)
-      this.form.taobaoNickname = obj.customTemplate.taobaoNickname
-      this.form.theRecipientName = obj.customTemplate.theRecipientName
+      this.form.taobaoNickname = obj.taobaoNickname
+      this.form.theRecipientName = obj.theRecipientName
     },
     handleInput: debounce(function () {
       this.$emit('info:changed', {

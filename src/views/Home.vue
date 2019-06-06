@@ -318,7 +318,7 @@ export default {
       'getMyAllBookedList',
       'initTemplateData',
       'setCacheDiePattern',
-      'saveCustomTemplates',
+      'saveCustomTemplates'
     ]),
     /**
      * 退出系统

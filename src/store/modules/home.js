@@ -104,7 +104,6 @@ const home = {
         state.cacheDiePattern.path = state.sbdDiePattern?.diePatternimagePath
       }
       state.cacheDiePattern.modelType = state.customeTemplate.modelType.id
-
     },
     SET_CACHE_CUSTOMNUMBER: (state, customNumber) => {
       state.cacheDiePattern.customNumber = customNumber
@@ -245,6 +244,7 @@ const home = {
     setCacheDiePattern ({ commit }, data) {
       return new Promise(resolve => {
         commit('INIT_TEMPLATE_DATA', data)
+        commit('SET_CACHE_SAVED_CUSTOME_TEMPLATE', data) // 用于信息展示
         commit('SET_CACHE_CUSTOMNUMBER', data?.customNumber)
         resolve()
       })

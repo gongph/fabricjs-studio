@@ -239,8 +239,6 @@ export default {
       // 本地上传的图片base64
       localUploadUrl: '',
       scrollTop: 100,
-      // 是否创建过
-      fabricDesign: null,
       // 水印对象
       waterText: null,
       // 淘宝Id
@@ -360,7 +358,6 @@ export default {
             })
           }
         })(object.toObject)
-
       })
     },
     /**
@@ -411,13 +408,13 @@ export default {
      * 全局Loading
      */
     handleLoading (opts) {
-      var opts = opts || {
+      var options = opts || {
         overlayColor: '#303030',
         color: 'orange',
         className: 'mu-custom-loading',
         text: '正在为您准备画布，请稍等...'
       }
-      return this.$loading(opts)
+      return this.$loading(options)
     },
     /**
      * 初始化Fabric
@@ -430,7 +427,6 @@ export default {
       this.getFabricJsonById(this.$route.query.id).then(data => {
         let originJson = null
         if (data) {
-          this.fabricDesign = data
           originJson = data.originJson
         }
         this.initCanvas((canvas) => {

@@ -41,9 +41,6 @@ const studio = {
     },
     CLEAR_LAYERS: (state) => {
       state.layers = []
-    },
-    SET_FABRIC_DESIGN: (state, data) => {
-      state.fabricDesign = data
     }
   },
   actions: {
@@ -111,8 +108,6 @@ const studio = {
         Api.getFabricDesignMaterialsByCustomId(id).then(response => {
           if (!response.status === 200) return reject(new Error('getFabricJsonById: error'))
           const data = response.data.length > 0 ? response.data[0] : null
-          // 存起来，展示用
-          commit('SET_FABRIC_DESIGN', data)
           resolve(data)
         }).catch(err => {
           reject(err)

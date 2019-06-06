@@ -5,7 +5,6 @@ const getters = {
   galleryTypes: state => state.studio.galleryTypes,
   gallerys: state => state.studio.gallerys,
   layers: state => state.studio.layers,
-  fabricDesign: state => state.studio.fabricDesign,
   // user
   token: state => state.user.token,
   roles: state => state.user.roles,
