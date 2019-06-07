@@ -8,6 +8,7 @@ import {
   saveCustomTemplates,
   updateCustomTemplates,
   queryCustomTemplatesByCustomNumber,
+  queryAllComputerTypes,
   queryAllCustomTemplates
 } from '@/api/home'
 import { gererateUUID } from '@/utils'
@@ -20,6 +21,7 @@ const home = {
     bookingTotal: 0,
     // 我的定制列表
     bookedList: [],
+    autoCompleteList: [],
     bookedTotal: 0,
     currentType: {},
     // 鼠标垫贴膜模具
@@ -78,6 +80,11 @@ const home = {
     },
     SET_CURRENT_TYPE: (state, data) => {
       state.currentType = data
+    },
+    SET_AUTO_TYPE: (state, data) => {
+      data.forEach((object) => {
+        state.autoCompleteList.push(object.value || object.customNumber)
+      })
     },
     SET_SBD: (state, data) => {
       state.sbdDiePattern = data
@@ -144,6 +151,18 @@ const home = {
           })
           commit('SET_BOOKING_LIST', data || [])
           commit('SET_BOOKING_TOTAL', Number(response?.headers['x-total-count']) || 0)
+          resolve()
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+    getAutoComplate ({ commit, getters }, query) {
+      return new Promise((resolve, reject) => {
+        queryAllComputerTypes().then(response => {
+          if (response.status !== 200) reject(new Error('error'))
+          let data = response.data
+          commit('SET_AUTO_TYPE', data || [])
           resolve()
         }).catch(err => {
           reject(err)
@@ -224,6 +243,7 @@ const home = {
             }
           })
           commit('SET_BOOKED_LIST', data || [])
+          commit('SET_AUTO_TYPE', data || [])
           commit('SET_BOOKED_TOTAL', Number(response?.headers['x-total-count']) || 0)
           resolve()
         }).catch(err => {
@@ -296,13 +316,11 @@ const home = {
     },
     getCustomTemplateByCustomNumber ({ commit }, { customNumber, id, type }) {
       return new Promise((resolve, reject) => {
-        debugger
         queryCustomTemplatesByCustomNumber(customNumber).then(response => {
           if (!response.status === 200) return reject(new Error('getFabricJsonById: error'))
           commit('SET_CACHE_CUSTOMNUMBER', customNumber)
           commit('SET_CACHE_MODE_TYPE', type)
           response.data.forEach(function (item, index, array) {
-            debugger
             if (item.modelType.id === type) {
               commit('SET_CACHE_SAVED_CUSTOME_TEMPLATE', item)
               commit('SET_CACHE_DATA', item)
