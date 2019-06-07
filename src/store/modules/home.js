@@ -27,6 +27,7 @@ const home = {
     // 鼠标垫贴膜模具
     sbdDiePattern: null,
     sbd: {},
+    bjb: {},
     // 初始化自定义模板数据
     customeTemplate: {
       // 定制编号
@@ -90,6 +91,9 @@ const home = {
     },
     SET_SBD_CUSTOM: (state, data) => {
       state.sbd = data
+    },
+    SET_BJB_CUSTOM: (state, data) => {
+      state.bjb = data
     },
     SET_BOOKING_TOTAL: (state, total) => {
       state.bookingTotal = total
@@ -296,6 +300,7 @@ const home = {
           commit('SET_CACHE_CUSTOMNUMBER', state.customeTemplate.customNumber)
           commit('SET_CACHE_MODE_TYPE', state.customeTemplate.modelType.id)
           commit('SET_SBD_CUSTOM', response[1].data)
+          commit('SET_BJB_CUSTOM', response[0].data)
           let data = null
           if (state.customeTemplate.modelType.id === 1) {
             data = response[0].data
@@ -309,7 +314,7 @@ const home = {
         })
       })
     },
-    getCustomTemplateByCustomNumber ({ commit }, customNumber, id, type) {
+    getCustomTemplateByCustomNumber ({ commit }, { customNumber, id, type }) {
       return new Promise((resolve, reject) => {
         queryCustomTemplatesByCustomNumber(customNumber).then(response => {
           if (!response.status === 200) return reject(new Error('getFabricJsonById: error'))
@@ -318,9 +323,12 @@ const home = {
           response.data.forEach(function (item, index, array) {
             if (item.modelType.id === type) {
               commit('SET_CACHE_SAVED_CUSTOME_TEMPLATE', item)
+              commit('SET_CACHE_DATA', item)
             }
             if (item.modelType.id === 2) {
               commit('SET_SBD_CUSTOM', item)
+            } else {
+              commit('SET_BJB_CUSTOM', item)
             }
             resolve()
           })
