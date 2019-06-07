@@ -40,6 +40,17 @@ export function queryAllCustomTemplates (userid, query) {
 }
 
 /**
+ * 获取计算机品牌
+ */
+export function queryAllComputerTypes (query) {
+  return request({
+    url: `/api/computer-types`,
+    method: 'get',
+    params: query
+  })
+}
+
+/**
  * 根据定制编号获取定制模版
  */
 export function queryCustomTemplatesByCustomNumber (customNumber, query) {

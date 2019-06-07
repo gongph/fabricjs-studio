@@ -8,6 +8,7 @@ import {
   saveCustomTemplates,
   updateCustomTemplates,
   queryCustomTemplatesByCustomNumber,
+  queryAllComputerTypes,
   queryAllCustomTemplates
 } from '@/api/home'
 import { gererateUUID } from '@/utils'
@@ -20,6 +21,7 @@ const home = {
     bookingTotal: 0,
     // 我的定制列表
     bookedList: [],
+    autoCompleteList: [],
     bookedTotal: 0,
     currentType: {},
     // 鼠标垫贴膜模具
@@ -77,6 +79,11 @@ const home = {
     },
     SET_CURRENT_TYPE: (state, data) => {
       state.currentType = data
+    },
+    SET_AUTO_TYPE: (state, data) => {
+      data.forEach((object) => {
+        state.autoCompleteList.push(object.value || object.customNumber)
+      })
     },
     SET_SBD: (state, data) => {
       state.sbdDiePattern = data
@@ -140,6 +147,18 @@ const home = {
           })
           commit('SET_BOOKING_LIST', data || [])
           commit('SET_BOOKING_TOTAL', Number(response?.headers['x-total-count']) || 0)
+          resolve()
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+    getAutoComplate ({ commit, getters }, query) {
+      return new Promise((resolve, reject) => {
+        queryAllComputerTypes().then(response => {
+          if (response.status !== 200) reject(new Error('error'))
+          let data = response.data
+          commit('SET_AUTO_TYPE', data || [])
           resolve()
         }).catch(err => {
           reject(err)
@@ -220,6 +239,7 @@ const home = {
             }
           })
           commit('SET_BOOKED_LIST', data || [])
+          commit('SET_AUTO_TYPE', data || [])
           commit('SET_BOOKED_TOTAL', Number(response?.headers['x-total-count']) || 0)
           resolve()
         }).catch(err => {
@@ -275,7 +295,7 @@ const home = {
           if (response[0].status !== 201) reject(new Error('saveCustomTemplates: error'))
           commit('SET_CACHE_CUSTOMNUMBER', state.customeTemplate.customNumber)
           commit('SET_CACHE_MODE_TYPE', state.customeTemplate.modelType.id)
-          commit('SET_SBD_CUSTOM',response[1].data)
+          commit('SET_SBD_CUSTOM', response[1].data)
           let data = null
           if (state.customeTemplate.modelType.id === 1) {
             data = response[0].data

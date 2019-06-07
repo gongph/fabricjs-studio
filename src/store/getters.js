@@ -16,6 +16,7 @@ const getters = {
   bookingTotal: state => state.home.bookingTotal,
   bookedList: state => state.home.bookedList,
   bookedTotal: state => state.home.bookedTotal,
+  autoCompleteList: state => state.home.autoCompleteList,
   // 模具
   cacheDiePatternPath: state => state.home.cacheDiePattern.path,
   cacheCustomNumber: state => state.home.cacheDiePattern.customNumber,

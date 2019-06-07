@@ -40,9 +40,13 @@
         <div class="search-wrapper">
           <div class="search-wrapper__inner">
             <!-- 搜索框 -->
-            <mu-text-field
+            <mu-auto-complete
+              :data="autoCompleteList"
               v-model="listQuery.queryParams"
               color="#ffffff"
+              avatar
+              open-on-focus
+              :max-search-results="5"
               class="mu-site-search"
               :key="fieldKey"
               :class="isFocus ? 'mu-input__focus' : ''"
@@ -51,10 +55,18 @@
               @key.enter="search"
               solo
             >
+              <template slot-scope="scope">
+                <mu-list-item-action>
+                  <mu-avatar color="primary">
+                    {{scope.item.substring(0, 1)}}
+                  </mu-avatar>
+                </mu-list-item-action>
+                <mu-list-item-content v-html="scope.highlight"></mu-list-item-content>
+              </template>
               <template #append>
                 <mu-icon class="search-button" value="search" @click="search"></mu-icon>
               </template>
-            </mu-text-field>
+            </mu-auto-complete>
           </div>
           <!-- 提示语 -->
           <div class="tips-wrapper">
@@ -168,7 +180,7 @@
                   color="error"
                   @click="goStudio(scope.row)"
                 >
-                  <span style="padding-right: 2px;">继续定制</span> 
+                  <span style="padding-right: 2px;">继续定制</span>
                   <mu-icon size="18" value="computer" v-if="scope.row.modelType.id === 1"></mu-icon>
                   <mu-icon size="18" v-else value="mouse"></mu-icon>
                 </mu-button>
@@ -290,6 +302,7 @@ export default {
     ...mapGetters([
       'nickName',
       'bookingList',
+      'autoCompleteList',
       'bookingTotal',
       'bookedList',
       'bookedTotal'
@@ -305,6 +318,7 @@ export default {
         }
       }
     })
+    this.getAutoComplate()
   },
   filters: {
     parseTime: function (value) {
@@ -318,6 +332,7 @@ export default {
       'signOut',
       'getSbdInfo',
       'changePassword',
+      'getAutoComplate',
       'getBookingList',
       'getBookedList',
       'getMyAllBookedList',
@@ -507,6 +522,7 @@ export default {
         this.fieldKey = 'marking'
         this.placeholder = '笔记本的品牌、型号'
         this.tips = '输入定制的电脑型号，点击"搜索"图标，在检索结果中找相应型号后点击"开始定制"'
+        this.getAutoComplate()
       } else {
         this.listQuery.queryParams = ''
         this.fieldKey = 'marked'
