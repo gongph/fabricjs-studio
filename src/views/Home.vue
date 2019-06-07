@@ -161,10 +161,16 @@
               <td class="is-center">{{ scope.row.customState.value }}</td>
               <td class="is-center"><span>{{ scope.row.createdDate | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span></td>
               <td class="is-center">
-                <mu-button color="error" v-if="scope.row.finishedCondition.id === 1" @click="goStudio(scope.row)">
-                  <span>继续定制</span>
-                  <mu-icon value="computer" v-if="scope.row.modelType.id === 1"></mu-icon>
-                  <mu-icon v-else value="mouse"></mu-icon>
+                <mu-button
+                  v-if="scope.row.finishedCondition.id === 1"
+                  href="javascript:;"
+                  small
+                  color="error"
+                  @click="goStudio(scope.row)"
+                >
+                  <span style="padding-right: 2px;">继续定制</span> 
+                  <mu-icon size="18" value="computer" v-if="scope.row.modelType.id === 1"></mu-icon>
+                  <mu-icon size="18" v-else value="mouse"></mu-icon>
                 </mu-button>
               </td>
             </template>
