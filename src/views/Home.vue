@@ -168,7 +168,7 @@
                   color="error"
                   @click="goStudio(scope.row)"
                 >
-                  <span style="padding-right: 2px;">继续定制</span> 
+                  <span style="padding-right: 2px;">继续定制</span>
                   <mu-icon size="18" value="computer" v-if="scope.row.modelType.id === 1"></mu-icon>
                   <mu-icon size="18" v-else value="mouse"></mu-icon>
                 </mu-button>

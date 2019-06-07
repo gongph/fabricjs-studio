@@ -22,6 +22,7 @@ const getters = {
   cacheModelType: state => state.home.cacheDiePattern.modelType,
   cacheSavedCustomTemplate: state => state.home.cacheDiePattern.savedCustomTemplate,
   sbdCustomTemplate: state => state.home.sbd,
+  bjbCustomTemplate: state => state.home.bjb,
   taobaoNickname: state => state.home.customeTemplate.taobaoNickname,
   theRecipientName: state => state.home.customeTemplate.theRecipientName
 }
