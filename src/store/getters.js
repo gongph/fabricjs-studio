@@ -16,11 +16,12 @@ const getters = {
   bookingTotal: state => state.home.bookingTotal,
   bookedList: state => state.home.bookedList,
   bookedTotal: state => state.home.bookedTotal,
-  // 磨具
+  // 模具
   cacheDiePatternPath: state => state.home.cacheDiePattern.path,
   cacheCustomNumber: state => state.home.cacheDiePattern.customNumber,
   cacheModelType: state => state.home.cacheDiePattern.modelType,
   cacheSavedCustomTemplate: state => state.home.cacheDiePattern.savedCustomTemplate,
+  sbdCustomTemplate: state => state.home.sbd,
   taobaoNickname: state => state.home.customeTemplate.taobaoNickname,
   theRecipientName: state => state.home.customeTemplate.theRecipientName
 }

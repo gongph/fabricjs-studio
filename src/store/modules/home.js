@@ -6,9 +6,10 @@ import {
   queryDiePatterns,
   queryCustomTemplates,
   saveCustomTemplates,
+  updateCustomTemplates,
+  queryCustomTemplatesByCustomNumber,
   queryAllCustomTemplates
 } from '@/api/home'
-// import { updateCustomTemplates } from '@/api/studio'
 import { gererateUUID } from '@/utils'
 import { cloneDeep } from 'lodash'
 
@@ -23,6 +24,7 @@ const home = {
     currentType: {},
     // 鼠标垫贴膜模具
     sbdDiePattern: null,
+    sbd: {},
     // 初始化自定义模板数据
     customeTemplate: {
       // 定制编号
@@ -39,7 +41,7 @@ const home = {
       },
       // 电脑贴膜模具
       diePattern: null,
-      // 磨具类型： id: 1 贴膜 id: 2 鼠标垫
+      // 模具类型： id: 1 贴膜 id: 2 鼠标垫
       modelType: {
         id: 1
       },
@@ -78,6 +80,9 @@ const home = {
     },
     SET_SBD: (state, data) => {
       state.sbdDiePattern = data
+    },
+    SET_SBD_CUSTOM: (state, data) => {
+      state.sbd = data
     },
     SET_BOOKING_TOTAL: (state, total) => {
       state.bookingTotal = total
@@ -165,7 +170,23 @@ const home = {
           query
         )).then(response => {
           if (response.status !== 200) reject(new Error('error'))
-          commit('SET_BOOKED_LIST', response.data ? response.data : [])
+          let data = response.data
+          // 处理 鼠标垫无法正常显示品牌和型号的问题
+          data.forEach(function (item, index, array) {
+            if (item.modelType.id === 2) {
+              queryCustomTemplatesByCustomNumber(item.customNumber).then(response => {
+                if (response.status === 200 && response.data && response.data.length > 0) {
+                  // 遍历数据
+                  response.data.forEach(function (item1, index, array) {
+                    if (item1.modelType.id === 1) {
+                      item.diePattern = item1.diePattern
+                    }
+                  })
+                }
+              })
+            }
+          })
+          commit('SET_BOOKED_LIST', data || [])
           commit('SET_BOOKED_TOTAL', Number(response?.headers['x-total-count']) || 0)
           resolve()
         }).catch(err => {
@@ -182,7 +203,23 @@ const home = {
           query
         )).then(response => {
           if (response.status !== 200) reject(new Error('error'))
-          commit('SET_BOOKED_LIST', response.data ? response.data : [])
+          let data = response.data
+          // 处理 鼠标垫无法正常显示品牌和型号的问题
+          data.forEach(function (item, index, array) {
+            if (item.modelType.id === 2) {
+              queryCustomTemplatesByCustomNumber(item.customNumber).then(response => {
+                if (response.status === 200 && response.data && response.data.length > 0) {
+                  // 遍历数据
+                  response.data.forEach(function (item1, index, array) {
+                    if (item1.modelType.id === 1) {
+                      item.diePattern = item1.diePattern
+                    }
+                  })
+                }
+              })
+            }
+          })
+          commit('SET_BOOKED_LIST', data || [])
           commit('SET_BOOKED_TOTAL', Number(response?.headers['x-total-count']) || 0)
           resolve()
         }).catch(err => {
@@ -191,7 +228,7 @@ const home = {
       })
     },
     /**
-     * 初始化磨具数据： 定制数量、淘宝ID、收件人姓名
+     * 初始化模具数据： 定制数量、淘宝ID、收件人姓名
      */
     initTemplateData ({ commit, state, getters }, { row, type }) {
       const data = Object.assign({
@@ -205,7 +242,20 @@ const home = {
       })
     },
     /**
-     * 保存自定义磨具
+     * 保存自定义模具
+     */
+    updateCustomTemplates ({ commit, state }, data) {
+      return new Promise((resolve, reject) => {
+        updateCustomTemplates(data).then(response => {
+          if (response.status !== 200) reject(new Error('error'))
+          resolve()
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+    /**
+     * 保存自定义模具
      */
     saveCustomTemplates ({ commit, state }) {
       return new Promise((resolve, reject) => {
@@ -225,6 +275,7 @@ const home = {
           if (response[0].status !== 201) reject(new Error('saveCustomTemplates: error'))
           commit('SET_CACHE_CUSTOMNUMBER', state.customeTemplate.customNumber)
           commit('SET_CACHE_MODE_TYPE', state.customeTemplate.modelType.id)
+          commit('SET_SBD_CUSTOM',response[1].data)
           let data = null
           if (state.customeTemplate.modelType.id === 1) {
             data = response[0].data
@@ -233,6 +284,26 @@ const home = {
           }
           commit('SET_CACHE_SAVED_CUSTOME_TEMPLATE', data)
           resolve(data)
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+    getCustomTemplateByCustomNumber ({ commit }, customNumber, id, type) {
+      return new Promise((resolve, reject) => {
+        queryCustomTemplatesByCustomNumber(customNumber).then(response => {
+          if (!response.status === 200) return reject(new Error('getFabricJsonById: error'))
+          commit('SET_CACHE_CUSTOMNUMBER', customNumber)
+          commit('SET_CACHE_MODE_TYPE', type)
+          response.data.forEach(function (item, index, array) {
+            if (item.modelType.id === type) {
+              commit('SET_CACHE_SAVED_CUSTOME_TEMPLATE', item)
+            }
+            if (item.modelType.id === 2) {
+              commit('SET_SBD_CUSTOM', item)
+            }
+            resolve()
+          })
         }).catch(err => {
           reject(err)
         })
