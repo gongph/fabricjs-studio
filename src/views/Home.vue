@@ -46,7 +46,6 @@
               color="#ffffff"
               avatar
               open-on-focus
-              :max-search-results="5"
               class="mu-site-search"
               :key="fieldKey"
               :class="isFocus ? 'mu-input__focus' : ''"

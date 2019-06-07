@@ -8,7 +8,7 @@ import {
   saveCustomTemplates,
   updateCustomTemplates,
   queryCustomTemplatesByCustomNumber,
-  queryAllComputerTypes,
+  queryAutoDiePatterns,
   queryAllCustomTemplates
 } from '@/api/home'
 import { gererateUUID } from '@/utils'
@@ -82,9 +82,20 @@ const home = {
       state.currentType = data
     },
     SET_AUTO_TYPE: (state, data) => {
+      // 清空列表里的数据
+      state.autoCompleteList = []
       data.forEach((object) => {
-        state.autoCompleteList.push(object.value || object.customNumber)
+        // 根据选项不同提供不同的候选值
+        if (object.computerType) {
+          state.autoCompleteList.push(object.computerType.value)
+          state.autoCompleteList.push(object.diePatternType)
+        } else {
+          state.autoCompleteList.push(object.customNumber)
+          state.autoCompleteList.push(object.taobaoNickname)
+          state.autoCompleteList.push(object.theRecipientName)
+        }
       })
+      state.autoCompleteList = [...new Set(state.autoCompleteList)]
     },
     SET_SBD: (state, data) => {
       state.sbdDiePattern = data
@@ -159,7 +170,7 @@ const home = {
     },
     getAutoComplate ({ commit, getters }, query) {
       return new Promise((resolve, reject) => {
-        queryAllComputerTypes().then(response => {
+        queryAutoDiePatterns().then(response => {
           if (response.status !== 200) reject(new Error('error'))
           let data = response.data
           commit('SET_AUTO_TYPE', data || [])

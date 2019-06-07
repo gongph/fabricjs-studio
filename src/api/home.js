@@ -17,6 +17,17 @@ export function queryDiePatterns (query) {
 }
 
 /**
+ * 查询获取刀模具列表
+ */
+
+export function queryAutoDiePatterns (query) {
+  return request({
+    url: '/api/die-patterns',
+    method: 'get',
+    params: query
+  })
+}
+/**
  * 查询获取我的定制列表
  */
 
