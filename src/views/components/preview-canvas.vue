@@ -24,13 +24,12 @@
       data-mu-loading-text="正在生成预览效果，请稍等..."
       v-loading="loading"
     >
-      <canvas id="c"></canvas>
+      <img :src="url">
     </div>
   </mu-dialog>
 </template>
 
 <script>
-import fb from '@/utils/fabric'
 import { mapGetters } from 'vuex'
 export default {
   name: 'PreviewCanvas',
@@ -42,6 +41,7 @@ export default {
   },
   data () {
     return {
+      url: '',
       loading: true
     }
   },
@@ -51,16 +51,11 @@ export default {
     ])
   },
   mounted () {
-    const originJSON = this.canvas.toJSON()
-    setTimeout(() => {
-      var preview = fb.initStatic(document.getElementById('c'), {
-        name: 'StaticCanvas',
-        width: this.canvas.width,
-        height: this.canvas.height
-      })
-      preview.loadFromJSON(originJSON)
-      this.loading = false
-    }, 0)
+    this.url = this.canvas.toDataURL({
+      format: 'png',
+      multiplier: 2
+    })
+    this.loading = false
   },
   methods: {
     close () {

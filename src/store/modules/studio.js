@@ -104,6 +104,7 @@ const studio = {
      */
     getFabricJsonById ({ commit }, id) {
       return new Promise((resolve, reject) => {
+        debugger
         // 1. 只能用id查询，如果用定制编号查询的话，会出现两条记录一条是笔记本，一条是贴膜的
         Api.getFabricDesignMaterialsByCustomId(id).then(response => {
           if (!response.status === 200) return reject(new Error('getFabricJsonById: error'))

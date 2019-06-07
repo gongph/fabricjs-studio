@@ -43,20 +43,17 @@
       <mu-button small flat slot="right" @click="handleRedo">
         <mu-icon left value="cached"></mu-icon> 重做
       </mu-button>
-      <mu-button small flat slot="right" @click="previewCanvas">
-        <mu-icon left value="remove_red_eye"></mu-icon> 预览
-      </mu-button>
       <mu-button small flat slot="right" @click="handleSaveToRemote">
-        <mu-icon left value="cloud_upload"></mu-icon> 保存
+        <mu-icon left value="remove_red_eye"></mu-icon> 保存预览
       </mu-button>
-      <mu-button small flat slot="right" @click="handleSaveToRemote">
+      <mu-button small flat slot="right" @click="handleSubmitDesignToRemote">
         <mu-icon left value="cloud_upload"></mu-icon> 提交设计
       </mu-button>
-      <mu-button small flat slot="right" @click="handleSaveToRemote">
-        <mu-icon left value="cloud_upload"></mu-icon> 设计鼠标垫
+      <mu-button small flat slot="right" v-if="parseInt($route.query.type) === 1 && sbdCustomTemplate.finishedCondition.id === 1" @click="goStudio(sbdCustomTemplate)">
+        <mu-icon left value="mouse"></mu-icon> 设计鼠标垫
       </mu-button>
-      <mu-button small flat slot="right" @click="handleSaveToRemote">
-        <mu-icon left value="cloud_upload"></mu-icon> 设计贴膜
+      <mu-button small flat slot="right" v-else-if="parseInt($route.query.type) === 2 && bjbCustomTemplate.finishedCondition.id === 1" @click="goStudio(bjbCustomTemplate)">
+        <mu-icon left value="computer"></mu-icon> 设计贴膜
       </mu-button>
       <mu-button small flat slot="right" @click="handleDownloadToLocal">
         <mu-icon left value="vertical_align_bottom"></mu-icon> 保存到本地
@@ -209,7 +206,7 @@ import { mapGetters, mapActions } from 'vuex'
 import { baseImgUrl, gererateUUID, download, getUrlParam } from '@/utils'
 import { fromEvent } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
-// import { uploadify } from '@/utils/file-upload.js'
+import { uploadify } from '@/utils/file-upload.js'
 import fb from '@/utils/fabric'
 import ImageLazyload from '@/components/ImgLazyload/index.vue'
 import PreviewCanvas from './components/preview-canvas.vue'
@@ -244,6 +241,7 @@ export default {
       selectedImgId: -1,
       openPreivewCanvasDialog: false,
       loading: true,
+      uploading: false,
       // 图层激活Id，用于设置样式
       layerActiveId: '',
       // 本地上传的图片base64
@@ -256,7 +254,24 @@ export default {
       // 淘宝Id
       taobaoId: this.taobaoNickname,
       // 收件人姓名
-      recevier: this.theRecipientName
+      recevier: this.theRecipientName,
+      // 成品图路径
+      productionRenderingImageUrl: ''
+    }
+  },
+  watch: {
+    $route (to, from) {
+      debugger
+      this.initFabric()
+      // 初始化滚动事件
+      fromEvent(
+        document.querySelector('.canvas-layout'),
+        'scroll'
+      ).pipe(
+        debounceTime(250)
+      ).subscribe(evt => {
+        this.scrollTop = evt.target.scrollTop
+      })
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -291,6 +306,7 @@ export default {
       'cacheCustomNumber',
       'cacheSavedCustomTemplate',
       'sbdCustomTemplate',
+      'bjbCustomTemplate',
       'cacheModelType',
       'galleryTypes',
       'gallerys',
@@ -438,7 +454,7 @@ export default {
       const self = this
       this.$progress.start()
       const loading = this.handleLoading()
-      this.getCustomTemplateByCustomNumber(this.$route.query.bh, this.$route.query.id, this.$route.query.type).then(response => {
+      this.getCustomTemplateByCustomNumber({ customNumber: this.$route.query.bh, id: this.$route.query.id, type: this.$route.query.type }).then(response => {
         // 获取服务器上保存的 json 文件
         return this.getFabricJsonById(this.$route.query.id)
       }).then(data => {
@@ -530,7 +546,7 @@ export default {
     /**
      * 添加水印。淘宝ID和收件人姓名
      */
-    initWatermark (opt = { left: 150, top: 10 }) {
+    initWatermark (opt = { left: 150, top: 0 }) {
       const self = this
       if (!this.cacheModelType) return
       const waterStr = `淘宝ID：${this.taobaoId}    收件人姓名：${this.recevier}`
@@ -641,7 +657,9 @@ export default {
         this.localUploadUrl = ''
         // 新添加的靠前
         this.canvas.sendBackwards(oImg)
-      })
+      },
+      { crossOrigin: 'anonymous' }
+      )
     },
     /**
      * 处理本地图片上传
@@ -649,12 +667,16 @@ export default {
     handleUploadChange (evt) {
       const self = this
       const file = evt.target.files[0]
+      this.uploading = true
       if (file) {
-        const reader = new FileReader()
-        reader.readAsDataURL(file)
-        reader.onload = function () {
-          self.localUploadUrl = this.result
-        }
+        uploadify(file).then(response => {
+          this.uploading = false
+          const { bucketName, fileName } = response
+          self.localUploadUrl = `${self.baseImgUrl}/${bucketName}/${fileName}`
+        }).catch(err => {
+          this.uploading = false
+          console.error(err)
+        })
       }
     },
     /**
@@ -733,35 +755,56 @@ export default {
      * 预览
      */
     previewCanvas () {
-      this.openPreivewCanvasDialog = true
+      return new Promise(resolve => {
+        this.openPreivewCanvasDialog = true
+      })
+    },
+    goStudio (customTemaplate) {
+      const c = this.canvas
+      const objects = c.getObjects()
+      objects.forEach((object) => {
+        c.remove(object)
+      })
+      this.canvas.clear()
+      // 清空图层
+      this.clearLayers()
+      this.canvas = null
+      this.$router.push({
+        name: 'studio',
+        query: { id: customTemaplate.id, type: customTemaplate.modelType.id, bh: customTemaplate.customNumber }
+      })
     },
     /**
      * 提取公共的保存信息
      */
     handleCustomTemplateAndFabricDesign () {
-      this.$progress.start()
-      // 更新定制模版信息
-      let customTemaplate = cloneDeep(this.cacheSavedCustomTemplate)
-      const sbd = cloneDeep(this.sbdCustomTemplate)
-      // 淘宝id
-      customTemaplate.taobaoNickname = this.taobaoId
-      // 收件人姓名
-      customTemaplate.theRecipientName = this.recevier
-      sbd.taobaoNickname = this.taobaoId
-      sbd.theRecipientName = this.recevier
-      Promise.all([this.updateCustomTemplates(customTemaplate), this.updateCustomTemplates(sbd)]).then(response => {
-        return this.saveOrUpdateFabricDesign(JSON.stringify(this.canvas.toJSON()))
-      }).then(() => {
-        this.$progress.done()
-        this.$toast.success({
-          message: '保存成功',
-          position: 'top'
-        })
-      }).catch(err => {
-        this.$progress.done()
-        this.$toast.error({
-          message: err.response?.data?.detail,
-          position: 'top'
+      return new Promise((resolve, reject) => {
+        this.$progress.start()
+        // 更新定制模版信息
+        let customTemaplate = cloneDeep(this.bjbCustomTemplate)
+        const sbd = cloneDeep(this.sbdCustomTemplate)
+        // 淘宝id
+        customTemaplate.taobaoNickname = this.taobaoId
+        // 收件人姓名
+        customTemaplate.theRecipientName = this.recevier
+        sbd.taobaoNickname = this.taobaoId
+        sbd.theRecipientName = this.recevier
+        Promise.all([this.updateCustomTemplates(customTemaplate), this.updateCustomTemplates(sbd)]).then(response => {
+          return this.saveOrUpdateFabricDesign(JSON.stringify(this.canvas.toJSON()))
+        }).then(() => {
+          this.$progress.done()
+          this.$toast.success({
+            message: '保存成功',
+            position: 'top'
+          })
+          resolve()
+        }).catch(err => {
+          this.$progress.done()
+          this.$toast.error({
+            message: err.response?.data?.detail,
+            position: 'top'
+          })
+          reject(err)
         })
       })
     },
@@ -769,21 +812,95 @@ export default {
      * 保存到服务器
      */
     handleSaveToRemote () {
-      // 您真的要提交设计？一旦提交成功，将不能再修改，请再次确认！！！
-      if (!this.taobaoId || !this.recevier) {
-        this.$confirm('淘宝ID、或收件人姓名尚未填写，是否确认继续保存并预览？请再次确认！！！', '提示', {
-          type: 'info'
-        }).then(({ result }) => {
-          // 如果选择是确认，直接提交信息，否则的话打开信息面板
-          if (result) {
-            this.handleCustomTemplateAndFabricDesign()
-          } else {
+      this.validateInput('保存并预览').then(result => {
+        // 如果选择是确认，直接提交信息，否则的话打开信息面板
+        if (result) {
+          return this.handleCustomTemplateAndFabricDesign()
+        } else {
+          this.navTabActived = 3
+          throw new Error('BIG_ERROR')
+        }
+      }).then(response => {
+        return this.previewCanvas()
+      }).then(response => {
+        // 什么都不用做
+      })
+    },
+    /**
+     * 校验淘宝信息
+     */
+    validateInput (message, isContinue = false) {
+      return new Promise((resolve, reject) => {
+        if (!this.taobaoId || !this.recevier) {
+          if (isContinue) {
+            this.$toast.error({
+              message: '淘宝ID或者收件人姓名不能为空',
+              position: 'top'
+            })
             this.navTabActived = 3
+            resolve(false)
+          } else {
+            this.$confirm('淘宝ID、或收件人姓名尚未填写，是否确认继续' + message + '？请再次确认！！！', '提示', {
+              type: 'info'
+            }).then(({ result }) => {
+              resolve(result)
+            }).catch(err => {
+              reject(err)
+            })
           }
-        })
-      } else {
-        this.handleCustomTemplateAndFabricDesign()
-      }
+        } else {
+          resolve(true)
+        }
+      })
+    },
+    /**
+     * 提交设计到服务器
+     */
+    handleSubmitDesignToRemote () {
+      // 您真的要提交设计？一旦提交成功，将不能再修改，请再次确认！！！
+      this.validateInput('提交设计', true).then(result => {
+        // 如果选择是确认，直接提交信息，否则的话打开信息面板
+        if (result) {
+          this.$progress.start()
+          // 上传图片到服务器
+          uploadify(this.canvas.toDataURL({
+            format: 'png',
+            multiplier: 2
+          }), 'product-design')
+            .then(response => {
+              this.uploading = false
+              const { bucketName, fileName } = response
+              this.productionRenderingImageUrl = `/${bucketName}/${fileName}`
+              // 更新定制模版信息
+              let customTemaplate = cloneDeep(this.cacheSavedCustomTemplate)
+              // 设置完成状态为完成
+              customTemaplate.finishedCondition.id = 2
+              // 淘宝id
+              customTemaplate.taobaoNickname = this.taobaoId
+              // 收件人姓名
+              customTemaplate.theRecipientName = this.recevier
+              // 设置最终效果图
+              customTemaplate.productionRenderingImageUrl = this.productionRenderingImageUrl
+              return this.updateCustomTemplates(customTemaplate)
+            }).then(response => {
+              return this.saveOrUpdateFabricDesign(JSON.stringify(this.canvas.toJSON()))
+            }).then(() => {
+              this.$progress.done()
+              this.$toast.success({
+                message: '提交成功',
+                position: 'top'
+              })
+              this.$router.push({ path: '/' })
+            }).catch(err => {
+              this.uploading = false
+              this.$progress.done()
+              this.$toast.error({
+                message: err.response?.data?.detail,
+                position: 'top'
+              })
+            })
+        }
+      })
     },
     /**
      * 保存到本地
