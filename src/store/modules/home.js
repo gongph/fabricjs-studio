@@ -337,7 +337,17 @@ const home = {
               commit('SET_CACHE_DATA', item)
             }
             if (item.modelType.id === 2) {
-              commit('SET_SBD_CUSTOM', item)
+              queryCustomTemplatesByCustomNumber(item.customNumber).then(response => {
+                if (response.status === 200 && response.data && response.data.length > 0) {
+                  // 遍历数据
+                  response.data.forEach(function (item1, index, array) {
+                    if (item1.modelType.id === 1) {
+                      item.diePattern = item1.diePattern
+                      commit('SET_SBD_CUSTOM', item)
+                    }
+                  })
+                }
+              })
             } else {
               commit('SET_BJB_CUSTOM', item)
             }
