@@ -172,6 +172,12 @@
               <td class="is-center">{{ scope.row.customState.value }}</td>
               <td class="is-center"><span>{{ scope.row.createdDate | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span></td>
               <td class="is-center">
+                <span v-if="scope.row.finishedCondition.id === 2">
+                  <viewer :img-src="baseUrl + scope.row.productionRenderingImageUrl" :zoom="1" />
+                </span>
+                <span v-else>-</span>
+              </td>
+              <td class="is-center">
                 <mu-button
                   v-if="scope.row.finishedCondition.id === 1"
                   href="javascript:;"
@@ -180,6 +186,16 @@
                   @click="goStudio(scope.row)"
                 >
                   <span style="padding-right: 2px;">继续定制</span>
+                  <mu-icon size="18" value="computer" v-if="scope.row.modelType.id === 1"></mu-icon>
+                  <mu-icon size="18" v-else value="mouse"></mu-icon>
+                </mu-button>
+                <mu-button
+                  v-else
+                 @click="downloadDesign(scope.row)"
+                 href="javascript:;"
+                 small
+                 color="error">
+                  <span style="padding-right: 2px;">下载设计</span>
                   <mu-icon size="18" value="computer" v-if="scope.row.modelType.id === 1"></mu-icon>
                   <mu-icon size="18" v-else value="mouse"></mu-icon>
                 </mu-button>
@@ -247,12 +263,15 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { parseTime } from '@/utils'
+import { parseTime, baseImgUrl, download } from '@/utils'
+import Viewer from '@/components/Viewer'
 import { throttle } from 'lodash'
 export default {
   name: 'HomePage',
+  components: { Viewer },
   data () {
     return {
+      baseUrl: baseImgUrl,
       tabActive: 0,
       isOpenMenu: false,
       isFocus: false,
@@ -283,6 +302,7 @@ export default {
         { title: '完成状态', name: 'finishedCondition', align: 'center' },
         { title: '定制进度', name: 'customState', align: 'center' },
         { title: '定制日期', name: 'createdDate', align: 'center' },
+        { title: '成果图', name: 'createdDate', align: 'center' },
         { title: '功能', name: 'actions', align: 'center' }
       ],
       markingTableLoading: false,
@@ -361,6 +381,35 @@ export default {
           query: { id: row.id, type: row.modelType.id, bh: row.customNumber }
         })
       })
+    },
+    /**
+     * 下载设计
+     */
+    downloadDesign (row) {
+      debugger
+      let id = (row.taobaoNickname) + '-' + (row.theRecipientName) + '-' + row.diePattern.computerType.value + '-' + row.diePattern.diePatternType + '-' + row.modelType.value + '-' + parseTime(row.createdDate, '{y}-{m}-{d} {h}:{i}:{s}')
+      let src = this.baseUrl + row.productionRenderingImageUrl
+      var canvas = document.createElement('canvas')
+      var img = document.createElement('img')
+      img.onload = function (e) {
+        canvas.width = img.width
+        canvas.height = img.height
+        var context = canvas.getContext('2d')
+        context.drawImage(img, 0, 0, img.width, img.height)
+        // window.navigator.msSaveBlob(canvas.msToBlob(),'image.jpg');
+        // saveAs(imageDataUrl, '附件');
+        canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height)
+        download(canvas.toDataURL('image/png'), id + '.png')
+        // context.toBlob(function(blob) {
+        // console.log('blob :', blob);
+
+        // let link = document.createElement('a');
+        // link.href = window.URL.createObjectURL(blob);
+        // link.download = 'aaa';
+        // }, "image/jpeg");
+      }
+      img.setAttribute('crossOrigin', 'Anonymous')
+      img.src = src
     },
     /**
      * 查询

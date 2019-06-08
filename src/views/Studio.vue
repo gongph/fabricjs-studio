@@ -203,7 +203,7 @@
 <script>
 import { SidebarBase, SidebarAttrs, SidebarLayer, SidebarInfos } from './layout'
 import { mapGetters, mapActions } from 'vuex'
-import { baseImgUrl, gererateUUID, download, getUrlParam } from '@/utils'
+import { baseImgUrl, gererateUUID, download, getUrlParam, parseTime } from '@/utils'
 import { fromEvent } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 import { uploadify } from '@/utils/file-upload.js'
@@ -859,6 +859,10 @@ export default {
     handleSubmitDesignToRemote () {
       // 您真的要提交设计？一旦提交成功，将不能再修改，请再次确认！！！
       this.validateInput('提交设计', true).then(result => {
+        return this.$confirm('您真的要提交设计？一旦提交成功，将不能再修改，请再次确认！！！', '提示', {
+          type: 'info'
+        })
+      }).then(result => {
         // 如果选择是确认，直接提交信息，否则的话打开信息面板
         if (result) {
           this.$progress.start()
@@ -916,17 +920,53 @@ export default {
         return
       }
       // 调整文件命名规则
-      const id = (this.taobaoId) + (this.recevier) + this.cacheSavedCustomTemplate.diePattern.computerType.value + this.cacheSavedCustomTemplate.diePattern.diePatternType + this.cacheSavedCustomTemplate.modelType.value + this.cacheSavedCustomTemplate.createdDate
+      let id = (this.taobaoId) + '-' + (this.recevier) + '-' + this.cacheSavedCustomTemplate.diePattern.computerType.value + '-' + this.cacheSavedCustomTemplate.diePattern.diePatternType + '-' + this.cacheSavedCustomTemplate.modelType.value + '-' + parseTime(this.cacheSavedCustomTemplate.createdDate, '{y}-{m}-{d} {h}:{i}:{s}')
       this.$confirm('您真的要将设计保存到本地？一旦点击确定，将不能再修改，请再次确认！！！', '重要提示', {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
           this.$progress.start()
-          download(this.canvas.toDataURL({
+          // 上传图片到服务器
+          uploadify(this.canvas.toDataURL({
             format: 'png',
             multiplier: 2
-          }), id + '.png')
-          this.$progress.done()
+          }), 'product-design')
+            .then(response => {
+              this.uploading = false
+              const { bucketName, fileName } = response
+              this.productionRenderingImageUrl = `/${bucketName}/${fileName}`
+              // 更新定制模版信息
+              let customTemaplate = cloneDeep(this.cacheSavedCustomTemplate)
+              // 设置完成状态为完成
+              customTemaplate.finishedCondition.id = 2
+              // 淘宝id
+              customTemaplate.taobaoNickname = this.taobaoId
+              // 收件人姓名
+              customTemaplate.theRecipientName = this.recevier
+              // 设置最终效果图
+              customTemaplate.productionRenderingImageUrl = this.productionRenderingImageUrl
+              return this.updateCustomTemplates(customTemaplate)
+            }).then(response => {
+              return this.saveOrUpdateFabricDesign(JSON.stringify(this.canvas.toJSON()))
+            }).then(() => {
+              this.$progress.done()
+              this.$toast.success({
+                message: '保存本地成功',
+                position: 'top'
+              })
+              download(this.canvas.toDataURL({
+                format: 'png',
+                multiplier: 2
+              }), id + '.png')
+              this.$router.push({ path: '/' })
+            }).catch(err => {
+              this.uploading = false
+              this.$progress.done()
+              this.$toast.error({
+                message: err.response?.data?.detail,
+                position: 'top'
+              })
+            })
         }
       })
     },
