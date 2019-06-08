@@ -511,9 +511,11 @@ export default {
     initEvents () {
       const self = this
       const canvas = this.canvas
-      fromEvent(canvas, 'mouse:up').pipe(debounceTime(100)).subscribe(opt => {
-        let target = opt.target
-        self.canvas.discardActiveObject(target)
+      // fromEvent(canvas, 'mouse:up').pipe(debounceTime(100)).subscribe(opt => {
+      //
+      // })
+
+      fromEvent(canvas, 'mouse:out').pipe(debounceTime(100)).subscribe(opt => {
         // 置顶：
         if (self.dieBg) {
           self.canvas.bringToFront(self.dieBg)
@@ -521,7 +523,38 @@ export default {
         if (self.waterText) {
           self.canvas.bringToFront(self.waterText)
         }
+        self.canvas.discardActiveObject(self.canvas.getActiveObject())
       })
+      // fromEvent(canvas, 'object:skewed').pipe(debounceTime(100)).subscribe(opt => {
+      //   // 置顶：
+      //   if (self.dieBg) {
+      //     self.canvas.bringToFront(self.dieBg)
+      //   }
+      //   if (self.waterText) {
+      //     self.canvas.bringToFront(self.waterText)
+      //   }
+      //   self.canvas.discardActiveObject(self.canvas.getActiveObject())
+      // })
+      // fromEvent(canvas, 'object:rotated').pipe(debounceTime(100)).subscribe(opt => {
+      //   // 置顶：
+      //   if (self.dieBg) {
+      //     self.canvas.bringToFront(self.dieBg)
+      //   }
+      //   if (self.waterText) {
+      //     self.canvas.bringToFront(self.waterText)
+      //   }
+      //   self.canvas.discardActiveObject(self.canvas.getActiveObject())
+      // })
+      // fromEvent(canvas, 'object:scaled').pipe(debounceTime(100)).subscribe(opt => {
+      //   // 置顶：
+      //   if (self.dieBg) {
+      //     self.canvas.bringToFront(self.dieBg)
+      //   }
+      //   if (self.waterText) {
+      //     self.canvas.bringToFront(self.waterText)
+      //   }
+      //   self.canvas.discardActiveObject(self.canvas.getActiveObject())
+      // })
 
       fromEvent(canvas, 'mouse:down').pipe(debounceTime(100)).subscribe(opt => {
         let target = opt.target
