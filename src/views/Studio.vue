@@ -261,7 +261,6 @@ export default {
   },
   watch: {
     $route (to, from) {
-      debugger
       this.initFabric()
       // 初始化滚动事件
       fromEvent(

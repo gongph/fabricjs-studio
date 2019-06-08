@@ -386,7 +386,6 @@ export default {
      * 下载设计
      */
     downloadDesign (row) {
-      debugger
       let id = (row.taobaoNickname) + '-' + (row.theRecipientName) + '-' + row.diePattern.computerType.value + '-' + row.diePattern.diePatternType + '-' + row.modelType.value + '-' + parseTime(row.createdDate, '{y}-{m}-{d} {h}:{i}:{s}')
       let src = this.baseUrl + row.productionRenderingImageUrl
       var canvas = document.createElement('canvas')
@@ -396,17 +395,8 @@ export default {
         canvas.height = img.height
         var context = canvas.getContext('2d')
         context.drawImage(img, 0, 0, img.width, img.height)
-        // window.navigator.msSaveBlob(canvas.msToBlob(),'image.jpg');
-        // saveAs(imageDataUrl, '附件');
         canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height)
         download(canvas.toDataURL('image/png'), id + '.png')
-        // context.toBlob(function(blob) {
-        // console.log('blob :', blob);
-
-        // let link = document.createElement('a');
-        // link.href = window.URL.createObjectURL(blob);
-        // link.download = 'aaa';
-        // }, "image/jpeg");
       }
       img.setAttribute('crossOrigin', 'Anonymous')
       img.src = src
