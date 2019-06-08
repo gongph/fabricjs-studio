@@ -916,7 +916,7 @@ export default {
         return
       }
       // 调整文件命名规则
-      const id = (this.cacheSavedCustomTemplate.taobaoNickname) + (this.cacheSavedCustomTemplate.theRecipientName) + this.cacheSavedCustomTemplate.diePattern.computerType.value + this.cacheSavedCustomTemplate.diePattern.diePatternType + this.cacheSavedCustomTemplate.modelType.value + this.cacheSavedCustomTemplate.createdDate
+      const id = (this.taobaoId) + (this.recevier) + this.cacheSavedCustomTemplate.diePattern.computerType.value + this.cacheSavedCustomTemplate.diePattern.diePatternType + this.cacheSavedCustomTemplate.modelType.value + this.cacheSavedCustomTemplate.createdDate
       this.$confirm('您真的要将设计保存到本地？一旦点击确定，将不能再修改，请再次确认！！！', '重要提示', {
         type: 'info'
       }).then(({ result }) => {
