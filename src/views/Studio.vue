@@ -246,6 +246,9 @@ export default {
       layerActiveId: '',
       // 本地上传的图片base64
       localUploadUrl: '',
+      // 模版图
+      dieBg: null,
+      // 收件人信息
       scrollTop: 100,
       // 水印对象
       waterText: null,
@@ -337,6 +340,8 @@ export default {
         // 修复 toJSON 时 name 过滤掉的问题
         if (object.type === 'image') {
           if (object.name === 'diebg') {
+            // 给背景图赋值，方便将来给该图层置顶
+            self.dieBg = object
             // 模具背景
             object.set({
               _uuid: -1,
@@ -379,7 +384,13 @@ export default {
           })
           self.waterText = object
         }
-
+        // 置顶：
+        if (self.dieBg) {
+          self.canvas.bringToFront(self.dieBg)
+        }
+        if (self.waterText) {
+          self.canvas.bringToFront(self.waterText)
+        }
         object.toObject = (function (toObject) {
           return function () {
             return self.$fabric.util.object.extend(toObject.call(this), {
@@ -406,6 +417,7 @@ export default {
             hoverCursor: 'default'
           })
           oImg = self.extendObject(oImg, 'diebg', false) // 拓展字段
+          self.dieBg = oImg
           canvas.add(oImg)
           self.initWatermark() // 初始化水印
         }, {
@@ -499,6 +511,18 @@ export default {
     initEvents () {
       const self = this
       const canvas = this.canvas
+      fromEvent(canvas, 'mouse:up').pipe(debounceTime(100)).subscribe(opt => {
+        let target = opt.target
+        self.canvas.discardActiveObject(target)
+        // 置顶：
+        if (self.dieBg) {
+          self.canvas.bringToFront(self.dieBg)
+        }
+        if (self.waterText) {
+          self.canvas.bringToFront(self.waterText)
+        }
+      })
+
       fromEvent(canvas, 'mouse:down').pipe(debounceTime(100)).subscribe(opt => {
         let target = opt.target
         if (target && !target.name) {
@@ -630,6 +654,14 @@ export default {
           })
           this.canvas.add(triangle)
           break
+      }
+      debugger
+      // 置顶：
+      if (self.dieBg) {
+        self.canvas.bringToFront(self.dieBg)
+      }
+      if (self.waterText) {
+        self.canvas.bringToFront(self.waterText)
       }
     },
     /**
