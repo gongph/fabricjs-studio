@@ -5,6 +5,10 @@ export default {
     if (fc) {
       fc.setHeight(opt.height)
       fc.setWidth(opt.width)
+      fc.setWidth(opt.width)
+      fc.setBackgroundColor(opt.backgroundColor)
+      fc.stopContextMenu = opt.stopContextMenu
+      fc.backgroundVpt = opt.backgroundVpt
       return fc
     } else {
       return new fabric.Canvas(c, opt)
