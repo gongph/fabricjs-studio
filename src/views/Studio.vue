@@ -317,7 +317,7 @@ export default {
     ]),
     // 水印文字
     waterStr: function () {
-      return '淘宝ID：' + this.taobaoNickname + '    收件人姓名：' + this.theRecipientName
+      return '淘宝ID：' + this.taobaoId + '    收件人姓名：' + this.recevier
     }
   },
   methods: {
