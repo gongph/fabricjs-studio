@@ -1,8 +1,14 @@
 import { fabric } from 'fabric'
 
 export default {
-  init (c, opt) {
-    return new fabric.Canvas(c, opt)
+  init (c, opt, fc) {
+    if (fc) {
+      fc.setHeight(opt.height)
+      fc.setWidth(opt.width)
+      return fc
+    } else {
+      return new fabric.Canvas(c, opt)
+    }
   },
   initStatic (c, opt) {
     return new fabric.StaticCanvas(c, opt)

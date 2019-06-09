@@ -314,7 +314,11 @@ export default {
       'gallerys',
       'taobaoNickname',
       'theRecipientName'
-    ])
+    ]),
+    // 水印文字
+    waterStr: function () {
+      return '淘宝ID：' + this.taobaoNickname + '    收件人姓名：' + this.theRecipientName
+    }
   },
   methods: {
     ...mapActions([
@@ -380,6 +384,7 @@ export default {
             name: 'waterText',
             _uuid: -1,
             evented: false,
+            text: self.waterStr,
             selectable: false
           })
           self.waterText = object
@@ -441,7 +446,8 @@ export default {
             height: image.height / 2,
             stopContextMenu: true,
             backgroundVpt: false
-          }
+          },
+          self.canvas
         )
         callback(canvas)
       }
@@ -605,8 +611,7 @@ export default {
     initWatermark (opt = { left: 150, top: 0 }) {
       const self = this
       if (!this.cacheModelType) return
-      const waterStr = `淘宝ID：${this.taobaoId}    收件人姓名：${this.recevier}`
-      let waterText = self.waterText = fb.addText(waterStr, {
+      let waterText = self.waterText = fb.addText(self.waterStr, {
         fontFamily: 'Microsoft YaHei',
         fill: '#fff',
         evented: false,
@@ -631,9 +636,10 @@ export default {
       this.canvas.add(waterText)
     },
     handleWatermark () {
+      const self = this
       if (!this.waterText) return
       this.waterText.set({
-        text: `淘宝ID：${this.taobaoId}    收件人姓名：${this.recevier}`
+        text: self.waterStr
       })
       this.canvas.renderAll()
     },
@@ -824,15 +830,10 @@ export default {
       })
     },
     goStudio (customTemaplate) {
-      const c = this.canvas
-      const objects = c.getObjects()
-      objects.forEach((object) => {
-        c.remove(object)
-      })
+      // 清空画板
       this.canvas.clear()
       // 清空图层
       this.clearLayers()
-      this.canvas = null
       this.$router.push({
         name: 'studio',
         query: { id: customTemaplate.id, type: customTemaplate.modelType.id, bh: customTemaplate.customNumber }
