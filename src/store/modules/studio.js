@@ -3,6 +3,7 @@
  */
 
 import * as Api from '@/api/studio'
+import { fetchFonts } from '@/api/fonts'
 import { cloneDeep } from 'lodash'
 
 const studio = {
@@ -18,7 +19,9 @@ const studio = {
     // 图层
     layers: [],
     // 设置素材对象
-    fabricDesign: null
+    fabricDesign: null,
+    // 字体
+    fonts: []
   },
   mutations: {
     SET_CANVAS: (state, canvas) => {
@@ -41,6 +44,9 @@ const studio = {
     },
     CLEAR_LAYERS: (state) => {
       state.layers = []
+    },
+    SET_FONTS: (state, fonts) => {
+      state.fonts = fonts
     }
   },
   actions: {
@@ -189,6 +195,17 @@ const studio = {
           }
         })
         resolve()
+      })
+    },
+    /**
+     * 初始化字体
+     */
+    initFonts ({ commit }) {
+      return new Promise((resolve, reject) => {
+        fetchFonts().then(response => {
+          if (!response.status === 200) reject(new Error('initFonts: error'))
+          commit('SET_FONTS', response.data)
+        })
       })
     }
   }

@@ -22,10 +22,10 @@
               @change="setItextAttr('fontFamily')"
             >
               <mu-option
-                v-for="(option,index) in fonts"
+                v-for="(font, index) in fonts"
                 :key="index"
-                :label="option"
-                :value="option"
+                :label="font.value"
+                :value="font.value"
               />
             </mu-select>
           </mu-form-item>
@@ -171,9 +171,10 @@
 
 <script>
 import Divide from '@/components/divide/index.vue'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { debounce } from 'lodash'
 import { gererateUUID } from '@/utils'
+import addCssRule from '@/utils/styleSheet.js'
 
 export default {
   name: 'SidebarAttrs',
@@ -227,7 +228,7 @@ export default {
         opacity: 1
       },
       inputColor: '#ff9800',
-      fonts: ['微软雅黑', '黑体', '宋体', '隶书']
+      // fonts: ['微软雅黑', '黑体', '宋体', '隶书']
       // 滤镜
       // filters: [
       //   { label: '正常', value: '' },
@@ -260,13 +261,18 @@ export default {
   computed: {
     ...mapGetters([
       'canvas',
-      'activeObject'
+      'activeObject',
+      'fonts'
     ])
   },
   created () {
     this.initData()
+    this.initFonts()
   },
   methods: {
+    ...mapActions([
+      'initFonts'
+    ]),
     /**
      * 初始化数据
      */
