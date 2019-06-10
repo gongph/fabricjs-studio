@@ -25,7 +25,7 @@ axios.get(`${Url.baseURL}/api/font-types`).then(response => {
   data.forEach(font => {
     includeFontTemplate.push(render(INCLUDE_FONT_TEMPLATE, {
       name: font.value,
-      url: font.name
+      url: Url.baseFileURL + font.name
     }))
   })
   const template = render(MAIN_TEMPLATE, {
