@@ -17,6 +17,17 @@ export function queryDiePatterns (query) {
 }
 
 /**
+ * 查询获取刀模具列表
+ */
+
+export function queryAutoDiePatterns (query) {
+  return request({
+    url: '/api/die-patterns',
+    method: 'get',
+    params: query
+  })
+}
+/**
  * 查询获取我的定制列表
  */
 
@@ -34,6 +45,17 @@ export function queryCustomTemplates (query) {
 export function queryAllCustomTemplates (userid, query) {
   return request({
     url: `/api/custom-templates/user/${userid}`,
+    method: 'get',
+    params: query
+  })
+}
+
+/**
+ * 获取计算机品牌
+ */
+export function queryAllComputerTypes (query) {
+  return request({
+    url: `/api/computer-types`,
     method: 'get',
     params: query
   })

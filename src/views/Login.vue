@@ -2,12 +2,12 @@
   <div class="app-container login-page">
     <div class="bg"></div>
     <div class="login-container">
-<!--      <div class="qrcode-wrapper">-->
-<!--        <div class="qrcode">-->
-<!--          <img src="/img/qrcode.png">-->
-<!--          <p>— 关注xxxx公众号 —</p>-->
-<!--        </div>-->
-<!--      </div>-->
+      <div class="qrcode-wrapper">
+        <div class="qrcode">
+          <img src="/img/qrcode3.png">
+          <p>— 系统建议入口 —</p>
+        </div>
+      </div>
       <div class="login-form__wrapper">
         <div class="login-form">
           <h2>用户登录</h2>
@@ -193,7 +193,7 @@ $color: #2f4071;
     color: $color;
     font-weight: normal;
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 55px;
   }
   .forget-pass {
     font-size: 12px;

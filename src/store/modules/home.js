@@ -8,6 +8,7 @@ import {
   saveCustomTemplates,
   updateCustomTemplates,
   queryCustomTemplatesByCustomNumber,
+  queryAutoDiePatterns,
   queryAllCustomTemplates
 } from '@/api/home'
 import { gererateUUID } from '@/utils'
@@ -20,6 +21,7 @@ const home = {
     bookingTotal: 0,
     // 我的定制列表
     bookedList: [],
+    autoCompleteList: [],
     bookedTotal: 0,
     currentType: {},
     // 鼠标垫贴膜模具
@@ -78,6 +80,22 @@ const home = {
     },
     SET_CURRENT_TYPE: (state, data) => {
       state.currentType = data
+    },
+    SET_AUTO_TYPE: (state, data) => {
+      // 清空列表里的数据
+      state.autoCompleteList = []
+      data.forEach((object) => {
+        // 根据选项不同提供不同的候选值
+        if (object.computerType) {
+          state.autoCompleteList.push(object.computerType.value)
+          state.autoCompleteList.push(object.diePatternType)
+        } else {
+          state.autoCompleteList.push(object.customNumber)
+          state.autoCompleteList.push(object.taobaoNickname)
+          state.autoCompleteList.push(object.theRecipientName)
+        }
+      })
+      state.autoCompleteList = [...new Set(state.autoCompleteList)]
     },
     SET_SBD: (state, data) => {
       state.sbdDiePattern = data
@@ -150,6 +168,18 @@ const home = {
         })
       })
     },
+    getAutoComplate ({ commit, getters }, query) {
+      return new Promise((resolve, reject) => {
+        queryAutoDiePatterns().then(response => {
+          if (response.status !== 200) reject(new Error('error'))
+          let data = response.data
+          commit('SET_AUTO_TYPE', data || [])
+          resolve()
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
     /**
      * 获取鼠标垫信息
      */
@@ -216,7 +246,10 @@ const home = {
                   // 遍历数据
                   response.data.forEach(function (item1, index, array) {
                     if (item1.modelType.id === 1) {
-                      item.diePattern = item1.diePattern
+                      // 品牌
+                      item.diePattern.computerType.value = item1.diePattern.computerType.value
+                      // 型号
+                      item.diePattern.diePatternType = item1.diePattern.diePatternType
                     }
                   })
                 }
@@ -224,6 +257,7 @@ const home = {
             }
           })
           commit('SET_BOOKED_LIST', data || [])
+          commit('SET_AUTO_TYPE', data || [])
           commit('SET_BOOKED_TOTAL', Number(response?.headers['x-total-count']) || 0)
           resolve()
         }).catch(err => {
@@ -296,19 +330,30 @@ const home = {
     },
     getCustomTemplateByCustomNumber ({ commit }, { customNumber, id, type }) {
       return new Promise((resolve, reject) => {
-        debugger
         queryCustomTemplatesByCustomNumber(customNumber).then(response => {
           if (!response.status === 200) return reject(new Error('getFabricJsonById: error'))
           commit('SET_CACHE_CUSTOMNUMBER', customNumber)
           commit('SET_CACHE_MODE_TYPE', type)
           response.data.forEach(function (item, index, array) {
-            debugger
             if (item.modelType.id === type) {
               commit('SET_CACHE_SAVED_CUSTOME_TEMPLATE', item)
               commit('SET_CACHE_DATA', item)
             }
             if (item.modelType.id === 2) {
-              commit('SET_SBD_CUSTOM', item)
+              queryCustomTemplatesByCustomNumber(item.customNumber).then(response => {
+                if (response.status === 200 && response.data && response.data.length > 0) {
+                  // 遍历数据
+                  response.data.forEach(function (item1, index, array) {
+                    if (item1.modelType.id === 1) {
+                      // 品牌
+                      item.diePattern.computerType.value = item1.diePattern.computerType.value
+                      // 型号
+                      item.diePattern.diePatternType = item1.diePattern.diePatternType
+                      commit('SET_SBD_CUSTOM', item)
+                    }
+                  })
+                }
+              })
             } else {
               commit('SET_BJB_CUSTOM', item)
             }

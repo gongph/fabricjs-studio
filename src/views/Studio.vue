@@ -203,7 +203,7 @@
 <script>
 import { SidebarBase, SidebarAttrs, SidebarLayer, SidebarInfos } from './layout'
 import { mapGetters, mapActions } from 'vuex'
-import { baseImgUrl, gererateUUID, download, getUrlParam } from '@/utils'
+import { baseImgUrl, gererateUUID, download, getUrlParam, parseTime } from '@/utils'
 import { fromEvent } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 import { uploadify } from '@/utils/file-upload.js'
@@ -246,6 +246,9 @@ export default {
       layerActiveId: '',
       // 本地上传的图片base64
       localUploadUrl: '',
+      // 模版图
+      dieBg: null,
+      // 收件人信息
       scrollTop: 100,
       // 水印对象
       waterText: null,
@@ -261,7 +264,6 @@ export default {
   },
   watch: {
     $route (to, from) {
-      debugger
       this.initFabric()
       // 初始化滚动事件
       fromEvent(
@@ -312,7 +314,11 @@ export default {
       'gallerys',
       'taobaoNickname',
       'theRecipientName'
-    ])
+    ]),
+    // 水印文字
+    waterStr: function () {
+      return '淘宝ID：' + this.taobaoId + '    收件人姓名：' + this.recevier
+    }
   },
   methods: {
     ...mapActions([
@@ -338,6 +344,8 @@ export default {
         // 修复 toJSON 时 name 过滤掉的问题
         if (object.type === 'image') {
           if (object.name === 'diebg') {
+            // 给背景图赋值，方便将来给该图层置顶
+            self.dieBg = object
             // 模具背景
             object.set({
               _uuid: -1,
@@ -376,11 +384,18 @@ export default {
             name: 'waterText',
             _uuid: -1,
             evented: false,
+            text: self.waterStr,
             selectable: false
           })
           self.waterText = object
         }
-
+        // 置顶：
+        if (self.dieBg) {
+          self.canvas.bringToFront(self.dieBg)
+        }
+        if (self.waterText) {
+          self.canvas.bringToFront(self.waterText)
+        }
         object.toObject = (function (toObject) {
           return function () {
             return self.$fabric.util.object.extend(toObject.call(this), {
@@ -407,6 +422,7 @@ export default {
             hoverCursor: 'default'
           })
           oImg = self.extendObject(oImg, 'diebg', false) // 拓展字段
+          self.dieBg = oImg
           canvas.add(oImg)
           self.initWatermark() // 初始化水印
         }, {
@@ -430,7 +446,8 @@ export default {
             height: image.height / 2,
             stopContextMenu: true,
             backgroundVpt: false
-          }
+          },
+          self.canvas
         )
         callback(canvas)
       }
@@ -500,6 +517,51 @@ export default {
     initEvents () {
       const self = this
       const canvas = this.canvas
+      // fromEvent(canvas, 'mouse:up').pipe(debounceTime(100)).subscribe(opt => {
+      //
+      // })
+
+      fromEvent(canvas, 'mouse:out').pipe(debounceTime(100)).subscribe(opt => {
+        // 置顶：
+        if (self.dieBg) {
+          self.canvas.bringToFront(self.dieBg)
+        }
+        if (self.waterText) {
+          self.canvas.bringToFront(self.waterText)
+        }
+        self.canvas.discardActiveObject(self.canvas.getActiveObject())
+      })
+      // fromEvent(canvas, 'object:skewed').pipe(debounceTime(100)).subscribe(opt => {
+      //   // 置顶：
+      //   if (self.dieBg) {
+      //     self.canvas.bringToFront(self.dieBg)
+      //   }
+      //   if (self.waterText) {
+      //     self.canvas.bringToFront(self.waterText)
+      //   }
+      //   self.canvas.discardActiveObject(self.canvas.getActiveObject())
+      // })
+      // fromEvent(canvas, 'object:rotated').pipe(debounceTime(100)).subscribe(opt => {
+      //   // 置顶：
+      //   if (self.dieBg) {
+      //     self.canvas.bringToFront(self.dieBg)
+      //   }
+      //   if (self.waterText) {
+      //     self.canvas.bringToFront(self.waterText)
+      //   }
+      //   self.canvas.discardActiveObject(self.canvas.getActiveObject())
+      // })
+      // fromEvent(canvas, 'object:scaled').pipe(debounceTime(100)).subscribe(opt => {
+      //   // 置顶：
+      //   if (self.dieBg) {
+      //     self.canvas.bringToFront(self.dieBg)
+      //   }
+      //   if (self.waterText) {
+      //     self.canvas.bringToFront(self.waterText)
+      //   }
+      //   self.canvas.discardActiveObject(self.canvas.getActiveObject())
+      // })
+
       fromEvent(canvas, 'mouse:down').pipe(debounceTime(100)).subscribe(opt => {
         let target = opt.target
         if (target && !target.name) {
@@ -549,8 +611,7 @@ export default {
     initWatermark (opt = { left: 150, top: 0 }) {
       const self = this
       if (!this.cacheModelType) return
-      const waterStr = `淘宝ID：${this.taobaoId}    收件人姓名：${this.recevier}`
-      let waterText = self.waterText = fb.addText(waterStr, {
+      let waterText = self.waterText = fb.addText(self.waterStr, {
         fontFamily: 'Microsoft YaHei',
         fill: '#fff',
         evented: false,
@@ -575,9 +636,10 @@ export default {
       this.canvas.add(waterText)
     },
     handleWatermark () {
+      const self = this
       if (!this.waterText) return
       this.waterText.set({
-        text: `淘宝ID：${this.taobaoId}    收件人姓名：${this.recevier}`
+        text: self.waterStr
       })
       this.canvas.renderAll()
     },
@@ -631,6 +693,14 @@ export default {
           })
           this.canvas.add(triangle)
           break
+      }
+      debugger
+      // 置顶：
+      if (self.dieBg) {
+        self.canvas.bringToFront(self.dieBg)
+      }
+      if (self.waterText) {
+        self.canvas.bringToFront(self.waterText)
       }
     },
     /**
@@ -760,15 +830,10 @@ export default {
       })
     },
     goStudio (customTemaplate) {
-      const c = this.canvas
-      const objects = c.getObjects()
-      objects.forEach((object) => {
-        c.remove(object)
-      })
+      // 清空画板
       this.canvas.clear()
       // 清空图层
       this.clearLayers()
-      this.canvas = null
       this.$router.push({
         name: 'studio',
         query: { id: customTemaplate.id, type: customTemaplate.modelType.id, bh: customTemaplate.customNumber }
@@ -859,6 +924,10 @@ export default {
     handleSubmitDesignToRemote () {
       // 您真的要提交设计？一旦提交成功，将不能再修改，请再次确认！！！
       this.validateInput('提交设计', true).then(result => {
+        return this.$confirm('您真的要提交设计？一旦提交成功，将不能再修改，请再次确认！！！', '提示', {
+          type: 'info'
+        })
+      }).then(result => {
         // 如果选择是确认，直接提交信息，否则的话打开信息面板
         if (result) {
           this.$progress.start()
@@ -916,17 +985,53 @@ export default {
         return
       }
       // 调整文件命名规则
-      const id = (this.cacheSavedCustomTemplate.taobaoNickname) + (this.cacheSavedCustomTemplate.theRecipientName) + this.cacheSavedCustomTemplate.diePattern.computerType.value + this.cacheSavedCustomTemplate.diePattern.diePatternType + this.cacheSavedCustomTemplate.modelType.value + this.cacheSavedCustomTemplate.createdDate
+      let id = (this.taobaoId) + '-' + (this.recevier) + '-' + this.cacheSavedCustomTemplate.diePattern.computerType.value + '-' + this.cacheSavedCustomTemplate.diePattern.diePatternType + '-' + this.cacheSavedCustomTemplate.modelType.value + '-' + parseTime(this.cacheSavedCustomTemplate.createdDate, '{y}-{m}-{d} {h}:{i}:{s}')
       this.$confirm('您真的要将设计保存到本地？一旦点击确定，将不能再修改，请再次确认！！！', '重要提示', {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
           this.$progress.start()
-          download(this.canvas.toDataURL({
+          // 上传图片到服务器
+          uploadify(this.canvas.toDataURL({
             format: 'png',
             multiplier: 2
-          }), id + '.png')
-          this.$progress.done()
+          }), 'product-design')
+            .then(response => {
+              this.uploading = false
+              const { bucketName, fileName } = response
+              this.productionRenderingImageUrl = `/${bucketName}/${fileName}`
+              // 更新定制模版信息
+              let customTemaplate = cloneDeep(this.cacheSavedCustomTemplate)
+              // 设置完成状态为完成
+              customTemaplate.finishedCondition.id = 2
+              // 淘宝id
+              customTemaplate.taobaoNickname = this.taobaoId
+              // 收件人姓名
+              customTemaplate.theRecipientName = this.recevier
+              // 设置最终效果图
+              customTemaplate.productionRenderingImageUrl = this.productionRenderingImageUrl
+              return this.updateCustomTemplates(customTemaplate)
+            }).then(response => {
+              return this.saveOrUpdateFabricDesign(JSON.stringify(this.canvas.toJSON()))
+            }).then(() => {
+              this.$progress.done()
+              this.$toast.success({
+                message: '保存本地成功',
+                position: 'top'
+              })
+              download(this.canvas.toDataURL({
+                format: 'png',
+                multiplier: 2
+              }), id + '.png')
+              this.$router.push({ path: '/' })
+            }).catch(err => {
+              this.uploading = false
+              this.$progress.done()
+              this.$toast.error({
+                message: err.response?.data?.detail,
+                position: 'top'
+              })
+            })
         }
       })
     },
