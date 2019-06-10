@@ -16,7 +16,11 @@ export function dataURItoBlob (dataURI) {
   return new Blob([intArray], { type: mimeString })
 }
 
-function isURL (strUrl) { // 验证url
+/**
+ * 是否是URL
+ */
+function isURL (strUrl) {
+  /* eslint-disable */
   var strRegex = '^((https|http|ftp|rtsp|mms)?://)' +
     "?(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" + // ftp的user@
     '(([0-9]{1,3}\.){3}[0-9]{1,3}' + // IP形式的URL- 199.194.52.184
