@@ -694,7 +694,6 @@ export default {
           this.canvas.add(triangle)
           break
       }
-      debugger
       // 置顶：
       if (self.dieBg) {
         self.canvas.bringToFront(self.dieBg)
@@ -711,7 +710,9 @@ export default {
       const self = this
       if (!this.localUploadUrl) return
       this.$fabric.Image.fromURL(this.localUploadUrl, oImg => {
-        oImg.scale(0.5)
+        // oImg.scale(oImg.height / oImg.width)
+        oImg.scaleToWidth(200)
+        oImg.scaleToHeight(oImg.height / oImg.width * 200.0)
         oImg.set({
           left: 100,
           top: this.scrollTop + 100
@@ -778,7 +779,9 @@ export default {
       this.$progress.start()
       this.sureBtnLoading = true
       this.$fabric.Image.fromURL(this.selectedImg.src, oImg => {
-        oImg.scale(900 / oImg.width / 2)
+        // oImg.scale(900 / oImg.width / 2)
+        oImg.scaleToWidth(200)
+        oImg.scaleToHeight(oImg.height / oImg.width * 200.0)
         oImg.set({
           left: 100,
           top: this.scrollTop + 100
