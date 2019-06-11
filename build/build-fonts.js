@@ -6,7 +6,7 @@ const ora = require('ora')
 const axios = require('axios')
 const Url = require('../src/utils/url')
 
-const OUTPUT_PATH =  path.join(__dirname, '../src/styles/fonts.scss')
+const OUTPUT_PATH = path.join(__dirname, '../src/styles/fonts.scss')
 const INCLUDE_FONT_TEMPLATE = `@font-face {
   font-family: '{{name}}', 'Microsoft YaHei';
   src: url('{{url}}');

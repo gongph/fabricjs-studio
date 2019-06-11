@@ -24,7 +24,9 @@
       data-mu-loading-text="正在生成预览效果，请稍等..."
       v-loading="loading"
     >
-      <img :src="url">
+      <div style="padding: 1%; width: 98%; float: left;">
+        <img :src="url" width="100%">
+      </div>
     </div>
   </mu-dialog>
 </template>
