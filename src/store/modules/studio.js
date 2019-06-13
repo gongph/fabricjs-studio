@@ -38,12 +38,17 @@ const studio = {
     taobaoId: '',
     // 收件人
     recevier: '',
+    // 系统配置
+    systemConfig: null,
     // 输入框是否禁用
     fieldDisabled: true
   },
   mutations: {
     SET_CANVAS: (state, canvas) => {
       state.canvas = canvas
+    },
+    SET_SYSTEM_CONFIG: (state, systemConfig) => {
+      state.systemConfig = systemConfig
     },
     SET_OPEN_PREVIEW_CANVAS_DIALOG: (state, openPreviewCanvasDialog) => {
       state.openPreviewCanvasDialog = openPreviewCanvasDialog
@@ -98,6 +103,20 @@ const studio = {
      */
     setCanvas ({ commit }, canvas) {
       commit('SET_CANVAS', canvas)
+    },
+    /**
+     * 设置 系统配置
+     */
+    getSystemConfig ({ commit }) {
+      return new Promise((resolve, reject) => {
+        Api.fetchConfig().then(response => {
+          if (response.status !== 200) reject(new Error('fetchImageTypes: error'))
+          commit('SET_SYSTEM_CONFIG', response.data[0])
+          resolve()
+        }).catch(err => {
+          reject(err)
+        })
+      })
     },
     /**
      * 设置预览页面状态

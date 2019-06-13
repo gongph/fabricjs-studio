@@ -214,12 +214,16 @@
 import { mapGetters, mapActions } from 'vuex'
 import { debounce } from 'lodash'
 import ExtendObjectMixin from '@/mixins/extendObject.js'
+import { download } from '@/utils'
+import url from '@/utils/url'
+
 export default {
   name: 'AppAttrsOfRside',
   mixins: [ExtendObjectMixin],
   data () {
     return {
       inputColor: '#ff9800',
+      fileUrl: url.baseFileURL,
       attrsForm: {
         itext: {
           fontSize: 40,
@@ -247,6 +251,7 @@ export default {
     ...mapGetters([
       'canvas',
       'activeObject',
+      'systemConfig',
       'fonts',
       'fieldDisabled',
       'graphType'
@@ -257,6 +262,9 @@ export default {
       ) : ''
     }
   },
+  mounted () {
+    this.getSystemConfig()
+  },
   watch: {
     activeObject () {
       this.initData()
@@ -265,6 +273,7 @@ export default {
   methods: {
     ...mapActions([
       'initFonts',
+      'getSystemConfig',
       'setActiveObject'
     ]),
     /**
@@ -433,6 +442,7 @@ export default {
      */
     downloadFont () {
       // 下载字体
+      download(this.fileUrl + this.systemConfig.productionRenderingSaveLocation, '字体.zip')
     },
     /**
      * 复制文本或图片

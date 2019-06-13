@@ -16,6 +16,17 @@ export function fetchImageTypes () {
 }
 
 /**
+ * 获取系统核心配置
+ */
+
+export function fetchConfig () {
+  return request({
+    url: '/api/configs',
+    method: 'get'
+  })
+}
+
+/**
  * 获取所有的官方图库
  */
 
