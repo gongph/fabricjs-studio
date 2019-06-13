@@ -170,7 +170,7 @@ export default {
           if (object.type === 'image') {
             if (object.name === 'diebg') {
               // 给背景图赋值，方便将来给该图层置顶
-              self.dieBg = object
+              self.setDiebg(object)
               // 模具背景
               object.set({
                 _uuid: -1,
@@ -285,7 +285,7 @@ export default {
     initWatermark () {
       const self = this
       if (self.cacheModelType) return
-      let waterText = self.waterText = fb.addText(self.waterStr, {
+      let waterText = fb.addText(self.waterStr, {
         fontFamily: 'Microsoft YaHei',
         fill: '#fff',
         evented: false,
@@ -310,6 +310,7 @@ export default {
       }
       waterText = self.extendObject(waterText, 'waterText', false)
       self.canvasObject.add(waterText)
+      self.setWaterText(waterText)
     }
   }
 }
