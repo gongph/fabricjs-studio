@@ -26,6 +26,7 @@ export default new Vuex.Store({
         'home.customeTemplate.theRecipientName',
         'home.sbdDiePattern',
         'studio.galleryTypes',
+        'studio.gallerys',
         'studio.fabricDesign',
         'studio.fonts'
       ]

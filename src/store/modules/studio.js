@@ -175,11 +175,17 @@ const studio = {
           Api.fetchImages().then(response => {
             if (response.status !== 200) reject(new Error('fetchImages: error'))
             commit('SET_GALLERYS', response.data)
+            resolve()
+          }).catch(err => {
+            reject(err)
           })
         } else {
           Api.fetchImagesByTypeId(typeId).then(response => {
             if (response.status !== 200) reject(new Error('fetchImagesByTypeId: error'))
             commit('SET_GALLERYS', response.data)
+            resolve()
+          }).catch(err => {
+            reject(err)
           })
         }
       })

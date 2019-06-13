@@ -10,6 +10,7 @@
     </div>
 
     <!-- 远程图库弹框 -->
+    <gallerys :open.sync="open"/>
 
   </div>
 </template>
@@ -17,6 +18,7 @@
 <script>
 import { mapActions } from 'vuex'
 import Divide from '@/components/divide/index.vue'
+import Gallerys from '@/views/components/gallerys.vue'
 import ExtendObjectMixin from '@/mixins/extendObject.js'
 import VarMixin from '@/mixins/var.js'
 import ProgressMixin from '@/mixins/progress.js'
@@ -26,14 +28,15 @@ import { uploadify } from '@/utils/file-upload.js'
 export default {
   name: 'AppSidebar',
   mixins: [ExtendObjectMixin, VarMixin, ProgressMixin],
-  components: { Divide },
+  components: { Divide, Gallerys },
   data () {
     return {
       tools: [
         { id: 'itext', title: '添加文字', icon: 'add-font' },
         { id: 'local-img', title: '本地图片上传', icon: 'local-upload' },
         { id: 'remote-img', title: '远程图库', icon: 'remote-img' }
-      ]
+      ],
+      open: false
     }
   },
   methods: {
@@ -52,6 +55,7 @@ export default {
           self.handleAddLocalImg()
           break
         case 'remote-img':
+          self.open = true
           break
       }
       self.$emit('click', type)

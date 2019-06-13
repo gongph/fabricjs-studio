@@ -5,86 +5,88 @@
     label-position="right"
     label-width="90"
   >
-    <!-- 字体特有 -->
-    <mu-form-item label="字号：">
-      <mu-text-field
-        v-model="attrsForm.itext.fontSize"
-        :color="inputColor"
-        suffix="px"
-        :disabled="fieldDisabled"
-        @input="setItextAttr('fontSize')"
-      />
-    </mu-form-item>
-
-    <mu-form-item label="字体：">
-      <mu-select
-        v-model="attrsForm.itext.fontFamily"
-        :color="inputColor"
-        :disabled="fieldDisabled"
-        @change="setItextAttr('fontFamily')"
-      >
-        <mu-option
-          v-for="(font, index) in fonts"
-          :key="index"
-          :label="font.value"
-          :value="font.name"
+    <template v-if="graphType === 'itext'">
+      <!-- 字体特有 -->
+      <mu-form-item label="字号：">
+        <mu-text-field
+          v-model="attrsForm.itext.fontSize"
+          :color="inputColor"
+          suffix="px"
+          :disabled="fieldDisabled"
+          @input="setItextAttr('fontSize')"
         />
-      </mu-select>
-    </mu-form-item>
+      </mu-form-item>
 
-    <mu-form-item label="样式：" class="format-size-style">
-      <template v-if="fieldDisabled">
-        <mu-icon value="format_bold" class="unactive"></mu-icon>
-        <mu-icon value="format_italic" class="unactive"></mu-icon>
-        <mu-icon value="format_underlined" class="unactive"></mu-icon>
-        <mu-icon value="format_strikethrough" class="unactive"></mu-icon>
-        <mu-icon value="palette" class="unactive"></mu-icon>
-      </template>
-      <template v-else>
-        <mu-tooltip placement="top" content="粗体">
-          <mu-icon
-            value="format_bold"
-            :class="attrsForm.itext.fontWeight !== 'normal' ? 'actived' : ''"
-            @click="setItextAttr('fontWeight')"
+      <mu-form-item label="字体：">
+        <mu-select
+          v-model="attrsForm.itext.fontFamily"
+          :color="inputColor"
+          :disabled="fieldDisabled"
+          @change="setItextAttr('fontFamily')"
+        >
+          <mu-option
+            v-for="(font, index) in fonts"
+            :key="index"
+            :label="font.value"
+            :value="font.name"
           />
-        </mu-tooltip>
-        <mu-tooltip placement="top" content="斜体">
-          <mu-icon
-            value="format_italic"
-            :class="attrsForm.itext.fontStyle !== 'normal' ? 'actived' : ''"
-            @click="setItextAttr('fontStyle')"
-          />
-        </mu-tooltip>
-        <mu-tooltip placement="top" content="下划线">
-          <mu-icon
-            value="format_underlined"
-            :class="attrsForm.itext.underline ? 'actived' : ''"
-            @click="setItextAttr('underline')"
-          />
-        </mu-tooltip>
-        <mu-tooltip placement="top" content="中划线">
-          <mu-icon
-            value="format_strikethrough"
-            :class="attrsForm.itext.linethrough ? 'actived' : ''"
-            @click="setItextAttr('linethrough')"
-          />
-        </mu-tooltip>
-        <mu-tooltip placement="top" content="颜色">
-          <div class="color-picker">
+        </mu-select>
+      </mu-form-item>
+
+      <mu-form-item label="样式：" class="format-size-style">
+        <template v-if="fieldDisabled">
+          <mu-icon value="format_bold" class="unactive"></mu-icon>
+          <mu-icon value="format_italic" class="unactive"></mu-icon>
+          <mu-icon value="format_underlined" class="unactive"></mu-icon>
+          <mu-icon value="format_strikethrough" class="unactive"></mu-icon>
+          <mu-icon value="palette" class="unactive"></mu-icon>
+        </template>
+        <template v-else>
+          <mu-tooltip placement="top" content="粗体">
             <mu-icon
-              value="palette"
-              :color="attrsForm.itext.fill"
+              value="format_bold"
+              :class="attrsForm.itext.fontWeight !== 'normal' ? 'actived' : ''"
+              @click="setItextAttr('fontWeight')"
             />
-            <input
-              v-model="attrsForm.itext.fill"
-              class="mu-color-input"
-              type="color"
-              @change="handleColorChange"
-            >
-          </div>
-        </mu-tooltip>
-      </template>
-    </mu-form-item>
+          </mu-tooltip>
+          <mu-tooltip placement="top" content="斜体">
+            <mu-icon
+              value="format_italic"
+              :class="attrsForm.itext.fontStyle !== 'normal' ? 'actived' : ''"
+              @click="setItextAttr('fontStyle')"
+            />
+          </mu-tooltip>
+          <mu-tooltip placement="top" content="下划线">
+            <mu-icon
+              value="format_underlined"
+              :class="attrsForm.itext.underline ? 'actived' : ''"
+              @click="setItextAttr('underline')"
+            />
+          </mu-tooltip>
+          <mu-tooltip placement="top" content="中划线">
+            <mu-icon
+              value="format_strikethrough"
+              :class="attrsForm.itext.linethrough ? 'actived' : ''"
+              @click="setItextAttr('linethrough')"
+            />
+          </mu-tooltip>
+          <mu-tooltip placement="top" content="颜色">
+            <div class="color-picker">
+              <mu-icon
+                value="palette"
+                :color="attrsForm.itext.fill"
+              />
+              <input
+                v-model="attrsForm.itext.fill"
+                class="mu-color-input"
+                type="color"
+                @change="handleColorChange"
+              >
+            </div>
+          </mu-tooltip>
+        </template>
+      </mu-form-item>
+    </template>
 
     <!-- 共有 -->
     <mu-form-item label="左边距：">
