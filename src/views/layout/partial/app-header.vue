@@ -15,7 +15,7 @@
       <mu-icon left value="cloud_upload"></mu-icon> 提交设计
     </mu-button>
     <mu-button small flat slot="right"  @click="handleRefreshLayer">
-      <mu-icon left value="cloud_upload"></mu-icon> 刷新场景
+      <mu-icon left value="refresh"></mu-icon> 刷新场景
     </mu-button>
     <mu-button small flat slot="right" v-if="parseInt($route.query.type) === 1 && sbdCustomTemplate.finishedCondition.id === 1" @click="goStudio(sbdCustomTemplate)">
       <mu-icon left value="mouse"></mu-icon> 设计鼠标垫
