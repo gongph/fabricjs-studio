@@ -199,6 +199,14 @@
         复制{{ copyText }}
       </mu-button>
     </mu-form-item>
+
+    <mu-form-item v-if="graphType === 'itext'">
+      <mu-button
+        @click="downloadFont"
+      >
+        下载字体<mu-icon left value="vertical_align_bottom"/>
+      </mu-button>
+    </mu-form-item>
   </mu-form>
 </template>
 
@@ -419,6 +427,12 @@ export default {
     handleColorChange (evt) {
       this.attrsForm.itext.fill = evt.target.value || ''
       this.setItextAttr('fill')
+    },
+    /**
+     * 下载字体
+     */
+    downloadFont () {
+      // 下载字体
     },
     /**
      * 复制文本或图片
