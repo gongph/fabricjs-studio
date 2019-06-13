@@ -44,6 +44,7 @@
 <script>
 import { parseTime } from '@/utils'
 import { debounce } from 'lodash'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'AppInfosOfRside',
@@ -62,26 +63,36 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'cacheSavedCustomTemplate'
+    ])
+  },
   created () {
     this.initData()
   },
   methods: {
+    ...mapActions([
+      'setTaobaoidRecevier'
+    ]),
     initData () {
       const obj = this.cacheSavedCustomTemplate
       if (!obj) return
-      this.form.customeNumber = obj.customNumber
-      this.form.computerType = obj.diePattern.computerType.value
-      this.form.diePatternType = obj.diePattern.diePatternType
-      this.form.customQuantity = obj.customQuantity
-      this.form.modelType = obj.modelType.value
-      this.form.lastModifiedDate = parseTime(obj.lastModifiedDate)
-      this.form.taobaoNickname = obj.taobaoNickname
-      this.form.theRecipientName = obj.theRecipientName
+      this.infosForm.customeNumber = obj.customNumber
+      this.infosForm.computerType = obj.diePattern.computerType.value
+      this.infosForm.diePatternType = obj.diePattern.diePatternType
+      this.infosForm.customQuantity = obj.customQuantity
+      this.infosForm.modelType = obj.modelType.value
+      this.infosForm.lastModifiedDate = parseTime(obj.lastModifiedDate, '{y}-{m}-{d} {h}:{i}:{s}')
+      this.infosForm.taobaoNickname = obj.taobaoNickname
+      this.infosForm.theRecipientName = obj.theRecipientName
     },
     handleInput: debounce(function () {
+      const self = this
+      self.setTaobaoidRecevier({ taobaoId: self.infosForm.taobaoNickname, recevier: self.infosForm.theRecipientName })
       this.$emit('info:changed', {
-        taobaoNickname: this.form.taobaoNickname,
-        theRecipientName: this.form.theRecipientName
+        taobaoNickname: this.infosForm.taobaoNickname,
+        theRecipientName: this.infosForm.theRecipientName
       })
     }, 250)
   }

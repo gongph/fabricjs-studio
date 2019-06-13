@@ -28,12 +28,30 @@ const studio = {
     waterText: null,
     // 图形类型 `itext` or `image`
     graphType: '',
+    // 展示预览页面的标志
+    openPreivewCanvasDialog: false,
+    // 当前属性标签页，1 素材属性页，2 定制属性页
+    tabActived: 1,
+    // 淘宝id
+    taobaoId: '',
+    // 收件人
+    recevier: '',
     // 输入框是否禁用
     fieldDisabled: true
   },
   mutations: {
     SET_CANVAS: (state, canvas) => {
       state.canvas = canvas
+    },
+    SET_OPEN_PREVIEW_CANVAS_DIALOG: (state, openPreviewCanvasDialog) => {
+      state.openPreivewCanvasDialog = openPreviewCanvasDialog
+    },
+    SET_TAOBAOID_RECEVIER: (state, obj) => {
+      state.taobaoId = obj.taobaoId
+      state.recevier = obj.recevier
+    },
+    SET_TAB_ACTIVED: (state, tabActived) => {
+      state.tabActived = tabActived
     },
     SET_ACTIVE_OBJECT: (state, activeObject) => {
       state.activeObject = activeObject
@@ -75,6 +93,24 @@ const studio = {
      */
     setCanvas ({ commit }, canvas) {
       commit('SET_CANVAS', canvas)
+    },
+    /**
+     * 设置预览页面状态
+     */
+    setOpenPreviewCanvasDialog ({ commit }, openPreviewCanvasDialog) {
+      commit('SET_OPEN_PREVIEW_CANVAS_DIALOG', openPreviewCanvasDialog)
+    },
+    /**
+     * 设置淘宝Id和收件人
+     */
+    setTaobaoidRecevier ({ commit }, obj) {
+      commit('SET_TAOBAOID_RECEVIER', obj)
+    },
+    /**
+     * 设置标签页
+     */
+    setTabActived ({ commit }, tabActived) {
+      commit('SET_TAB_ACTIVED', tabActived)
     },
     /**
      * 设置当前激活的 Canvas 对象

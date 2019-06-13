@@ -10,6 +10,10 @@ const getters = {
   waterText: state => state.studio.waterText,
   graphType: state => state.studio.graphType,
   fieldDisabled: state => state.studio.fieldDisabled,
+  openPreviewCanvasDialog: state => state.studio.openPreviewCanvasDialog,
+  tabActived: state => state.studio.tabActived,
+  recevier: state => state.studio.recevier,
+  taobaoId: state => state.studio.taobaoId,
   // user
   token: state => state.user.token,
   roles: state => state.user.roles,

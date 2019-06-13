@@ -11,11 +11,15 @@
       <!-- 右侧边栏 -->
       <app-rside/>
     </main>
+    <!-- 预览画布效果 -->
+    <preview-canvas v-if="openPreviewCanvasDialog" :open.sync="openPreviewCanvasDialog"/>
   </div>
 </template>
 
 <script>
 import { AppHeader, AppSidebar, AppMain, AppRside } from './layout'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'studio-page',
   components: {
@@ -23,6 +27,11 @@ export default {
     AppSidebar,
     AppMain,
     AppRside
+  },
+  computed: {
+    ...mapGetters([
+      'openPreviewCanvasDialog'
+    ])
   }
 }
 </script>
