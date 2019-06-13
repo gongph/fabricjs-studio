@@ -21,7 +21,15 @@ const studio = {
     // 设置素材对象
     fabricDesign: null,
     // 字体
-    fonts: []
+    fonts: [],
+    // 模具背景图对象
+    dieBg: null,
+    // 水印对象
+    waterText: null,
+    // 图形类型 `itext` or `image`
+    graphType: '',
+    // 输入框是否禁用
+    fieldDisabled: true
   },
   mutations: {
     SET_CANVAS: (state, canvas) => {
@@ -47,6 +55,18 @@ const studio = {
     },
     SET_FONTS: (state, fonts) => {
       state.fonts = fonts
+    },
+    SET_DIE_BG: (state, dieBg) => {
+      state.dieBg = dieBg
+    },
+    SET_WATER_TEXT: (state, waterText) => {
+      state.waterText = waterText
+    },
+    SET_GRAPH_TYPE: (state, type) => {
+      state.graphType = type
+    },
+    SET_FIELD_DISABLED: (state, disabled) => {
+      state.fieldDisabled = disabled
     }
   },
   actions: {
@@ -64,6 +84,30 @@ const studio = {
         commit('SET_ACTIVE_OBJECT', activeObject)
         resolve()
       })
+    },
+    /**
+     * 设置模具图背景
+     */
+    setDiebg ({ commit }, dieBg) {
+      commit('SET_DIE_BG', dieBg)
+    },
+    /**
+     * 设置水印对象
+     */
+    setWaterText ({ commit }, waterText) {
+      commit('SET_WATER_TEXT', waterText)
+    },
+    /**
+     * 设置图形类型
+     */
+    setGraphType ({ commit }, type) {
+      commit('SET_GRAPH_TYPE', type)
+    },
+    /**
+     * 设置输入框禁用状态
+     */
+    setFieldDisabled ({ commit }, status) {
+      commit('SET_FIELD_DISABLED', status)
     },
     /**
      * 清空当前激活的 Canvas 对象
@@ -110,7 +154,6 @@ const studio = {
      */
     getFabricJsonById ({ commit }, id) {
       return new Promise((resolve, reject) => {
-        debugger
         // 1. 只能用id查询，如果用定制编号查询的话，会出现两条记录一条是笔记本，一条是贴膜的
         Api.getFabricDesignMaterialsByCustomId(id).then(response => {
           if (!response.status === 200) return reject(new Error('getFabricJsonById: error'))

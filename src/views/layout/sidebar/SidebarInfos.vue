@@ -122,7 +122,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .mu-infos-form {
   padding: 10px 25px 25px;
   .mu-form-item-label {

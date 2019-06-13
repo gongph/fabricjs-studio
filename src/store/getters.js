@@ -6,6 +6,10 @@ const getters = {
   gallerys: state => state.studio.gallerys,
   layers: state => state.studio.layers,
   fonts: state => state.studio.fonts,
+  dieBg: state => state.studio.dieBg,
+  waterText: state => state.studio.waterText,
+  graphType: state => state.studio.graphType,
+  fieldDisabled: state => state.studio.fieldDisabled,
   // user
   token: state => state.user.token,
   roles: state => state.user.roles,

@@ -174,7 +174,6 @@ import Divide from '@/components/divide/index.vue'
 import { mapGetters, mapActions } from 'vuex'
 import { debounce } from 'lodash'
 import { gererateUUID } from '@/utils'
-import addCssRule from '@/utils/styleSheet.js'
 
 export default {
   name: 'SidebarAttrs',
@@ -227,7 +226,7 @@ export default {
         // 透明度
         opacity: 1
       },
-      inputColor: '#ff9800',
+      inputColor: '#ff9800'
       // fonts: ['微软雅黑', '黑体', '宋体', '隶书']
       // 滤镜
       // filters: [

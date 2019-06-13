@@ -30,6 +30,10 @@ import Loading from 'muse-ui-loading'
 import 'muse-ui-message/dist/muse-ui-message.css'
 import Message from 'muse-ui-message'
 
+// 滚动条
+import HappyScroll from 'vue-happy-scroll'
+import 'vue-happy-scroll/docs/happy-scroll.css'
+
 import { fabric } from 'fabric'
 
 theme.add('darkTheme', {
@@ -44,10 +48,11 @@ theme.use('darkTheme')
 Vue.use(Toast)
 Vue.use(MuseUI)
 Vue.use(NProgress, {
-  color: '#ff4081'
+  color: '#ff9800'
 })
 Vue.use(Loading)
 Vue.use(Message)
+Vue.use(HappyScroll)
 
 Vue.prototype.$fabric = fabric
 Vue.config.productionTip = false

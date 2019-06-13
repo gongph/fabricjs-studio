@@ -16,3 +16,37 @@ $inputBg: #8a8a8a;
 .mu-input-line {
   background-color: $inputBg;
 }
+
+// 弹框样式
+.mu-alert-dialog {
+  .mu-dialog {
+    border-radius: 9px;
+  }
+}
+
+// 小按钮字体
+.mu-flat-button.mu-button-small {
+  font-size: 12px;
+}
+
+// 下拉菜单
+.mu-item {
+  height: auto;
+  .mu-item-title {
+    font-size: 12px;
+  }
+}
+
+p, h1, h2, h3 {
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background-color: #fff;
+}

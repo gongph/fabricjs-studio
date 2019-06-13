@@ -1,0 +1,299 @@
+/**
+ * Studio page style
+ */
+
+/* 重写地方方样式
+-----------------------------------*/
+.studio-page {
+  .canvas-container {
+    margin: 10px auto;
+  }
+  .mu-form-item-label {
+    color: #ccc;
+    font-size: 12px;
+    user-select: none;
+  }
+  .mu-text-field-input,
+  .mu-select-input {
+    color: orange;
+  }
+  .mu-form-item {
+    margin-bottom: 0;
+  }
+  .mu-input-suffix-text {
+    color: #8a8a8a;
+  }
+  .mu-input-content,
+  .mu-slider {
+    width: 85%;
+    font-size: 12px;
+  }
+  // 滚动条
+  .happy-scroll-container .happy-scroll-content {
+    width: 100%;
+  }
+}
+
+/* 页面自己的样式
+-----------------------------------*/
+.studio-page {
+  $sidebarWidth: 50px;
+  $rsideWidth: 300px;
+  $bg: #535353;
+  $mainBg: #3c3c3c;
+  $titleHeight: 25px;
+
+  .studio-page {
+    overflow: hidden;
+  }
+  // Header
+  .header-wrapper {
+    position: relative;
+    z-index: 9;
+  }
+  // Main
+  .main-container {
+    position: relative;
+    height: calc(100vh - 48px);
+    background: #3c3c3c;
+  }
+  .sidebar-wrapper,
+  .main-wrapper,
+  .rside-wrapper {
+    position: relative;
+    float: left;
+    height: 100%;
+    background-color: $bg;
+  }
+  // Sidebar
+  .sidebar-wrapper {
+    width: $sidebarWidth;
+    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),
+      0 2px 2px 0 rgba(0,0,0,.14),
+      0 1px 5px 0 rgba(0,0,0,.12);
+    position: relative;
+    z-index: 3;
+    overflow: hidden;
+  }
+  .sidebar-wrapper__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .tool-item {
+      $h: 35px;
+      width: 100%;
+      align-self: center;
+      margin-top: 5px;
+      height: $h;
+      line-height: $h;
+      text-align: center;
+      font-size: 22px;
+      color: #ccc;
+      cursor: pointer;
+      border: 1px solid transparent;
+      &:hover {
+        background-color: #535353;
+        border: 1px solid rgba(0,0,0,.2);
+      }
+    }
+  }
+  // Main
+  .main-wrapper {
+    width: calc(100% - #{$sidebarWidth} - #{$rsideWidth});
+    background: #3c3c3c;
+    overflow-y: auto;
+  }
+  .main-content {
+    width: 900px;
+    background-color: transparent;
+    margin: auto;
+    color: #000;
+    .canvas-wrapper {
+      margin: 20px 0;
+      width: 100%;
+      min-height: 640px;
+      background-color: #fff;
+      overflow-x: hidden;
+    }
+  }
+  // Right rside
+  .rside-wrapper {
+    width: $rsideWidth;
+    box-shadow: 0 3px 1px 2px rgba(0,0,0,.12),
+      0 2px 2px 0 rgba(0,0,0,.14),
+      0 1px 5px 0 rgba(0,0,0,.12);
+  }
+  .rside-top,
+  .rside-bottom {
+    position: relative;
+    color: #ccc;
+    width: 100%;
+    overflow: hidden;
+    .title-wrapper {
+      position: relative;
+      z-index: 2;
+      background: #3A3A3A;
+      height: $titleHeight;
+    }
+    .title {
+      margin: 3px 0 0 3px;
+      padding: 0 10px;
+      display: inline-block;
+      position: relative;
+      top: 2px;
+      z-index: 2;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-left: none;
+      border-bottom: none;
+      &:hover,
+      &.active {
+        background-color: $bg;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        border: 1px solid #303030;
+        border-left: none;
+        border-bottom: none;
+      }
+    }
+    .content-wrapper {
+      height: calc(100% - #{$titleHeight});
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+  }
+  .rside-top {
+    height: 70%;
+    max-height: 70%;
+    overflow-y: auto;
+    .mu-attrs-form {
+      margin-bottom: 20px;
+      padding-right: 20px;
+    }
+    .mu-infos-form {
+      padding: 20px;
+      .mu-input.disabled .mu-input-content {
+        cursor: default;
+      }
+      .mu-input-line.disabled {
+        border-bottom: 1px dotted rgba(120,120,120,.5);
+      }
+    }
+    .format-size-style {
+      .mu-icon {
+        color: #8a8a8a;
+        cursor: pointer;
+        &.actived,
+        &:hover {
+          background-color: $mainBg;
+        }
+        & + .mu-icon {
+          margin-left: 10px;
+          box-sizing: border-box;
+        }
+        &.unactive {
+          cursor: not-allowed;
+        }
+      }
+      .color-picker {
+        display: inline-block;
+        position: relative;
+        margin-left: 10px;
+        .mu-color-input {
+          position: absolute;
+          width: 24px;
+          height: 24px;
+          left: 0;
+          opacity: 0;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  .rside-bottom {
+    height: 30%;
+    max-height: 30%;
+    overflow-y: auto;
+    .drag-indicator {
+      position: relative;
+      .svg-icon {
+        font-size: 24px;
+        display: inline-block;
+        position: absolute;
+        left: 50%;
+        top: -8px;
+        color: #969696;
+        cursor: default;
+      }
+    }
+    .content-wrapper {
+      height: calc(100% - #{$titleHeight});
+    }
+    .layer {
+      $w: 70px;
+      $layerHeight: 40px;
+      $borderColor: #3A3A3A;
+      height: $layerHeight;
+      margin: 10px 0 20px 0;
+      cursor: pointer;
+      position: relative;
+      &::after {
+        content: '';
+        position: absolute;
+        height: 1px;
+        bottom: -11px;
+        left: 0;
+        right: 0;
+        background: $borderColor;
+      }
+      .visible,
+      .view {
+        position: relative;
+        float: left;
+        height: 100%;
+      }
+      .visible {
+        width: $w;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 3.3;
+        .mu-icon {
+          display: inline-block;
+          & + .mu-icon {
+            margin-left: 10px;
+          }
+          &:hover {
+            color: #fff;
+          }
+        }
+        &::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 1px;
+          background-color: $borderColor;
+        }
+      }
+      .view {
+        width: calc(100% - #{$w});
+        display: flex;
+        align-items: center;
+        user-select: none;
+        .box {
+          width: 38px;
+          height: 38px;
+          background: #fff;
+        }
+        .text {
+          margin-left: 10px;
+        }
+        &.active {
+          background-color: rgba(58, 58, 58, 0.48);
+        }
+      }
+    }
+  }
+}

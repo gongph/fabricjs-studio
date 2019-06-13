@@ -357,8 +357,8 @@ const home = {
             } else {
               commit('SET_BJB_CUSTOM', item)
             }
-            resolve()
           })
+          resolve()
         }).catch(err => {
           reject(err)
         })

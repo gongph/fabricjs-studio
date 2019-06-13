@@ -1,4 +1,4 @@
-export { default as SidebarBase } from './sidebar/SidebarBase'
-export { default as SidebarAttrs } from './sidebar/SidebarAttrs'
-export { default as SidebarLayer } from './sidebar/SidebarLayer'
-export { default as SidebarInfos } from './sidebar/SidebarInfos'
+export { default as AppHeader } from './partial/app-header.vue'
+export { default as AppSidebar } from './partial/app-sidebar.vue'
+export { default as AppRside } from './partial/app-rside.vue'
+export { default as AppMain } from './partial/app-main.vue'

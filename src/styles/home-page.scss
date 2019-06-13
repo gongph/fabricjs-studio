@@ -1,0 +1,38 @@
+/**
+ * Home page style
+ */
+
+.home-page {
+  .mu-site-search {
+    color: #fff;
+    width: 350px;
+    height: 64px;
+    transition: width .3s cubic-bezier(.23,1,.32,1);
+    .mu-text-field-input {
+      color: #fff;
+      font-weight: 300;
+      padding-left: 15px;
+      font-size: 20px;
+    }
+    .mu-input-content {
+      background: hsla(0,0%,100%,.25);
+      border-radius: 25px;
+    }
+    &.mu-input__focus {
+      width: 400px;
+    }
+    .material-icons {
+      cursor: pointer;
+      margin-right: 10px;
+    }
+  }
+  .mu-search-pagination {
+    margin-top: 15px;
+  }
+  // .mu-marked-table {
+  //   overflow-x: auto;
+  //   .mu-table-header-wrapper {
+  //     overflow: unset;
+  //   }
+  // }
+}
