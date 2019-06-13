@@ -37,10 +37,25 @@ export default {
       recevier: '' // 收件人姓名
     }
   },
+  watch: {
+    $route (to, from) {
+      this.initFabric()
+      // 初始化滚动事件
+      fromEvent(
+        document.querySelector('.canvas-layout'),
+        'scroll'
+      ).pipe(
+        debounceTime(250)
+      ).subscribe(evt => {
+        this.scrollTop = evt.target.scrollTop
+      })
+    }
+  },
   computed: {
     ...mapGetters([
       'cacheDiePatternPath',
-      'cacheModelType'
+      'taobaoId',
+      'recevier'
     ]),
     // 水印文字
     waterStr: function () {
@@ -48,8 +63,8 @@ export default {
     }
   },
   created () {
-    this.taobaoId = this.taobaoNickname
-    this.recevier = this.theRecipientName
+    // this.taobaoId = this.taobaoNickname
+    // this.recevier = this.theRecipientName
   },
   mounted () {
     this.initFabric()
@@ -74,6 +89,7 @@ export default {
       const self = this
       const loading = self.loading()
       self.progressStart()
+      debugger
       // 查询是否有已设计的素材
       const { bh: customNumber, id, type } = self.$route.query
       self.getCustomTemplateByCustomNumber({
@@ -249,13 +265,13 @@ export default {
     initEvents () {
       const self = this
       const canvas = self.canvasObject
-      // 鼠标移走事件
-      fromEvent(canvas, 'mouse:out').pipe(
-        debounceTime(100)
-      ).subscribe(x => {
-        self.bringDiebgAndWater()
-        canvas.discardActiveObject(canvas.getActiveObject())
-      })
+      // // 鼠标移走事件
+      // fromEvent(canvas, 'mouse:out').pipe(
+      //   debounceTime(100)
+      // ).subscribe(x => {
+      //   self.bringDiebgAndWater()
+      //   canvas.discardActiveObject(canvas.getActiveObject())
+      // })
 
       // 鼠标按下事件
       fromEvent(canvas, 'mouse:down').pipe(

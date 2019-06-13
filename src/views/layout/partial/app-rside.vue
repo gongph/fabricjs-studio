@@ -37,6 +37,8 @@ import AppAttrsOfRside from './app-attrs-of-rside.vue'
 import AppInfosOfRside from './app-infos-of-rside.vue'
 import AppLayerOfRside from './app-layer-of-rside.vue'
 import Divide from '@/components/divide/index.vue'
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
   name: 'AppRside',
   components: {
@@ -45,14 +47,17 @@ export default {
     AppLayerOfRside,
     Divide
   },
-  data () {
-    return {
-      tabActived: 1
-    }
+  computed: {
+    ...mapGetters([
+      'tabActived'
+    ])
   },
   methods: {
+    ...mapActions([
+      'setTabActived'
+    ]),
     handleTab (index) {
-      this.tabActived = index
+      this.setTabActived(index)
     }
   }
 }
