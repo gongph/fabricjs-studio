@@ -103,19 +103,19 @@
     background: #3c3c3c;
     overflow-y: auto;
   }
-  .main-content {
-    width: 900px;
-    background-color: transparent;
-    margin: auto;
-    color: #000;
-    .canvas-wrapper {
-      margin: 20px 0;
-      width: 100%;
-      min-height: 300px;
-      background-color: transparent;
-      overflow-x: hidden;
-    }
-  }
+  //.main-content {
+  //  width: 900px;
+  //  background-color: transparent;
+  //  margin: auto;
+  //  color: #000;
+  //  .canvas-wrapper {
+  //    margin: 20px 0;
+  //    width: 100%;
+  //    min-height: 640px;
+  //    background-color: #fff;
+  //    overflow-x: hidden;
+  //  }
+  //}
   // Right rside
   .rside-wrapper {
     width: $rsideWidth;
