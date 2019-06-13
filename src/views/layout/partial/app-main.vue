@@ -32,9 +32,7 @@ export default {
   data () {
     return {
       canvasObject: null, // 画布对象
-      layerActiveId: '', // 图层激活Id，用于设置样式
-      taobaoId: '', // 淘宝Id
-      recevier: '' // 收件人姓名
+      layerActiveId: '' // 图层激活Id，用于设置样式
     }
   },
   watch: {
@@ -55,7 +53,12 @@ export default {
     ...mapGetters([
       'cacheDiePatternPath',
       'taobaoId',
-      'recevier'
+      'recevier',
+      'waterText',
+      'dieBg',
+      'cacheModelType',
+      'taobaoNickname',
+      'theRecipientName'
     ]),
     // 水印文字
     waterStr: function () {
@@ -63,6 +66,9 @@ export default {
     }
   },
   created () {
+    const self = this
+    // 初始化淘宝id和收件人信息
+    self.setTaobaoidRecevier({ taobaoId: self.taobaoNickname, recevier: self.theRecipientName })
     // this.taobaoId = this.taobaoNickname
     // this.recevier = this.theRecipientName
   },
@@ -80,6 +86,8 @@ export default {
       'setActiveObject',
       'delActiveObject',
       'getFabricJsonById',
+      'setTaobaoidRecevier',
+      'setTabActived',
       'getCustomTemplateByCustomNumber'
     ]),
     /**
@@ -89,7 +97,6 @@ export default {
       const self = this
       const loading = self.loading()
       self.progressStart()
-      debugger
       // 查询是否有已设计的素材
       const { bh: customNumber, id, type } = self.$route.query
       self.getCustomTemplateByCustomNumber({
@@ -170,6 +177,8 @@ export default {
           self.setDiebg(oImg)
           canvas.add(oImg)
           self.initWatermark() // 初始化水印
+        }, {
+          crossOrigin: 'Anonymous'
         }
       )
     },
@@ -265,13 +274,22 @@ export default {
     initEvents () {
       const self = this
       const canvas = self.canvasObject
-      // // 鼠标移走事件
-      // fromEvent(canvas, 'mouse:out').pipe(
-      //   debounceTime(100)
-      // ).subscribe(x => {
-      //   self.bringDiebgAndWater()
-      //   canvas.discardActiveObject(canvas.getActiveObject())
-      // })
+      // 素材获取焦点
+      fromEvent(canvas, 'selection:created').pipe(
+        debounceTime(100)
+      ).subscribe(x => {
+        // 默认现实的是信息页面
+        self.setTabActived(1)
+      })
+      // 素材失去焦点
+      fromEvent(canvas, 'selection:cleared').pipe(
+        debounceTime(100)
+      ).subscribe(x => {
+        // 默认现实的是信息页面
+        self.setTabActived(2)
+        self.bringDiebgAndWater()
+        canvas.discardActiveObject(canvas.getActiveObject())
+      })
 
       // 鼠标按下事件
       fromEvent(canvas, 'mouse:down').pipe(
@@ -300,7 +318,7 @@ export default {
      */
     initWatermark () {
       const self = this
-      if (self.cacheModelType) return
+      if (!self.cacheModelType) return
       let waterText = fb.addText(self.waterStr, {
         fontFamily: 'Microsoft YaHei',
         fill: '#fff',

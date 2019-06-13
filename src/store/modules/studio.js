@@ -26,10 +26,12 @@ const studio = {
     dieBg: null,
     // 水印对象
     waterText: null,
+    // 收件人水印文字
+    waterStr: null,
     // 图形类型 `itext` or `image`
     graphType: '',
     // 展示预览页面的标志
-    openPreivewCanvasDialog: false,
+    openPreviewCanvasDialog: false,
     // 当前属性标签页，1 素材属性页，2 定制属性页
     tabActived: 1,
     // 淘宝id
@@ -44,7 +46,10 @@ const studio = {
       state.canvas = canvas
     },
     SET_OPEN_PREVIEW_CANVAS_DIALOG: (state, openPreviewCanvasDialog) => {
-      state.openPreivewCanvasDialog = openPreviewCanvasDialog
+      state.openPreviewCanvasDialog = openPreviewCanvasDialog
+    },
+    SET_WATER_STR: (state, waterStr) => {
+      state.waterStr = waterStr
     },
     SET_TAOBAOID_RECEVIER: (state, obj) => {
       state.taobaoId = obj.taobaoId
@@ -105,6 +110,8 @@ const studio = {
      */
     setTaobaoidRecevier ({ commit }, obj) {
       commit('SET_TAOBAOID_RECEVIER', obj)
+      const waterStr = '淘宝ID：' + obj.taobaoId + '    收件人姓名：' + obj.recevier
+      commit('SET_WATER_STR', waterStr)
     },
     /**
      * 设置标签页
@@ -132,6 +139,24 @@ const studio = {
      */
     setWaterText ({ commit }, waterText) {
       commit('SET_WATER_TEXT', waterText)
+    },
+    /**
+     * 设置水印对象
+     */
+    setWaterStr ({ commit }, waterStr) {
+      commit('SET_WATER_STR', waterStr)
+    },
+    /**
+     * 更新水印
+     * @param commit
+     * @param waterStr
+     */
+    handleWatermark ({ commit, state }, waterStr) {
+      if (!state.waterText) return
+      state.waterText.set({
+        text: state.waterStr
+      })
+      state.canvas.renderAll()
     },
     /**
      * 设置图形类型

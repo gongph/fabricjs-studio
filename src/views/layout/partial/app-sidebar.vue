@@ -34,7 +34,7 @@ export default {
       tools: [
         { id: 'itext', title: '添加文字', icon: 'add-font' },
         { id: 'local-img', title: '本地图片上传', icon: 'local-upload' },
-        { id: 'remote-img', title: '远程图库', icon: 'remote-img' }
+        { id: 'remote-img', title: '官方图库', icon: 'remote-img' }
       ],
       open: false
     }
@@ -138,6 +138,8 @@ export default {
               self.bringDiebgAndWater()
               self.progressDone()
               document.body.removeChild(fileEl)
+            }, {
+              crossOrigin: 'Anonymous'
             }
           )
         })
