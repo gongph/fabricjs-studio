@@ -1,5 +1,11 @@
 import { mapGetters } from 'vuex'
+import URL from '@/utils/url.js'
 export default {
+  data () {
+    return {
+      baseImgUrl: URL.baseImgUrl
+    }
+  },
   computed: {
     ...mapGetters([
       'canvas',
