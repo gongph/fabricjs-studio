@@ -133,6 +133,7 @@ export default {
               self.setFieldDisabled(false)
               self.bringDiebgAndWater()
               self.progressDone()
+              document.body.removeChild(fileEl)
             }
           )
         })
