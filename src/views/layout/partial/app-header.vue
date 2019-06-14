@@ -17,10 +17,10 @@
     <mu-button small flat slot="right"  @click="handleRefreshLayer">
       <mu-icon left value="refresh"></mu-icon> 刷新场景
     </mu-button>
-    <mu-button small flat slot="right" v-if="parseInt($route.query.type) === 1 && sbdCustomTemplate.finishedCondition.id === 1" @click="goStudio(sbdCustomTemplate)">
+    <mu-button v-if="isSbd" small flat slot="right" @click="goStudio(sbdCustomTemplate)">
       <mu-icon left value="mouse"></mu-icon> 设计鼠标垫
     </mu-button>
-    <mu-button small flat slot="right" v-else-if="parseInt($route.query.type) === 2 && bjbCustomTemplate.finishedCondition.id === 1" @click="goStudio(bjbCustomTemplate)">
+    <mu-button v-else-if="isBjb" small flat slot="right" @click="goStudio(bjbCustomTemplate)">
       <mu-icon left value="computer"></mu-icon> 设计贴膜
     </mu-button>
     <mu-button small flat slot="right"  @click="handleDownloadToLocal">
@@ -82,7 +82,19 @@ export default {
       'sbdCustomTemplate',
       'bjbCustomTemplate',
       'tabActived'
-    ])
+    ]),
+    isSbd () {
+      return (
+        parseInt(this.$route.query.type) === 1 &&
+        this.sbdCustomTemplate.finishedCondition?.id === 1
+      )
+    },
+    isBjb () {
+      return (
+        parseInt(this.$route.query.type) === 2 &&
+        this.bjbCustomTemplate.finishedCondition?.id === 1
+      )
+    }
   },
   methods: {
     ...mapActions([
