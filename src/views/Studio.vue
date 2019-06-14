@@ -19,6 +19,7 @@
 <script>
 import { AppHeader, AppSidebar, AppMain, AppRside } from './layout'
 import { mapGetters } from 'vuex'
+import PreviewCanvas from './components/preview-canvas.vue'
 
 export default {
   name: 'studio-page',
@@ -26,7 +27,8 @@ export default {
     AppHeader,
     AppSidebar,
     AppMain,
-    AppRside
+    AppRside,
+    PreviewCanvas
   },
   computed: {
     ...mapGetters([

@@ -12,6 +12,7 @@ const getters = {
   fieldDisabled: state => state.studio.fieldDisabled,
   openPreviewCanvasDialog: state => state.studio.openPreviewCanvasDialog,
   tabActived: state => state.studio.tabActived,
+  systemConfig: state => state.studio.systemConfig,
   recevier: state => state.studio.recevier,
   taobaoId: state => state.studio.taobaoId,
   // user

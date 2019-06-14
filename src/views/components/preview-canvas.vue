@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'PreviewCanvas',
   props: {
@@ -60,8 +60,12 @@ export default {
     this.loading = false
   },
   methods: {
+    ...mapActions([
+      'setOpenPreviewCanvasDialog'
+    ]),
     close () {
-      this.$emit('update:open')
+      this.setOpenPreviewCanvasDialog(false)
+      // this.$emit('update:open')
     }
   }
 }

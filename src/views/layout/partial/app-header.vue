@@ -15,7 +15,7 @@
       <mu-icon left value="cloud_upload"></mu-icon> 提交设计
     </mu-button>
     <mu-button small flat slot="right"  @click="handleRefreshLayer">
-      <mu-icon left value="cloud_upload"></mu-icon> 刷新场景
+      <mu-icon left value="refresh"></mu-icon> 刷新场景
     </mu-button>
     <mu-button small flat slot="right" v-if="parseInt($route.query.type) === 1 && sbdCustomTemplate.finishedCondition.id === 1" @click="goStudio(sbdCustomTemplate)">
       <mu-icon left value="mouse"></mu-icon> 设计鼠标垫
@@ -78,6 +78,7 @@ export default {
       'nickName',
       'taobaoId',
       'recevier',
+      'cacheSavedCustomTemplate',
       'sbdCustomTemplate',
       'bjbCustomTemplate',
       'tabActived'
@@ -121,7 +122,7 @@ export default {
      */
     handleRefreshLayer () {
       const self = this
-      const canvas = self.canvasObject
+      const canvas = self.canvas
       self.bringDiebgAndWater()
       canvas.discardActiveObject(canvas.getActiveObject())
     },
@@ -289,7 +290,6 @@ export default {
           message: '淘宝ID或者收件人姓名不能为空',
           position: 'top'
         })
-        // this.navTabActived = 3
         this.setTabActived(2)
         return
       }
@@ -332,7 +332,7 @@ export default {
                 format: 'png',
                 multiplier: 2
               }), id + '.png')
-              this.$router.push({ path: '/' })
+              // this.$router.push({ path: '/' })
             }).catch(err => {
               this.uploading = false
               this.progressDone()

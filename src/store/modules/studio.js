@@ -26,16 +26,20 @@ const studio = {
     dieBg: null,
     // 水印对象
     waterText: null,
+    // 收件人水印文字
+    waterStr: null,
     // 图形类型 `itext` or `image`
     graphType: '',
     // 展示预览页面的标志
-    openPreivewCanvasDialog: false,
+    openPreviewCanvasDialog: false,
     // 当前属性标签页，1 素材属性页，2 定制属性页
     tabActived: 1,
     // 淘宝id
     taobaoId: '',
     // 收件人
     recevier: '',
+    // 系统配置
+    systemConfig: null,
     // 输入框是否禁用
     fieldDisabled: true
   },
@@ -43,8 +47,14 @@ const studio = {
     SET_CANVAS: (state, canvas) => {
       state.canvas = canvas
     },
+    SET_SYSTEM_CONFIG: (state, systemConfig) => {
+      state.systemConfig = systemConfig
+    },
     SET_OPEN_PREVIEW_CANVAS_DIALOG: (state, openPreviewCanvasDialog) => {
-      state.openPreivewCanvasDialog = openPreviewCanvasDialog
+      state.openPreviewCanvasDialog = openPreviewCanvasDialog
+    },
+    SET_WATER_STR: (state, waterStr) => {
+      state.waterStr = waterStr
     },
     SET_TAOBAOID_RECEVIER: (state, obj) => {
       state.taobaoId = obj.taobaoId
@@ -95,6 +105,20 @@ const studio = {
       commit('SET_CANVAS', canvas)
     },
     /**
+     * 设置 系统配置
+     */
+    getSystemConfig ({ commit }) {
+      return new Promise((resolve, reject) => {
+        Api.fetchConfig().then(response => {
+          if (response.status !== 200) reject(new Error('fetchImageTypes: error'))
+          commit('SET_SYSTEM_CONFIG', response.data[0])
+          resolve()
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+    /**
      * 设置预览页面状态
      */
     setOpenPreviewCanvasDialog ({ commit }, openPreviewCanvasDialog) {
@@ -105,6 +129,8 @@ const studio = {
      */
     setTaobaoidRecevier ({ commit }, obj) {
       commit('SET_TAOBAOID_RECEVIER', obj)
+      const waterStr = '淘宝ID：' + obj.taobaoId + '    收件人姓名：' + obj.recevier
+      commit('SET_WATER_STR', waterStr)
     },
     /**
      * 设置标签页
@@ -132,6 +158,24 @@ const studio = {
      */
     setWaterText ({ commit }, waterText) {
       commit('SET_WATER_TEXT', waterText)
+    },
+    /**
+     * 设置水印对象
+     */
+    setWaterStr ({ commit }, waterStr) {
+      commit('SET_WATER_STR', waterStr)
+    },
+    /**
+     * 更新水印
+     * @param commit
+     * @param waterStr
+     */
+    handleWatermark ({ commit, state }, waterStr) {
+      if (!state.waterText) return
+      state.waterText.set({
+        text: state.waterStr
+      })
+      state.canvas.renderAll()
     },
     /**
      * 设置图形类型

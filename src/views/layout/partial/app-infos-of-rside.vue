@@ -65,7 +65,9 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'cacheSavedCustomTemplate'
+      'cacheSavedCustomTemplate',
+      'waterText',
+      'canvas'
     ])
   },
   created () {
@@ -73,7 +75,9 @@ export default {
   },
   methods: {
     ...mapActions([
-      'setTaobaoidRecevier'
+      'setTaobaoidRecevier',
+      'handleWatermark',
+      'setWaterStr'
     ]),
     initData () {
       const obj = this.cacheSavedCustomTemplate
@@ -90,10 +94,8 @@ export default {
     handleInput: debounce(function () {
       const self = this
       self.setTaobaoidRecevier({ taobaoId: self.infosForm.taobaoNickname, recevier: self.infosForm.theRecipientName })
-      this.$emit('info:changed', {
-        taobaoNickname: this.infosForm.taobaoNickname,
-        theRecipientName: this.infosForm.theRecipientName
-      })
+      // 动态刷新收件人信息和淘宝id
+      self.handleWatermark()
     }, 250)
   }
 }
