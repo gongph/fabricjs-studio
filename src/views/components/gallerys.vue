@@ -4,6 +4,7 @@
     title="官方图库"
     dialog-class="mu-uploadify-dialog"
     :overlay-opacity="0.5"
+    overlay-color="rgba(255,255,255,.85)"
     :open.sync="isOpen"
     @close="handleClose"
   >
@@ -35,7 +36,7 @@
     <!-- 图片列表 -->
     <div
       data-mu-loading-color="#2196f3"
-      data-mu-loading-overlay-color="rgba(0, 0, 0, .1)"
+      data-mu-loading-overlay-color="transparent"
       v-loading="imgLoading"
       class="image-list"
     >
@@ -55,7 +56,7 @@
               class="item-img"
               :data-id="img.id"
               @click="handleImgClick"
-            ></image-lazyload>
+            />
           </div>
         </div>
       </happy-scroll>
@@ -224,24 +225,21 @@ export default {
     cursor: pointer;
     border-radius: 4px;
     .superscript {
-      display: none;
       position: absolute;
       top: -4px;
-      right: 0;
+      right: -1px;
       z-index: 9;
+      transition: transform .2s;
+      transform: scale(0);
     }
     .item-img {
       max-width: 100%;
-      transition: all .3s ease-out;
-      opacity: 1;
     }
     &.active,
     &:hover {
       .superscript {
-        display: block;
-      }
-      .item-img {
-        opacity: .5;
+        will-change: transform;
+        transform: scale(1);
       }
     }
   }
