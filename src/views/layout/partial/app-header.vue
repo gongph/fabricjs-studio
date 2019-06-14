@@ -124,7 +124,7 @@ export default {
           })
           // 清空图层
           this.clearLayers()
-          this.setTabActived(1)
+          this.setTabActived(2)
           // this.navTabActived = 0
         }
       })
@@ -177,7 +177,7 @@ export default {
     /**
      * 提取公共的保存信息
      */
-    handleCustomTemplateAndFabricDesign () {
+    handleCustomTemplateAndFabricDesign (flag = true) {
       return new Promise((resolve, reject) => {
         // this.progressStart()
         this.progressStart()
@@ -195,10 +195,12 @@ export default {
         }).then(() => {
           // this.progressDone()
           this.progressDone()
-          this.$toast.success({
-            message: '保存成功',
-            position: 'top'
-          })
+          if (flag) {
+            this.$toast.success({
+              message: '保存成功',
+              position: 'top'
+            })
+          }
           resolve()
         }).catch(err => {
           this.progressDone()
@@ -242,11 +244,13 @@ export default {
         // 如果选择是确认，直接提交信息，否则的话打开信息面板
         if (result) {
           this.progressStart()
-          // 上传图片到服务器
-          uploadify(this.canvas.toDataURL({
-            format: 'png',
-            multiplier: 2
-          }), 'product-design')
+          this.handleCustomTemplateAndFabricDesign(false).then(response => {
+            // 上传图片到服务器
+            return uploadify(this.canvas.toDataURL({
+              format: 'png',
+              multiplier: 2
+            }), 'product-design')
+          })
             .then(response => {
               this.uploading = false
               const { bucketName, fileName } = response
@@ -312,11 +316,13 @@ export default {
       }).then(({ result }) => {
         if (result) {
           this.progressStart()
-          // 上传图片到服务器
-          uploadify(this.canvas.toDataURL({
-            format: 'png',
-            multiplier: 2
-          }), 'product-design')
+          this.handleCustomTemplateAndFabricDesign(false).then(response => {
+            // 上传图片到服务器
+            return uploadify(this.canvas.toDataURL({
+              format: 'png',
+              multiplier: 2
+            }), 'product-design')
+          })
             .then(response => {
               this.uploading = false
               const { bucketName, fileName } = response
@@ -344,6 +350,11 @@ export default {
                 format: 'png',
                 multiplier: 2
               }), id + '.png')
+              // if (this.isSbd()) {
+              //   this.goStudio(this.sbdCustomTemplate)
+              // } else if (this.isBjb()) {
+              //   this.goStudio(this.sbdCustomTemplate)
+              // }
               // this.$router.push({ path: '/' })
             }).catch(err => {
               this.uploading = false

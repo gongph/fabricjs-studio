@@ -33,7 +33,7 @@ const studio = {
     // 展示预览页面的标志
     openPreviewCanvasDialog: false,
     // 当前属性标签页，1 素材属性页，2 定制属性页
-    tabActived: 1,
+    tabActived: 2,
     // 淘宝id
     taobaoId: '',
     // 收件人
