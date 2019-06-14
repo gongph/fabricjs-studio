@@ -17,12 +17,10 @@ export default {
     }
   },
   watch: {
-    src () {
-      this.loadImg()
+    src: {
+      handler: 'loadImg',
+      immediate: true
     }
-  },
-  created () {
-    this.loadImg()
   },
   methods: {
     click (evt) {
