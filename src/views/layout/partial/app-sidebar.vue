@@ -8,10 +8,8 @@
         <divide/>
       </div>
     </div>
-
     <!-- 远程图库弹框 -->
     <gallerys :open.sync="open"/>
-
   </div>
 </template>
 
@@ -22,12 +20,13 @@ import Gallerys from '@/views/components/gallerys.vue'
 import ExtendObjectMixin from '@/mixins/extendObject.js'
 import VarMixin from '@/mixins/var.js'
 import ProgressMixin from '@/mixins/progress.js'
+import LoadingMixin from '@/mixins/loading.js'
 import fb from '@/utils/fabric'
 import { uploadify } from '@/utils/file-upload.js'
 
 export default {
   name: 'AppSidebar',
-  mixins: [ExtendObjectMixin, VarMixin, ProgressMixin],
+  mixins: [ExtendObjectMixin, VarMixin, ProgressMixin, LoadingMixin],
   components: { Divide, Gallerys },
   data () {
     return {
@@ -108,6 +107,11 @@ export default {
       fileEl.onabort = function () { alert() }
       fileEl.onchange = function (evt) {
         self.progressStart()
+        const loading = self.loading({
+          overlayColor: 'rgba(255,255,255,.25)',
+          color: 'rgba(255,255,255,.15)'
+        })
+
         const file = evt.target.files[0]
         if (!/^image\/(png|jpg|jpeg)$/.test(file.type)) {
           self.$toast.error({
@@ -137,6 +141,7 @@ export default {
               self.setFieldDisabled(false)
               self.bringDiebgAndWater()
               self.progressDone()
+              loading.close()
               document.body.removeChild(fileEl)
             }, {
               crossOrigin: 'Anonymous'

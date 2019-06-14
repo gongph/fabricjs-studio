@@ -127,7 +127,7 @@ export default {
           setTimeout(() => {
             self.progressDone()
             loading.close()
-          })
+          }, 100)
         })
       }).catch(err => {
         console.error(err)
