@@ -1,6 +1,6 @@
 <template>
   <div class="main-wrapper">
-    <happy-scroll color="rgba(120,120,120, .5)" resize>
+    <happy-scroll color="rgba(120,120,120, .5)" hide-horizontal resize>
       <div class="main-content">
         <div class="canvas-wrapper">
           <canvas id="canvas"></canvas>

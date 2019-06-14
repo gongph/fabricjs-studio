@@ -3,7 +3,7 @@
     width="640"
     title="官方图库"
     dialog-class="mu-uploadify-dialog"
-    :overlay-opacity="0.75"
+    :overlay-opacity="0.5"
     :open.sync="isOpen"
     @close="handleClose"
   >
