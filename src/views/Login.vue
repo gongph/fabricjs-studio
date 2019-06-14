@@ -4,7 +4,7 @@
     <div class="login-container">
       <div class="qrcode-wrapper">
         <div class="qrcode">
-          <img src="/img/qrcode3.png">
+          <img src="/img/qrcode3.png" draggable="false">
           <p>— 系统建议入口 —</p>
         </div>
       </div>
@@ -57,7 +57,7 @@
     </div>
 
     <div class="footer">
-      <p>Copyright © 版权所有</p>
+      <p>Copyright ©2017 郑州新通路商贸有限公司.All rights reserved.</p>
     </div>
 
     <mu-snackbar position="top" :open.sync="snackbar.open">
@@ -143,6 +143,7 @@ $color: #2f4071;
   background-size: cover;
   transition: all 2s linear;
   transform: translateZ(0);
+  overflow: hidden;
 }
 .bg {
   position: absolute;
@@ -173,6 +174,7 @@ $color: #2f4071;
   display: flex;
   justify-content: center;
   align-items: center;
+  user-select: none;
   .qrcode {
     width: 50%;
     img {
@@ -194,6 +196,7 @@ $color: #2f4071;
     font-weight: normal;
     text-align: center;
     margin-bottom: 55px;
+    user-select: none;
   }
   .forget-pass {
     font-size: 12px;
@@ -207,6 +210,7 @@ $color: #2f4071;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  color: #666;
+  color: rgba(221, 220, 220, 0.5);
+  user-select: none;
 }
 </style>
