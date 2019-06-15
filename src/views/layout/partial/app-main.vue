@@ -318,7 +318,7 @@ export default {
      */
     initWatermark () {
       const self = this
-      if (!self.cacheModelType) return
+      if (!parseInt(this.$route.query.type)) return
       let waterText = fb.addText(self.waterStr, {
         fontFamily: 'Microsoft YaHei',
         fill: '#fff',
@@ -327,13 +327,13 @@ export default {
       })
 
       // 如果是`笔记本`
-      if (self.cacheModelType === 1) {
+      if (parseInt(this.$route.query.type) === 1) {
         waterText.scale(0.25)
         waterText.set({
           left: 150,
           top: 0
         })
-      } else {
+      } else if (parseInt(this.$route.query.type) === 2) {
         // 如果是`鼠标垫`
         waterText.scale(0.35)
         waterText.set({
