@@ -418,6 +418,11 @@ export default {
         value = val / originHeight
         this.activeObject.set('scaleY', value)
       } else if (key === 'angle') {
+        // 避免负值的错误问题
+        // 修复 https://github.com/gongph/fabricjs-studio/issues/44
+        if (value === '-') {
+          return
+        }
         this.activeObject.set({
           left: this.activeObject.getCenterPoint().x,
           top: this.activeObject.getCenterPoint().y,
