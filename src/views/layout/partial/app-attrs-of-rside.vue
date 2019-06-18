@@ -264,6 +264,7 @@ export default {
   },
   mounted () {
     this.getSystemConfig()
+    this.initFonts()
   },
   watch: {
     activeObject () {
