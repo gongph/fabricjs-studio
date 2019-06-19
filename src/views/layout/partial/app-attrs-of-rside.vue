@@ -28,7 +28,7 @@
             v-for="(font, index) in fonts"
             :key="index"
             :label="font.value"
-            :value="font.name"
+            :value="font.value"
           />
         </mu-select>
       </mu-form-item>
@@ -367,6 +367,7 @@ export default {
      * 设置文本属性
      */
     setItextAttr: debounce(function (key) {
+      debugger
       const val = this.attrsForm.itext[key]
       const NORMAL = 'normal'
       let value = val
