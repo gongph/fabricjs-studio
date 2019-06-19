@@ -27,6 +27,7 @@
           <mu-option
             v-for="(font, index) in fonts"
             :key="index"
+            :style="{fontFamily: font.value}"
             :label="font.value"
             :value="font.value"
           />
