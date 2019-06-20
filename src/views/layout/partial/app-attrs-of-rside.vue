@@ -390,7 +390,11 @@ export default {
         }
       }
       this.attrsForm.itext[key] = value
-      this.activeObject.set(key, value)
+      if (key === 'fontFamily') {
+        this.activeObject.fontFamily = value
+      } else {
+        this.activeObject.set(key, value)
+      }
       this.canvas.renderAll()
     }, 250),
     /**
