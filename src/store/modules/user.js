@@ -61,7 +61,7 @@ const user = {
             reject(new Error('getLoginUserInfo: roles must be a non-null array!'))
           }
           commit('SET_USER', data)
-          commit('SET_NAME', data.login)
+          commit('SET_NAME', data.firstName)
           resolve(response)
         }).catch(err => {
           reject(err)
