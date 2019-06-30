@@ -470,7 +470,11 @@ export default {
             left: left + 5,
             top: top + 5
           })
-          obj = this.extendObject(obj, 'itext')
+          if (obj.type === 'itext') {
+            obj = this.extendObject(obj, 'itext')
+          } else {
+            obj = this.extendObject(obj, 'image')
+          }
           c.add(obj)
           this.setActiveObject(obj)
           this.$emit('graph:copyed', obj)
