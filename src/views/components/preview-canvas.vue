@@ -55,7 +55,7 @@ export default {
   mounted () {
     this.url = this.canvas.toDataURL({
       format: 'png',
-      multiplier: 2
+      multiplier: 4
     })
     this.loading = false
   },

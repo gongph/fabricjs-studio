@@ -248,7 +248,7 @@ export default {
             // 上传图片到服务器
             return uploadify(this.canvas.toDataURL({
               format: 'png',
-              multiplier: 2
+              multiplier: 4
             }), 'product-design')
           })
             .then(response => {
@@ -320,7 +320,7 @@ export default {
             // 上传图片到服务器
             return uploadify(this.canvas.toDataURL({
               format: 'png',
-              multiplier: 2
+              multiplier: 4
             }), 'product-design')
           })
             .then(response => {
@@ -348,7 +348,7 @@ export default {
               })
               download(this.canvas.toDataURL({
                 format: 'png',
-                multiplier: 2
+                multiplier: 4
               }), id + '.png')
               // if (this.isSbd()) {
               //   this.goStudio(this.sbdCustomTemplate)

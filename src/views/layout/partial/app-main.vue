@@ -148,8 +148,8 @@ export default {
           {
             name: 'canvas',
             backgroundColor: '#fff',
-            width: image.width / 2,
-            height: image.height / 2,
+            width: image.width / 4,
+            height: image.height / 4,
             stopContextMenu: true,
             backgroundVpt: false
           },
@@ -166,7 +166,7 @@ export default {
       self.$fabric.Image.fromURL(
         `${baseImgUrl}${self.cacheDiePatternPath}`,
         oImg => {
-          oImg.scale(0.5)
+          oImg.scale(0.25)
           oImg.set({
             selectable: false,
             evented: false,
@@ -328,14 +328,14 @@ export default {
 
       // 如果是`笔记本`
       if (parseInt(this.$route.query.type) === 1) {
-        waterText.scale(0.25)
+        waterText.scale(0.125)
         waterText.set({
           left: 150,
           top: 0
         })
       } else if (parseInt(this.$route.query.type) === 2) {
         // 如果是`鼠标垫`
-        waterText.scale(0.35)
+        waterText.scale(0.175)
         waterText.set({
           left: 20,
           top: 10,
