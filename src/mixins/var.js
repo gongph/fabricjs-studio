@@ -10,6 +10,7 @@ export default {
     ...mapGetters([
       'canvas',
       'waterText',
+      'dieLineBg',
       'dieBg'
     ])
   },
@@ -44,7 +45,7 @@ export default {
       if (self.dieBg) {
         self.bringToFront(self.dieBg)
       }
-      if (self.dieLineBg) {
+      if (self.dieLineBg && parseInt(this.$route.query.type) === 1) {
         self.bringToFront(self.dieLineBg)
       }
       if (self.waterText) {

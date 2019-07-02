@@ -67,7 +67,7 @@ export default {
     ]),
     close () {
       // 初始化线模图
-      if (this.cacheLinePathDiePatternPath) {
+      if (this.cacheLinePathDiePatternPath && parseInt(this.$route.query.type) === 1) {
         this.$fabric.Image.fromURL(
           `${baseImgUrl}${self.cacheLinePathDiePatternPath}`,
           oImg => {
