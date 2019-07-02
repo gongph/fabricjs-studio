@@ -32,10 +32,13 @@
 </template>
 
 <script>
-import { baseImgUrl } from '@/utils'
 import { mapGetters, mapActions } from 'vuex'
+import VarMixin from '@/mixins/var.js'
 export default {
   name: 'PreviewCanvas',
+  mixins: [
+    VarMixin
+  ],
   props: {
     open: {
       type: Boolean,
@@ -50,8 +53,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'canvas',
-      'cacheLinePathDiePatternPath'
+      'canvas'
     ])
   },
   mounted () {
@@ -67,25 +69,7 @@ export default {
     ]),
     close () {
       // 初始化线模图
-      if (this.cacheLinePathDiePatternPath && parseInt(this.$route.query.type) === 1) {
-        this.$fabric.Image.fromURL(
-          `${baseImgUrl}${self.cacheLinePathDiePatternPath}`,
-          oImg => {
-            oImg.scale(0.25)
-            oImg.set({
-              selectable: false,
-              evented: false,
-              moveCursor: 'default',
-              hoverCursor: 'default'
-            })
-            oImg = this.extendObject(oImg, 'dielinebg', false) // 拓展字段
-            this.setDieLinebg(oImg)
-            this.canvas.add(oImg)
-          }, {
-            crossOrigin: 'Anonymous'
-          }
-        )
-      }
+      this.showDieLineBg()
       this.setOpenPreviewCanvasDialog(false)
       // this.$emit('update:open')
     }

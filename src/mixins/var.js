@@ -1,6 +1,11 @@
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import URL from '@/utils/url.js'
+import { baseImgUrl } from '@/utils'
+import ExtendObjectMixin from '@/mixins/extendObject.js'
 export default {
+  mixins: [
+    ExtendObjectMixin
+  ],
   data () {
     return {
       baseImgUrl: URL.baseImgUrl
@@ -11,10 +16,14 @@ export default {
       'canvas',
       'waterText',
       'dieLineBg',
+      'cacheLinePathDiePatternPath',
       'dieBg'
     ])
   },
   methods: {
+    ...mapActions([
+      'setDieLinebg'
+    ]),
     /**
      * 通过Id找到对象
      */
@@ -50,6 +59,32 @@ export default {
       }
       if (self.waterText) {
         self.bringToFront(self.waterText)
+      }
+    },
+    /**
+     * 显示线模图
+     */
+    showDieLineBg () {
+      const self = this
+      // 初始化线模图
+      if (self.cacheLinePathDiePatternPath && parseInt(this.$route.query.type) === 1) {
+        self.$fabric.Image.fromURL(
+          `${baseImgUrl}${self.cacheLinePathDiePatternPath}`,
+          oImg => {
+            oImg.scale(0.25)
+            oImg.set({
+              selectable: false,
+              evented: false,
+              moveCursor: 'default',
+              hoverCursor: 'default'
+            })
+            oImg = self.extendObject(oImg, 'dielinebg', false) // 拓展字段
+            self.setDieLinebg(oImg)
+            self.canvas.add(oImg)
+          }, {
+            crossOrigin: 'Anonymous'
+          }
+        )
       }
     }
   }

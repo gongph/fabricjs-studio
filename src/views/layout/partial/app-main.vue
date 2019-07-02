@@ -52,7 +52,6 @@ export default {
   computed: {
     ...mapGetters([
       'cacheDiePatternPath',
-      'cacheLinePathDiePatternPath',
       'taobaoId',
       'recevier',
       'waterText',
@@ -81,7 +80,6 @@ export default {
     ...mapActions([
       'setCanvas',
       'setDiebg',
-      'setDieLinebg',
       'setWaterText',
       'setGraphType',
       'setFieldDisabled',
@@ -185,25 +183,7 @@ export default {
         }
       )
       // 初始化线模图
-      if (self.cacheLinePathDiePatternPath && parseInt(this.$route.query.type) === 1) {
-        self.$fabric.Image.fromURL(
-          `${baseImgUrl}${self.cacheLinePathDiePatternPath}`,
-          oImg => {
-            oImg.scale(0.25)
-            oImg.set({
-              selectable: false,
-              evented: false,
-              moveCursor: 'default',
-              hoverCursor: 'default'
-            })
-            oImg = self.extendObject(oImg, 'dielinebg', false) // 拓展字段
-            self.setDieLinebg(oImg)
-            canvas.add(oImg)
-          }, {
-            crossOrigin: 'Anonymous'
-          }
-        )
-      }
+      self.showDieLineBg()
     },
     /**
      * 从加载JSON以便重新渲染Fabric
@@ -280,25 +260,7 @@ export default {
         }
       )
       // 初始化线模图
-      if (self.cacheLinePathDiePatternPath && parseInt(this.$route.query.type) === 1) {
-        self.$fabric.Image.fromURL(
-          `${baseImgUrl}${self.cacheLinePathDiePatternPath}`,
-          oImg => {
-            oImg.scale(0.25)
-            oImg.set({
-              selectable: false,
-              evented: false,
-              moveCursor: 'default',
-              hoverCursor: 'default'
-            })
-            oImg = self.extendObject(oImg, 'dielinebg', false) // 拓展字段
-            self.setDieLinebg(oImg)
-            canvas.add(oImg)
-          }, {
-            crossOrigin: 'Anonymous'
-          }
-        )
-      }
+      self.showDieLineBg()
     },
     /**
      * 初始化选中框样式
