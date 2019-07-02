@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import { baseImgUrl } from '@/utils'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'PreviewCanvas',
@@ -49,7 +50,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'canvas'
+      'canvas',
+      'cacheLinePathDiePatternPath'
     ])
   },
   mounted () {
@@ -64,6 +66,26 @@ export default {
       'setOpenPreviewCanvasDialog'
     ]),
     close () {
+      // 初始化线模图
+      if (this.cacheLinePathDiePatternPath) {
+        this.$fabric.Image.fromURL(
+          `${baseImgUrl}${self.cacheLinePathDiePatternPath}`,
+          oImg => {
+            oImg.scale(0.25)
+            oImg.set({
+              selectable: false,
+              evented: false,
+              moveCursor: 'default',
+              hoverCursor: 'default'
+            })
+            oImg = this.extendObject(oImg, 'dielinebg', false) // 拓展字段
+            this.setDieLinebg(oImg)
+            this.canvas.add(oImg)
+          }, {
+            crossOrigin: 'Anonymous'
+          }
+        )
+      }
       this.setOpenPreviewCanvasDialog(false)
       // this.$emit('update:open')
     }

@@ -44,6 +44,9 @@ export default {
       if (self.dieBg) {
         self.bringToFront(self.dieBg)
       }
+      if (self.dieLineBg) {
+        self.bringToFront(self.dieLineBg)
+      }
       if (self.waterText) {
         self.bringToFront(self.waterText)
       }

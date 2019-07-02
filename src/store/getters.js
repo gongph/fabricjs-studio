@@ -7,6 +7,7 @@ const getters = {
   layers: state => state.studio.layers,
   fonts: state => state.studio.fonts,
   dieBg: state => state.studio.dieBg,
+  dieLineBg: state => state.studio.dieLineBg,
   waterText: state => state.studio.waterText,
   graphType: state => state.studio.graphType,
   fieldDisabled: state => state.studio.fieldDisabled,
@@ -29,6 +30,8 @@ const getters = {
   autoCompleteList: state => state.home.autoCompleteList,
   // 模具
   cacheDiePatternPath: state => state.home.cacheDiePattern.path,
+  // 线模图
+  cacheLinePathDiePatternPath: state => state.home.cacheDiePattern.linepath,
   cacheCustomNumber: state => state.home.cacheDiePattern.customNumber,
   cacheModelType: state => state.home.cacheDiePattern.modelType,
   cacheSavedCustomTemplate: state => state.home.cacheDiePattern.savedCustomTemplate,

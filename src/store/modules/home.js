@@ -69,6 +69,8 @@ const home = {
       customNumber: '',
       // 模具图路径
       path: '',
+      // 线模图路径
+      linepath: '',
       // 模具类型
       modelType: 1,
       savedCustomTemplate: null
@@ -127,6 +129,7 @@ const home = {
       // 电脑贴膜和鼠标垫的图片路径是不一样的
       if (state.customeTemplate.modelType.id === 1) {
         state.cacheDiePattern.path = data?.diePatternimagePath ? data.diePatternimagePath : data.diePattern.diePatternimagePath
+        state.cacheDiePattern.linepath = data?.linePatternimagePath ? data.linePatternimagePath : data.diePattern.linePatternimagePath
       } else {
         state.cacheDiePattern.path = state.sbdDiePattern?.diePatternimagePath
       }
