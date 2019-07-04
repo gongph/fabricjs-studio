@@ -368,7 +368,6 @@ export default {
      * 设置文本属性
      */
     setItextAttr: debounce(function (key) {
-      debugger
       const val = this.attrsForm.itext[key]
       const NORMAL = 'normal'
       let value = val

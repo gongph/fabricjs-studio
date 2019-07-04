@@ -56,6 +56,7 @@ export default {
       'recevier',
       'waterText',
       'dieBg',
+      'dieLineBg',
       'cacheModelType',
       'taobaoNickname',
       'theRecipientName'
@@ -181,6 +182,8 @@ export default {
           crossOrigin: 'Anonymous'
         }
       )
+      // 初始化线模图
+      self.showDieLineBg()
     },
     /**
      * 从加载JSON以便重新渲染Fabric
@@ -256,6 +259,8 @@ export default {
           })(object.toObject)
         }
       )
+      // 初始化线模图
+      self.showDieLineBg()
     },
     /**
      * 初始化选中框样式

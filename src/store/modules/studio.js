@@ -24,6 +24,8 @@ const studio = {
     fonts: [],
     // 模具背景图对象
     dieBg: null,
+    // 模具线模图
+    dieLineBg: null,
     // 水印对象
     waterText: null,
     // 收件人水印文字
@@ -86,6 +88,9 @@ const studio = {
     },
     SET_DIE_BG: (state, dieBg) => {
       state.dieBg = dieBg
+    },
+    SET_DIE_LINE_BG: (state, dieLineBg) => {
+      state.dieLineBg = dieLineBg
     },
     SET_WATER_TEXT: (state, waterText) => {
       state.waterText = waterText
@@ -152,6 +157,12 @@ const studio = {
      */
     setDiebg ({ commit }, dieBg) {
       commit('SET_DIE_BG', dieBg)
+    },
+    /**
+     * 设置模具图背景
+     */
+    setDieLinebg ({ commit }, dieLineBg) {
+      commit('SET_DIE_LINE_BG', dieLineBg)
     },
     /**
      * 设置水印对象

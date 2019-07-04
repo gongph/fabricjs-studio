@@ -175,6 +175,7 @@ export default {
         this.isOpen = false
         this.sureBtnLoading = false
         this.progressDone()
+        this.$emit('update:open', false)
       }, {
         crossOrigin: 'Anonymous'
       })

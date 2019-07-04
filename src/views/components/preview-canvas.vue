@@ -33,8 +33,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import VarMixin from '@/mixins/var.js'
 export default {
   name: 'PreviewCanvas',
+  mixins: [
+    VarMixin
+  ],
   props: {
     open: {
       type: Boolean,
@@ -64,6 +68,8 @@ export default {
       'setOpenPreviewCanvasDialog'
     ]),
     close () {
+      // 初始化线模图
+      this.showDieLineBg()
       this.setOpenPreviewCanvasDialog(false)
       // this.$emit('update:open')
     }

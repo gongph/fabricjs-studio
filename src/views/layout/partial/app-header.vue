@@ -75,6 +75,7 @@ export default {
   computed: {
     ...mapGetters([
       'canvas',
+      'dieLineBg',
       'nickName',
       'taobaoId',
       'recevier',
@@ -216,6 +217,9 @@ export default {
      * 保存到服务器
      */
     handleSaveToRemote () {
+      if (this.dieLineBg) {
+        this.canvas.remove(this.dieLineBg)
+      }
       this.validateInput('保存并预览').then(result => {
         // 如果选择是确认，直接提交信息，否则的话打开信息面板
         if (result) {
@@ -235,6 +239,9 @@ export default {
      * 提交设计到服务器
      */
     handleSubmitDesignToRemote () {
+      if (this.dieLineBg) {
+        this.canvas.remove(this.dieLineBg)
+      }
       // 您真的要提交设计？一旦提交成功，将不能再修改，请再次确认！！！
       this.validateInput('提交设计', true).then(result => {
         return this.$confirm('您真的要提交设计？一旦提交成功，将不能再修改，请再次确认！！！', '提示', {
@@ -300,6 +307,9 @@ export default {
      * 保存到本地
      */
     handleDownloadToLocal () {
+      if (this.dieLineBg) {
+        this.canvas.remove(this.dieLineBg)
+      }
       // 如果收件人或者淘宝id为空不允许提交
       if (!this.taobaoId || !this.recevier) {
         this.$toast.error({
