@@ -132,7 +132,7 @@ const home = {
         // 如果有线模图给线模图赋值
         if (data.linePatternimagePath) {
           state.cacheDiePattern.linepath = data.linePatternimagePath
-        } else if (data.diePattern.linePatternimagePath) {
+        } else if (data.diePattern && data.diePattern.linePatternimagePath) {
           state.cacheDiePattern.linepath = data.diePattern.linePatternimagePath
         }
       } else {
