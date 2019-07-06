@@ -7,7 +7,9 @@ import store from '@/store'
 import { getToken } from '@/utils/auth'
 
 const service = axios.create({
-  baseURL: 'http://new-api.boyuanziben.cn',
+  // baseURL: 'http://new-api.boyuanziben.cn',
+  // baseURL: 'http://localhost:8080',
+  baseURL: 'http://api.xintonglu.top',
   timeout: 50000
 })
 
