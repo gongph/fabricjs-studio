@@ -53,7 +53,7 @@ import LoadingMixin from '@/mixins/loading.js'
 import ProgressMixin from '@/mixins/progress.js'
 import ExtendObjectMixin from '@/mixins/extendObject.js'
 import { uploadify } from '@/utils/file-upload.js'
-import { baseImgUrl, download, parseTime } from '@/utils'
+import { download, parseTime } from '@/utils'
 import { cloneDeep } from 'lodash'
 
 export default {
@@ -67,7 +67,6 @@ export default {
   data () {
     return {
       canvasObject: null, // 画布对象
-      baseImgUrl,
       uploading: false,
       layerActiveId: '' // 图层激活Id，用于设置样式
     }

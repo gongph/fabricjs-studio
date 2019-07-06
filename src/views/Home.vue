@@ -263,15 +263,16 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { parseTime, baseImgUrl, download } from '@/utils'
+import { parseTime, download } from '@/utils'
 import Viewer from '@/components/Viewer'
 import { throttle } from 'lodash'
+import URL from '@/utils/url.js'
 export default {
   name: 'HomePage',
   components: { Viewer },
   data () {
     return {
-      baseUrl: baseImgUrl,
+      baseImgUrl: URL.baseImgUrl,
       tabActive: 0,
       isOpenMenu: false,
       isFocus: false,

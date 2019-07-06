@@ -16,7 +16,7 @@ import VarMixin from '@/mixins/var.js'
 import LoadingMixin from '@/mixins/loading.js'
 import ProgressMixin from '@/mixins/progress.js'
 import ExtendObjectMixin from '@/mixins/extendObject.js'
-import { baseImgUrl, gererateUUID } from '@/utils'
+import { gererateUUID } from '@/utils'
 import { fromEvent } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 import fb from '@/utils/fabric'
@@ -141,7 +141,7 @@ export default {
     initCanvas (cb) {
       const self = this
       const image = new Image()
-      image.src = `${baseImgUrl}${self.cacheDiePatternPath}`
+      image.src = `${self.baseImgUrl}${self.cacheDiePatternPath}`
       image.onload = () => {
         // 初始化Canvas画布
         const canvas = self.canvasObject = fb.init(
@@ -165,7 +165,7 @@ export default {
     createFabric (canvas) {
       const self = this
       self.$fabric.Image.fromURL(
-        `${baseImgUrl}${self.cacheDiePatternPath}`,
+        `${self.baseImgUrl}${self.cacheDiePatternPath}`,
         oImg => {
           oImg.scale(0.25)
           oImg.set({

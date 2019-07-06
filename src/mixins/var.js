@@ -1,6 +1,5 @@
 import { mapGetters, mapActions } from 'vuex'
 import URL from '@/utils/url.js'
-import { baseImgUrl } from '@/utils'
 import ExtendObjectMixin from '@/mixins/extendObject.js'
 export default {
   mixins: [
@@ -69,7 +68,7 @@ export default {
       // 初始化线模图
       if (self.cacheLinePathDiePatternPath && parseInt(this.$route.query.type) === 1) {
         self.$fabric.Image.fromURL(
-          `${baseImgUrl}${self.cacheLinePathDiePatternPath}`,
+          `${self.baseImgUrl}${self.cacheLinePathDiePatternPath}`,
           oImg => {
             oImg.scale(0.25)
             oImg.set({
