@@ -342,8 +342,8 @@ export default {
         // 如果是`鼠标垫`
         waterText.scale(0.175)
         waterText.set({
-          left: 20,
-          top: 10,
+          left: 10,
+          top: 5,
           angle: 90
         })
       }
