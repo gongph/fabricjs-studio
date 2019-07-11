@@ -203,7 +203,7 @@
 <script>
 import { SidebarBase, SidebarAttrs, SidebarLayer, SidebarInfos } from './layout'
 import { mapGetters, mapActions } from 'vuex'
-import { baseImgUrl, gererateUUID, download, getUrlParam, parseTime } from '@/utils'
+import { gererateUUID, download, getUrlParam, parseTime } from '@/utils'
 import { fromEvent } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 import { uploadify } from '@/utils/file-upload.js'
@@ -211,6 +211,7 @@ import fb from '@/utils/fabric'
 import ImageLazyload from '@/components/ImgLazyload/index.vue'
 import PreviewCanvas from './components/preview-canvas.vue'
 import { cloneDeep } from 'lodash'
+import URL from '@/utils/url.js'
 
 export default {
   name: 'Studio',
@@ -224,8 +225,8 @@ export default {
   },
   data () {
     return {
-      baseImgUrl,
       navTabActived: 0,
+      baseImgUrl: URL.baseImgUrl,
       uploadTabActived: 0,
       attrTababled: true,
       canvas: null,
@@ -412,7 +413,7 @@ export default {
     createFabric (canvas) {
       const self = this
       self.$fabric.Image.fromURL(
-        `${baseImgUrl}${self.cacheDiePatternPath}`,
+        `${self.baseImgUrl}${self.cacheDiePatternPath}`,
         (oImg) => {
           oImg.scale(0.5)
           oImg.set({
@@ -434,7 +435,7 @@ export default {
     initCanvas (callback) {
       const self = this
       const image = new Image()
-      image.src = `${baseImgUrl}${self.cacheDiePatternPath}`
+      image.src = `${self.baseImgUrl}${self.cacheDiePatternPath}`
       image.onload = () => {
         // 初始化Canvas画布
         const canvas = self.canvas = fb.init(

@@ -1,5 +1,3 @@
-// 图片根路径
-export const baseImgUrl = 'http://th.minio.boyuanziben.cn'
 /**
  * base64  to blob二进制
  */

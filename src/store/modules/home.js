@@ -129,7 +129,12 @@ const home = {
       // 电脑贴膜和鼠标垫的图片路径是不一样的
       if (state.customeTemplate.modelType.id === 1) {
         state.cacheDiePattern.path = data?.diePatternimagePath ? data.diePatternimagePath : data.diePattern.diePatternimagePath
-        state.cacheDiePattern.linepath = data?.linePatternimagePath ? data.linePatternimagePath : data.diePattern.linePatternimagePath
+        // 如果有线模图给线模图赋值
+        if (data.linePatternimagePath) {
+          state.cacheDiePattern.linepath = data.linePatternimagePath
+        } else if (data.diePattern && data.diePattern.linePatternimagePath) {
+          state.cacheDiePattern.linepath = data.diePattern.linePatternimagePath
+        }
       } else {
         state.cacheDiePattern.path = state.sbdDiePattern?.diePatternimagePath
       }

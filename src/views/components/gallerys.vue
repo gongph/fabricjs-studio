@@ -90,6 +90,7 @@ import ImageLazyload from '@/components/ImgLazyload/index.vue'
 import VarMixin from '@/mixins/var.js'
 import ProgressMixin from '@/mixins/progress.js'
 import ExtendObjectMixin from '@/mixins/extendObject.js'
+import URL from '@/utils/url.js'
 export default {
   name: 'Gallerys',
   mixins: [VarMixin, ProgressMixin, ExtendObjectMixin],
@@ -105,6 +106,7 @@ export default {
       isOpen: this.open,
       activeTypeId: '',
       selectedImgId: '',
+      baseImgUrl: URL.baseImgUrl,
       imgLoading: true,
       sureBtnLoading: false
     }

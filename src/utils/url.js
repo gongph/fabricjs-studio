@@ -1,5 +1,5 @@
 module.exports = {
-  baseImgUrl: 'http://th.minio.boyuanziben.cn',
-  baseURL: 'http://new-api.boyuanziben.cn',
-  baseFileURL: 'http://minio.boyuanziben.cn'
+  baseImgUrl: 'http://photo.minio.xintonglu.top',
+  baseURL: 'http://api.xintonglu.top',
+  baseFileURL: 'http://minio.xintonglu.top'
 }
