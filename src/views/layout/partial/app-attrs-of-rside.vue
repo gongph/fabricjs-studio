@@ -475,6 +475,7 @@ export default {
             obj = this.extendObject(obj, 'image')
           }
           c.add(obj)
+          c.setActiveObject(obj)
           this.setActiveObject(obj)
           this.$emit('graph:copyed', obj)
         })
