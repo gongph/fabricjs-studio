@@ -173,7 +173,7 @@
               <td class="is-center"><span>{{ scope.row.createdDate | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span></td>
               <td class="is-center">
                 <span v-if="scope.row.finishedCondition.id === 2">
-                  <viewer :img-src="baseUrl + scope.row.productionRenderingImageUrl" :zoom="1" />
+                  <viewer :img-src="baseImgUrl + scope.row.productionRenderingImageUrl" :zoom="1" />
                 </span>
                 <span v-else>-</span>
               </td>

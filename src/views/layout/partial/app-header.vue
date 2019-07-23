@@ -102,6 +102,7 @@ export default {
       'setTabActived',
       'setOpenPreviewCanvasDialog',
       'clearLayers',
+      'clearLine',
       'getCustomTemplateByCustomNumber',
       'saveOrUpdateFabricDesign',
       'updateCustomTemplates',
@@ -124,6 +125,9 @@ export default {
           })
           // 清空图层
           this.clearLayers()
+          if (this.dieLineBg) {
+            this.canvas.remove(this.dieLineBg)
+          }
           this.setTabActived(2)
           // this.navTabActived = 0
         }
@@ -280,6 +284,8 @@ export default {
                 message: '提交成功',
                 position: 'top'
               })
+              this.clearLine()
+              this.clearLayers()
               this.$router.push({ path: '/' })
             }).catch(err => {
               this.uploading = false
@@ -293,6 +299,9 @@ export default {
       })
     },
     goStudio (customTemaplate) {
+      if (this.dieLineBg) {
+        this.canvas.remove(this.dieLineBg)
+      }
       // 清空画板
       this.canvas.clear()
       // 清空图层
@@ -384,7 +393,11 @@ export default {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
+          if (this.dieLineBg) {
+            this.canvas.remove(this.dieLineBg)
+          }
           this.clearLayers()
+          this.clearLine()
           this.$router.push({ path: '/' })
         }
       })
@@ -398,6 +411,10 @@ export default {
       }).then(({ result }) => {
         if (result) {
           this.signOut().then(() => {
+            if (this.dieLineBg) {
+              this.canvas.remove(this.dieLineBg)
+            }
+            this.clearLine()
             this.clearLayers()
             this.$router.push({ path: '/login' })
           })
