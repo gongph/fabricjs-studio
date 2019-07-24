@@ -137,6 +137,8 @@ const home = {
           state.cacheDiePattern.linepath = data.linePatternimagePath
         } else if (data.diePattern && data.diePattern.linePatternimagePath) {
           state.cacheDiePattern.linepath = data.diePattern.linePatternimagePath
+        } else {
+          state.cacheDiePattern.linepath = ''
         }
       } else {
         state.cacheDiePattern.path = state.sbdDiePattern?.diePatternimagePath
