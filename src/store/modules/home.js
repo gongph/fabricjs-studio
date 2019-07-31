@@ -89,6 +89,9 @@ const home = {
       data.forEach((object) => {
         // 根据选项不同提供不同的候选值
         if (object.computerType) {
+          if (object.computerType.value === '鼠标垫' || object.computerType.value === '' || object.diePatternType === '') {
+            return
+          }
           state.autoCompleteList.push(object.computerType.value)
           state.autoCompleteList.push(object.diePatternType)
         } else {
@@ -134,6 +137,8 @@ const home = {
           state.cacheDiePattern.linepath = data.linePatternimagePath
         } else if (data.diePattern && data.diePattern.linePatternimagePath) {
           state.cacheDiePattern.linepath = data.diePattern.linePatternimagePath
+        } else {
+          state.cacheDiePattern.linepath = ''
         }
       } else {
         state.cacheDiePattern.path = state.sbdDiePattern?.diePatternimagePath
@@ -153,9 +158,18 @@ const home = {
     },
     SET_CACHE_SAVED_CUSTOME_TEMPLATE: (state, data) => {
       state.cacheDiePattern.savedCustomTemplate = data
+    },
+    CLEAR_LINE: (state) => {
+      state.cacheDiePattern.linepath = ''
     }
   },
   actions: {
+    /**
+     * 清空`线模图`
+     */
+    clearLine ({ commit }) {
+      commit('CLEAR_LINE')
+    },
     /**
      * 获取`我要定制`列表
      */
