@@ -388,7 +388,7 @@ export default {
      */
     downloadDesign (row) {
       let id = (row.taobaoNickname) + '-' + (row.theRecipientName) + '-' + row.diePattern.computerType.value + '-' + row.diePattern.diePatternType + '-' + row.modelType.value + '-' + parseTime(row.createdDate, '{y}-{m}-{d} {h}:{i}:{s}')
-      let src = this.baseUrl + row.productionRenderingImageUrl
+      let src = this.baseImgUrl + row.productionRenderingImageUrl
       var canvas = document.createElement('canvas')
       var img = document.createElement('img')
       img.onload = function (e) {
