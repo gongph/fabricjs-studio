@@ -333,7 +333,12 @@ export default {
         type: 'info'
       }).then(({ result }) => {
         if (result) {
-          this.progressStart()
+          const self = this
+          const loading = self.loading({
+            text: '小二正在为您准备本地保存的设计稿，请稍等...',
+            color: '#ffa500', // orange
+            overlayColor: '#303030'
+          })
           this.handleCustomTemplateAndFabricDesign(false).then(response => {
             // 上传图片到服务器
             return uploadify(this.canvas.toDataURL({
@@ -359,7 +364,7 @@ export default {
             }).then(response => {
               return this.saveOrUpdateFabricDesign(JSON.stringify(this.canvas.toJSON()))
             }).then(() => {
-              this.progressDone()
+              loading.close()
               this.$toast.success({
                 message: '保存本地成功',
                 position: 'top'
