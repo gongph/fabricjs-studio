@@ -34,6 +34,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { debounce } from 'lodash'
 import VarMixin from '@/mixins/var.js'
 import Sortable from 'sortablejs'
 
@@ -72,15 +73,28 @@ export default {
      * 初始化排序
      */
     initSortable () {
-      this.$nextTick(() => {
+      const self = this
+      self.$nextTick(() => {
         Sortable.create(document.getElementById('layers'), {
           animation: 300,
           handle: '.layer',
           easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-          ghostClass: 'sortable-ghost'
+          ghostClass: 'sortable-ghost',
+          // 拖拽结束之后触发
+          // https://github.com/SortableJS/Sortable#options
+          onEnd: function (evt) {
+            self.handleLayerIndex(evt.newIndex)
+          }
         })
       })
     },
+    /**
+     * 处理图层顺序，加个防抖
+     */
+    handleLayerIndex: debounce(function (index) {
+      const item = this.getObjectById(id)
+      if (item) item.moveTo(index)
+    }, 250),
     /**
      * 处理图层是否可见
      */
