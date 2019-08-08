@@ -1,7 +1,7 @@
 <template>
   <happy-scroll :color="scrollColor" hide-horizontal resize>
     <div id="layers">
-      <div v-for="(layer, $index) of layers" class="layer" :key="$index">
+      <div v-for="(layer, $index) of layers" class="layer" :key="$index" :data-id="layer.id">
         <div class="visible">
           <mu-icon
             size="16"
@@ -83,7 +83,8 @@ export default {
           // 拖拽结束之后触发
           // https://github.com/SortableJS/Sortable#options
           onEnd: function (evt) {
-            self.handleLayerIndex(evt.newIndex)
+            var item = evt.item, id = evt.dataset.id
+            self.handleLayerIndex(id, evt.newIndex)
           }
         })
       })
@@ -91,7 +92,7 @@ export default {
     /**
      * 处理图层顺序，加个防抖
      */
-    handleLayerIndex: debounce(function (index) {
+    handleLayerIndex: debounce(function (id, index) {
       const item = this.getObjectById(id)
       if (item) item.moveTo(index)
     }, 250),
