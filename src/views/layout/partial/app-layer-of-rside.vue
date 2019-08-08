@@ -83,8 +83,7 @@ export default {
           // 拖拽结束之后触发
           // https://github.com/SortableJS/Sortable#options
           onEnd: function (evt) {
-            var item = evt.item, id = evt.dataset.id
-            self.handleLayerIndex(id, evt.newIndex)
+            self.handleLayerIndex(evt.dataset.id, evt.newIndex)
           }
         })
       })
