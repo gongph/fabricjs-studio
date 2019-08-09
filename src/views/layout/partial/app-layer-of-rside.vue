@@ -1,7 +1,7 @@
 <template>
   <happy-scroll :color="scrollColor" hide-horizontal resize>
     <div id="layers">
-      <div v-for="(layer, $index) of layers" class="layer" :key="$index" :data-id="layer.id">
+      <div v-for="(layer, $index) of layers" class="layer" :key="$index" :id="layer.id">
         <div class="visible">
           <mu-icon
             size="16"
@@ -19,7 +19,9 @@
           :class="activeId === layer.id ? 'active' : ''"
           @click="handleSelected(layer.id)"
         >
-          <div class="box"></div>
+          <div class="box">
+            <img class="image" v-if="layer.name !== 'itext'" :src="layer.dataUrl">
+          </div>
           <div class="text">
             {{ layer.name === 'itext'
               ? '文本' + ($index + 1)
@@ -83,7 +85,8 @@ export default {
           // 拖拽结束之后触发
           // https://github.com/SortableJS/Sortable#options
           onEnd: function (evt) {
-            self.handleLayerIndex(evt.dataset.id, evt.newIndex)
+            const item = evt.item
+            if (item) self.handleLayerIndex(item.getAttribute('id'), evt.newIndex + 1)
           }
         })
       })
@@ -93,7 +96,7 @@ export default {
      */
     handleLayerIndex: debounce(function (id, index) {
       const item = this.getObjectById(id)
-      if (item) item.moveTo(index)
+      if (item) this.canvas.moveTo(item, index)
     }, 250),
     /**
      * 处理图层是否可见

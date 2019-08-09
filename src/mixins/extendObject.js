@@ -21,7 +21,8 @@ export default {
           name: target.name,
           id: target._uuid,
           visible: true,
-          kclass: target
+          kclass: target,
+          dataUrl: target.toDataURL()
         })
       }
 

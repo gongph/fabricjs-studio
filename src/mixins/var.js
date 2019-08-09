@@ -43,7 +43,7 @@ export default {
      * @param {Object} object Fabric's install
      */
     bringToFront (object) {
-      this.canvas.bringToFront(object)
+      this.canvas && this.canvas.bringToFront(object)
     },
     /**
      * 置顶模糊图和水印内容

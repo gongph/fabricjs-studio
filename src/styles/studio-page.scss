@@ -286,6 +286,11 @@
           width: 38px;
           height: 38px;
           background: #fff;
+          .image {
+            max-width: 100%;
+            width: 100%;
+            height: 100%
+          }
         }
         .text {
           margin-left: 10px;
