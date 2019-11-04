@@ -23,7 +23,7 @@
     ]
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "base64-img": "^1.0.4",
     "core-js": "^2.6.5",
     "fabric": "3.0.0",
