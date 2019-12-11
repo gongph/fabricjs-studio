@@ -57,7 +57,8 @@
     </div>
 
     <div class="footer">
-      <p>Copyright ©2017 郑州新通路商贸有限公司.All rights reserved.</p>
+      <p style="text-align: center">Copyright ©2017 郑州新通路商贸有限公司.All rights reserved.</p>
+      <p style="text-align: center"><a href="http://www.beian.miit.gov.cn">豫ICP备17015335号</a></p>
     </div>
 
     <mu-snackbar position="top" :open.sync="snackbar.open">
